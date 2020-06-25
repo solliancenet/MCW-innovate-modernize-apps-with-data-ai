@@ -1,4 +1,4 @@
-# Outline - Innovate and Modernize Apps with Data & AI*
+# Outline - Innovate and Modernize Apps with Data & AI
 
 Wide World Importers is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C.
 
