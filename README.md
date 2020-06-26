@@ -27,26 +27,35 @@ In particular, they would like to modernize their solution to use microservices,
 
 They recognize their solutions will benefit from the cloud and want to ensure that their hybrid solution can be managed in a consistent way across both cloud and on-premises resources.
 
+The factories currently collect and analyze their operational data independently, and they would like to deploy a cloud based platform to centralize and allow storage of all data across all factories.
+
 ## Preferred Solution Architecture
 
-### On-Premises 
+### On-Premises (Single Factory)
 
 Azure IoT Edge
-- ingests device events
+- ingests device events to local IoT Hub
 - runs Stream Analytics on-premises
 - forwards events to IoT Hub in cloud
   
+IoT Hub
+- runs within container on-premises in IoT Edge
+
 Kubernetes (on-premises cluster)
 - hosting of website 
 - hosting of Azure Functions (the microservices) in container
 - hosting of anomaly detector container
 - hosting of PostgreSQL Hyperscale database
 
+PostgreSQL Hyperscale
+- Factory/plant specific operational analytics data store
+- Deploy PostgreSQL to on-premises Kubernetes clusters using Azure Arc
+
 Azure Functions
+- IoT Hub event consumer, writing events to PostgreSQL
 - microservices logic runs on Kubernetes
 - invoked from IoT Edge
 - coordinates calls to anomaly detector service and alerting service
-- writes aggregate events to PostgreSQL
 
 Cognitive Services
 - Anomaly Detector service deployed in container to on-premises Kubernetes cluster
@@ -60,11 +69,10 @@ Azure ARC
 - Azure Arc enabled Kubernetes installs an agent on Kubernetes cluster that can communicate with the Azure control plane. 
 - A representation of the cluster is created in Azure, allowing one to configure policies, monitoring, and GitOps integrations.
 
-### Cloud Based
+### Cloud Based (All Factories)
 IoT Hub
-- runs within container on-premises
 - cloud based message ingest store
-- adds capability to manage IoT devices remotely
+- writes messages to Azure Storage
 
 Azure Stream Analytics
 - queries device messages from IoT Hub and writes them to Cosmos DB
@@ -72,18 +80,23 @@ Azure Stream Analytics
 Cosmos DB
 - used as the event store in the cloud
 - consumer applications subscribe to the change feed 
+- change feed raises event about new events, handled by Functions
+- change feed enables event sourcing approach which enables extensibility of cloud processing
 
 Azure Functions
 - microservices logic 
 - responding to Cosmos DB change feed
+- Function writing events from ALL plants to PostgreSQL 
 - Function used to aggregate events into snapshots and materialized views for easier querying and reporting
 
 Azure Synapse Analytics
+- Support analysis of historical data across all factories/plants
+- Serverless used to explore messages written by IoT Hub in Storage
 - SQL Pool tables loaded with telemetry current state data to support querying and reporting with Power BI
 - Spark structured stream processing in notebooks, applies predictive maintenance model to identify devices needing service soon.
 
 Azure Database for PostgreSQL Hyperscale
-- deploy PostgreSQL to on-premises Kubernetes clusters using Azure Arc
+- Operational analytics data store support ALL factories/plants
 
 Azure Machine Learning
 - Predictive maintenance model, estimates days until anticipated service need.
