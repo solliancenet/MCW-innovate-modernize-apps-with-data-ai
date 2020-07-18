@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-[Insert workshop name here]
+Innovate and Modernize Apps with Data & AI
 </div>
 
 <div class="MCWHeader2">
@@ -9,7 +9,7 @@ Hands-on lab step-by-step
 </div>
 
 <div class="MCWHeader3">
-[Insert date here Month Year]
+July 2020
 </div>
 
 
@@ -27,7 +27,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [\[insert workshop name here\] hands-on lab step-by-step](#\insert-workshop-name-here\-hands-on-lab-step-by-step)
+- [Innovate and Modernize Apps with Data & AI hands-on lab step-by-step](#innovate-and-modernize-apps-with-data-and-ai-hands-on-lab-step-by-step)
     - [Abstract and learning objectives](#abstract-and-learning-objectives)
     - [Overview](#overview)
     - [Solution architecture](#solution-architecture)
@@ -64,13 +64,23 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Requirements
 
-1.  Number and insert your custom workshop content here . . . 
+1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
+
+    a. Trial subscriptions will not work.
+
+2. Install [Visual Studio Code](https://code.visualstudio.com/).
+
+    a. Install the [Azure IoT Tools extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.azure-iot-tools).
+
+    b. Install the [C# for Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp).
+
+    c. Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
+
+3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py).
 
 ## Before the hands-on lab
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
-
-To author: remove this section if you do not require environment setup instructions.
 
 ## Exercise 1: Exercise name
 
