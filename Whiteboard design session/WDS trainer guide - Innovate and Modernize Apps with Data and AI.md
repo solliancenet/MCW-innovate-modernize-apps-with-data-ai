@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-[Insert workshop name here]
+Innovate and Modernize Apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -9,7 +9,7 @@ Whiteboard design session trainer guide
 </div>
 
 <div class="MCWHeader3">
-[Insert date here Month Year]
+July 2020
 </div>
 
 
@@ -32,7 +32,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Whiteboard design session flow](#whiteboard-design-session-flow)
     - [Before the whiteboard design session: How to prepare](#before-the-whiteboard-design-session-how-to-prepare)
     - [During the whiteboard design session: Tips for an effective whiteboard design session](#during-the-whiteboard-design-session-tips-for-an-effective-whiteboard-design-session)
-- [\[insert workshop name here\] whiteboard design session student guide](#\insert-workshop-name-here\-whiteboard-design-session-student-guide)
+- [Innovate and Modernize Apps with Data and AI whiteboard design session student guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-student-guide)
     - [Abstract and learning objectives](#abstract-and-learning-objectives)
     - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study)
         - [Customer situation](#customer-situation)
@@ -43,7 +43,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Step 3: Present the solution](#step-3-present-the-solution)
     - [Wrap-up](#wrap-up)
     - [Additional references](#additional-references)
-- [\[insert workshop name here\] whiteboard design session trainer guide](#\insert-workshop-name-here\-whiteboard-design-session-trainer-guide)
+- Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-trainer-guide)
     - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study-1)
     - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution-1)
     - [Step 3: Present the solution](#step-3-present-the-solution-1)
@@ -167,11 +167,13 @@ When participants are doing activities, you can **look ahead to refresh your mem
 
 **Wait for responses**. If you ask a question such as, "What's your experience with (fill in the blank)?" then wait. Do not be afraid of a little silence. If you leap into the silence, your participants will feel you are not serious about involving them and will become passive. Give participants a chance to think, and if no one answers, patiently ask again. You will usually get a response.
 
-#  \[insert workshop name here\] whiteboard design session student guide
+# Innovate and Modernize Apps with Data and AI whiteboard design session student guide
 
 ## Abstract and learning objectives 
 
-\[insert what is trying to be solved for by using this workshop. . . \]
+In this whiteboard design session, you will work with a group to design a solution for ingesting and preparing manufacturing device sensor data, as well as detecting anomalies in sensor data and creating, training, and deploying a machine learning model which can predict when device maintenance will become necessary.
+
+At the end of this whiteboard design session, you will have learned how to capture Internet of Things (IoT) device data with Azure IoT Hub, process device data with Azure Stream Analytics, apply the Command and Query Responsibility Segregation (CQRS) pattern with Azure Functions, build a predictive maintenance model using Azure Synapse Analytics Spark notebooks, deploy the model to an Azure Machine Learning model registry, deploy the model to an Azure Container Instance, and generate predictions with Azure Functions accessing a Cosmos DB change feed.  These skills will help you modernize applications and integrate Artificial Intelligence into the application.
 
 ## Step 1: Review the customer case study 
 
@@ -196,16 +198,28 @@ Directions:  With all participants in the session, the facilitator/SME presents 
 
 ### Customer needs 
 
-1.  \[insert your custom workshop content here . . . \]
+1. We want to centralize our factory sensor data into the cloud, using PaaS services wherever possible.
 
-2.  
+2. We want to replace our local installations of Apache Kafka with a service which does not require on-premises administrators.  Not all of our factories have dedicated Kafka administrators, and this has led to avoidable data loss issues in the past.
+
+3. In addition, the consumer group application we have built to process data from Kafka is our data pipeline bottleneck--when factory managers need to wait for information to come in, it typically is because the consumer group has fallen behind again.  We want a system which can keep up with the torrent of device data our sensors generate.
+
+4. Our factories are spread out across the world and factory managers are used to near-real-time responses from the web applications hosted on on-premises servers.  Instead of a pure cloud solution, we would like a hybrid cloud solution which allows our central office, located in Seattle, Washington, to oversee operations while still enabling factory managers to get the information they need at the speed to which they are accustomed.
+
+5. In addition to storing data in the cloud, we would like to integrate machine learning into our application processing, including detecting anomalies in sensor data and using sensor data to predict when device maintenance will be necessary.
+
+6. We would like to reduce our reliance on a classic web application server for data processing and move toward a microservice approach.
 
 
 ### Customer objections 
 
-1.  \[insert your custom workshop content here . . . \]
+1. We process a large amount of sensor data at each factory.  Will a cloud service be able to keep up with our data requirements?
 
-2.  
+2. Does Azure have any capabilities available to perform anomaly detection on our sensor data?  How quickly could we get a service in place?
+
+3. Will an hybrid Azure and on-premises solution require additional administrators?  We do not have the budget to hire new IT staff this fiscal year, and so we want to limit the amount of maintenance required.
+
+4. How quickly could we add new sensors to this solution?  We have new manufacturing devices coming online and wish to expand the sensors on our existing devices, so we need a solution which will scale over time.
 
 
 ### Infographic for common scenarios
@@ -294,7 +308,7 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 |   |   |
 |   |   |
 
-# \[insert workshop name here\] whiteboard design session trainer guide
+# Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide
 
 ## Step 1: Review the customer case study
 
@@ -336,9 +350,11 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 
 -   Have the table participants reconvene with the larger session group to hear the facilitator/SME share the following preferred solution.
 
-##  Preferred target audience
+## Preferred target audience
 
-\[insert your custom workshop content here . . . \]
+Molly Fischer, Chief Information Officer (CIO), Wide World Importers
+
+The primary audience is business and technology decision-makers. From the case study scenario, it would include the Director of Analytics. Usually, we talk to the infrastructure managers who report to the chief information officer (CIO), or to application sponsors, such as a line of business (LOB) vice president (VP), chief marketing officer (CMO), or to those who represent the business unit IT or developers who report to application sponsors.
 
 ## Preferred solution
 

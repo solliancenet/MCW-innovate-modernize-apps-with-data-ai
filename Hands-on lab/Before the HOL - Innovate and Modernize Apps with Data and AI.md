@@ -34,6 +34,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
         - [Task 2: Provision Azure Data Lake Storage Gen2](#task-2-provision-azure-data-lake-storage-gen2)
         - [Task 3: Provision an IoT Hub](#task-3-provision-an-iot-hub)
         - [Task 4: Provision an Azure Container Registry](#task-4-provision-an-azure-container-registry)
+        - [Task 5: Provision an Ubuntu Virtual Machine](#task-5-provision-an-ubuntu-virtual-machine)
+        - [Task 6: Provision Cosmos DB](#task-6-provision-cosmos-db)
+        - [Task 7: Provision a Function App](#task-7-provision-a-function-app)
+        - [Task 8: Deploy Azure Database for PostgreSQL](#task-8-deploy-azure-database-for-postgresql)
+        - [Task 9: Provision an Azure Synapse Analytics workspace](#task-9-provision-an-azure-synapse-analytics-workspace)
+        - [Task 10: Provision a Machine Learning workspace](#task-10-provision-a-machine-learning-workspace)
 
 <!-- /TOC -->
 
@@ -47,7 +53,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Before the hands-on lab
 
-Duration: 30 minutes
+Duration: 40 minutes
 
 In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all steps provided before attending the Hands-on lab.
 
@@ -93,12 +99,14 @@ Azure Data Lake Storage Gen2 will be critical for several integration points thr
    | ------------------------------ | ------------------------------------------  |
    | Subscription                   | _select the appropriate subscription_       |
    | Resource group                 | _select `modernize-app`_                    |
-   | Storage account name           | _`modernizeappstorage`_                     |
+   | Storage account name           | _`modernizeappstorage#SUFFIX#`_             |
    | Location                       | _select the resource group's location_      |
    | Pricing tier                   | _select Standard_                           |
    | Account kind                   | _select StorageV2 (general purpose v2)_     |
    | Replication                    | _select Locally-redundant storage (LRS)_    |
    | Access tier                    | _select Hot_                                |
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the storage account name with a suffix you would like to use. Names of storage accounts must be globally unique.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-storage-account-1.png 'Storage Account Settings')
 
@@ -129,7 +137,9 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
    | Subscription                   | _select the appropriate subscription_       |
    | Resource group                 | _select `modernize-app`_                    |
    | Location                       | _select the resource group's location_      |
-   | IoT hub name                   | _`modernize-app-iot`_                       |
+   | IoT hub name                   | _`modernize-app-iot-#SUFFIX#`_              |
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the IoT hub name with a suffix you would like to use. Names of IoT hubs must be globally unique.
 
    ![The form fields are completed with the previously described settings and with the Size and scale menu option selected.](media/azure-create-iot-hub-1.png 'Iot Hub Settings')
 
@@ -143,7 +153,7 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
 
 ### Task 4: Provision an Azure Container Registry
 
-IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will build a data generator which simulates a sensor sending messages to IoT Hub.
+The container registry will store container images you will create during the hands-on lab.
 
 1. In the [Azure portal](https://portal.azure.com), type in "container registries" in the top search menu and then select **Container registries** from the results.
 
@@ -151,7 +161,7 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
 
 2. Select **+ Add** on the Container registries page.
 
-3. Within the **IoT hub** form, complete the following:
+3. Within the **Container registry** form, complete the following:
 
    | Field                          | Value                                       |
    | ------------------------------ | ------------------------------------------  |
@@ -173,13 +183,253 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
 
     ![The Admin user is enabled for the container registry.](media/azure-create-container-registry-2.png 'Container registry Access keys')
 
-**TODO:**
-1. Provision a Linux VM.
-2. Provision a Cosmos DB database.
-3. Provision a Function App.
-4. Provision Postgres Hyperscale.
-5. Provision an Azure Synapse Analytics workspace.
-6. Provision an Azure Machine Learning workspace.
+### Task 5: Provision an Ubuntu Virtual Machine
+
+In the hands-on lab, you will use an Ubuntu virtual machine to send sensor data.
+
+1. In the [Azure portal](https://portal.azure.com), type in "virtual machines" in the top search menu and then select **Virtual machines** from the results.
+
+    ![In the Services search result list, Virtual machines is selected.](media/azure-create-linux-vm-search.png 'Virtual machines')
+
+2. Select **+ Add** on the Virtual machines page and then select the **Virtual machine** option.
+
+3. In the **Basics** tab, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Resource group                 | _select `modernize-app`_                           |
+   | Virtual machine name           | _`modernize-app-vm`_                               |
+   | Region                         | _select the resource group's location_             |
+   | Availability options           | _select `No infrastructure redundancy required`_   |
+   | Image                          | _select `Ubuntu Server 18.04 LTS`_                 |
+   | Azure Spot instance            | _select `No`_                                      |
+   | Size                           | _select `Standard_D2s_v3`_                         |
+   | Authentication type            | _select `SSH public key`_                          |
+   | Username                       | _select `iotuser`_                                 |
+   | SSH public key source          | _select `Generate new key pair`_                   |
+   | Key pair name                  | _select `modernize-app-vm_key`_                    |
+   | Public inbound ports           | _select `Allow selected ports`_                    |
+   | Select inbound ports           | _select `SSH (22)`_                                |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-linux-vm-1.png 'Create a virtual machine')
+
+4. Select **Review + create**. On the review screen, select **Create**.
+
+5. A modal dialog will appear to generate a new key pair.  Select **Download private key and create resource**. This will create the SSH key and you will download a file named modernize-app-vm_key.pem.
+
+    ![Generate a new key pair.](media/azure-create-linux-vm-2.png 'Generate new key pair')
+
+6. Copy this private key to a location on your drive, such as `C:\Temp`. The private key must be accessible only to the current user, with no permissions for other users or groups. To accomplish this in Windows, right-click on the key and select **Properties**. On the **Security** tab, select **Advanced**.
+
+    ![Set private key permissions.](media/azure-create-linux-vm-3.png 'Set private key permissions')
+
+7. In Advanced Security Settings, ensure that you are the owner. If not, select **Change** and change the owner to your account.
+
+8. In Advanced Security Settings, select **Disable inheritance** and select **Remove all inherited permissions from this object.** on the ensuing modal dialog.
+
+    ![Disable inheritance and remove inherited permissions.](media/azure-create-linux-vm-4.png 'Block Inheritance')
+
+9. In the Permissions tab on Advanced Security Settings, **Remove** any entries other than your user account.
+
+    ![Remove permission entries for all accounts other than your own.](media/azure-create-linux-vm-5.png 'Remove permission entries')
+
+10. If there is not already an entry for your account, select **Add** to add a new permission. Select **Select a principal** to add your account and then select **Full control** to give full control of the permissions file to your account. Then select **OK** for each open dialog to complete these changes.
+
+    ![Add permissions for your user account.](media/azure-create-linux-vm-6.png 'Add permissions')
+
+11. After the deployment succeeds, select the **Go to resource** button.
+
+12. In the **Settings** section on the menu, select **Connect**.  This will provide instructions on how to connect to the VM, including the IP address you will use for the connection.
+
+    ![The example command to connect to your VM is selected.](media/azure-create-linux-vm-7.png 'Connect')
+
+13. If you are running Windows 10 version 1709 (Fall Creators Update) or later, Windows has a built-in `ssh` command. Run the following command to ensure that your SSH key is configured correctly. Be sure to change the private key location and IP address as needed.
+
+    `ssh -i #FILE_LOCATION#\modernize-app-vm_key.pem iotuser@#VM_IP_ADDRESS#`
+
+    > **IMPORTANT:**  If you receive an error message which includes "WARNING: UNPROTECTED PRIVATE KEY FILE!", please ensure that you have completed the above steps and set file permissions for the private key.
+
+    > **NOTE:** If you are running a version of Windows which does not include built-in SSH support, you can use an [SSH client like PuTTY](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-azure-vm-technical-asset#connect-to-a-linux-based-vm) to connect to your virtual machine. If you are using Linux or MacOS, you should already have the `ssh` command installed. In that case, be sure to run `chmod 400 modernize-app-vm_key.pem` to set the file as read-only and accessible only to your user account before attempting to connect.
+
+### Task 6: Provision Cosmos DB
+
+The hands-on lab will use Cosmos DB as a key component in the event sourcing architecture.
+
+1. In the [Azure portal](https://portal.azure.com), type in "cosmos db" in the top search menu and then select **Azure Cosmos DB** from the results.
+
+    ![In the Services search result list, Azure Cosmos DB is selected.](media/azure-create-cosmos-db-search.png 'Cosmos DB')
+
+2. Select **+ Add** on the Container registries page.
+
+3. Within the **Create Azure Cosmos DB Account** form, complete the following:
+
+   | Field                          | Value                                       |
+   | ------------------------------ | ------------------------------------------  |
+   | Subscription                   | _select the appropriate subscription_       |
+   | Resource group                 | _select `modernize-app`_                    |
+   | Account name                   | _`modernize-app-#SUFFIX#`_                  |
+   | API                            | _select `Core (SQL)`                        |
+   | Notebooks                      | _select `Off`                               |
+   | Location                       | _select the resource group's location_      |
+   | Apply Free Tier Discount       | _select `Apply` if available_               |
+   | Account Type                   | _select `Non-Production`_                   |
+   | Geo-Redundancy                 | _select `Disable`_                          |
+   | Multi-region Writes            | _select `Disable`_                          |
+   | Availability Zones             | _select `Disable`_                          |
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the account name with a suffix you would like to use. Names of Cosmos DB accounts must be globally unique.
+
+   > **NOTE**: Cosmos DB allows one account to be placed into a free tier, which provides access to 400 Request Units and 5 GB of storage for free. This hands-on lab will remain well under those limits, so if you have it available, you may wish to apply the discount.
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-cosmos-db-1.png 'Cosmos DB Settings')
+
+4. Select **Review + create**. On the review screen, select **Create**. This may take 15 minutes or so to complete and while it deploys, you may continue on to other tasks.
+
+### Task 7: Provision a Function App
+
+1. In the [Azure portal](https://portal.azure.com), type in "function app" in the top search menu and then select **Function App** from the results.
+
+    ![In the Services search result list, Function App is selected.](media/azure-create-function-app-search.png 'Function App')
+
+2. Select **+ Add** on the Function App page.
+
+3. Within the **Create Function App** form, complete the following:
+
+   | Field                          | Value                                       |
+   | ------------------------------ | ------------------------------------------  |
+   | Subscription                   | _select the appropriate subscription_       |
+   | Resource group                 | _select `modernize-app`_                    |
+   | Function App name              | _`modernize-app-#SUFFIX#`_                  |
+   | Publish                        | _select `Code`_                             |
+   | Runtime stack                  | _select `.NET Core`_                        |
+   | Version                        | _select `3.1`_                              |
+   | Region                         | _select the resource group's location_      |
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the Function App name with a suffix you would like to use. Names of Function Apps must be globally unique.
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-function-app-1.png 'Create Function App')
+
+4. Select **Next : Hosting >** to move on to the Hosting page.  On the Hosting page, select the Azure Data Lake Storage Gen2 account you created earlier for storage account.  Leave the Operating System as Windows and the Plan type as Consumption (Serverless).
+
+    ![The Hosting page with the correct storage account selected.](media/azure-create-function-app-2.png 'Hosting')
+
+5. Select **Review + create**. On the review screen, select **Create**.
+
+### Task 8: Deploy Azure Database for PostgreSQL
+
+In this task, you will deploy a new Azure Database for PostgreSQL, selecting the Hyperscale (Citus) option.
+
+1. In the [Azure portal](https://portal.azure.com), type in "postgres" in the top search menu and then select **Azure Database for PostgreSQL servers** from the results.
+
+    ![In the Services search result list, Azure Database for PostgreSQL servers is selected.](media/azure-create-postgres-search.png 'Azure Database for PostgreSQL servers')
+
+2. Select **+ Add** on the Azure Database for PostgreSQL servers page.
+
+3. Select **Create** under the **Hyperscale (Citus) server group** deployment option.
+
+   ![The Hyperscale (Citus) server group option is highlighted.](media/azure-create-postgres-1.png 'Select Azure Database for PostgreSQL deployment option')
+
+4. Within the **Hyperscale (Citus) server group** form, complete the following:
+
+   | Field                          | Value                                       |
+   | ------------------------------ | ------------------------------------------  |
+   | Subscription                   | _select the appropriate subscription_       |
+   | Resource group                 | _select `modernize-app`_                    |
+   | Server group name              | _`modernize-app-#SUFFIX#`_                  |
+   | Location                       | _select the resource group's location_      |
+   | Password                       | _enter a valid password you will remember_  |
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the server group name with a suffix you would like to use. Names of server groups must be globally unique.
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-postgres-2.png 'Hyperscale (Citus) server group')
+
+5. Select **Configure server group**. Leave the settings in that section unchanged and select **Save**.
+
+6. Select **Review + create** and then **Create** to provision the server. Provisioning takes **up to 10** minutes.
+
+7. The page will redirect to monitor deployment. When the live status changes from **Your deployment is underway** to **Your deployment is complete**, select the **Outputs** menu item on the left of the page. The outputs page will contain a coordinator hostname with a button next to it to copy the value to the clipboard. Record this information for later use.
+
+   ![The deployment output shows the Coordinator Hostname value after deployment is complete.](media/azure-create-postgres-3.png 'Outputs')
+
+8. Select **Overview** to view the deployment details, then select **Go to resource**.
+
+   ![The Overview menu item and Go to resource button are both highlighted.](media/azure-create-postgres-4.png 'Deployment overview')
+
+   If you are redirected to the Resource Group instead of the Azure Database for PostgreSQL server group, select the server group to continue to the next step.
+
+   ![The Azure Database for PostgreSQL server group is highlighted.](media/azure-create-postgres-5.png 'Resource Group')
+
+9. Select **Networking** in the left-hand menu underneath Security. In the Firewall rules blade, select **Yes** to *allow Azure services and resources to access this server group*, then select the **+ Add 0.0.0.0 - 255.255.255.255** link to create a new firewall rule to allow all connections (from your machine and Azure services).
+
+   ![The Firewall rules blade is displayed.](media/azure-create-postgres-6.png 'Firewall rules')
+
+10. Select **Save** to apply the new firewall rule.
+
+### Task 9: Provision an Azure Synapse Analytics workspace
+
+1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
+
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
+
+2. Select **+ Add** on the Azure Synapse Analytics (workspaces preview) page.
+
+3. Within the **Create Synapse workspace** form, complete the following:
+
+   | Field                          | Value                                            |
+   | ------------------------------ | ------------------------------------------       |
+   | Subscription                   | _select the appropriate subscription_            |
+   | Resource group                 | _select `modernize-app`_                         |
+   | Workspace name                 | _`modernizeapp#SUFFIX#`_                         |
+   | Region                         | _select the resource group's location_           |
+   | Select Data Lake Storage Gen2  | _select `Code`_                                  |
+   | Account name                   | _select the storage account you created earlier_ |
+   | File system name               | _select `Create new` and enter `synapse`_        |
+   
+
+   > **NOTE**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-synapse-1.png 'Create Synapse workspace')
+
+4. Select **Next : Security + networking >** to move on to the Security and Networking page.  On the Security and Networking page, enter a valid password you will remember. Leave the other options at their default values.
+
+    ![The Security and Networking page with a valid password entered.](media/azure-create-synapse-2.png 'Security and Networking')
+
+5. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 10** minutes.
+
+6. Select **Overview** to view the deployment details, then select **Go to resource**.
+
+7. In the Synapse workspace, select **+ New SQL pool** to create a new SQL pool.
+
+    ![The Synapse workspace page with New SQL Pool selected.](media/azure-create-synapse-3.png 'Synapse workspace')
+
+8. Enter a SQL pool name of `modernapp` and select a performance level of DW100c.
+
+    ![The form fields are completed with the previously described settings.](media/azure-create-synapse-4.png 'Create SQL pool')
+
+9. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 10** minutes. While this is underway, it is safe to continue to the next task.
+
+### Task 10: Provision a Machine Learning workspace
+
+1. In the [Azure portal](https://portal.azure.com), type in "machine learning" in the top search menu and then select **Machine Learning** from the results.
+
+    ![In the Services search result list, Machine Learning is selected.](media/azure-create-ml-search.png 'Machine Learning')
+
+2. Select **+ Add** on the Machine Learning page.
+
+3. Within the **Create Synapse workspace** form, complete the following:
+
+   | Field                          | Value                                            |
+   | ------------------------------ | ------------------------------------------       |
+   | Subscription                   | _select the appropriate subscription_            |
+   | Resource group                 | _select `modernize-app`_                         |
+   | Workspace name                 | _`modernize-app`_                                |
+   | Region                         | _select the resource group's location_           |
+   | Workspace edition              | _select `Enterprise`_                            |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-ml-1.png 'Create Machine Learning workspace')
+
+4. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 5** minutes.
 
 You should follow all steps provided *before* performing the Hands-on lab.
 
