@@ -109,7 +109,7 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
     If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
 
-    ![In the Services search result list, Resource groups is selected.](media/azure-create-iot-hub-search.png 'Resource groups')
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
 
     From there, select the **modernize-app** resource group.
 
@@ -621,39 +621,244 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
 ### Task 1: Enable Azure Synapse Link for Cosmos DB
 
-1.  Number and insert your custom workshop content here . . .
+1.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
 
-        -  
+    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
+
+    From there, select the **modernize-app** resource group.
+
+2. Select the Cosmos DB account you created before the hands-on lab. This will have a Type of **Azure Cosmos DB account**.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-cosmos-db-select.png 'Resource groups')
+
+3. In the **Settings** section, navigate to the **Features** pane.
+
+    ![In the Cosmos DB settings section, Features is selected.](media/azure-cosmos-db-features.png 'Features')
+
+4. Select the **Azure Synapse Link** feature and then select **Enable**.  Note that this may take several minutes to complete. Please wait for this to complete before moving on to the next task.
+
+    ![In the Features section, Azure Synapse Link is selected and enabled.](media/azure-cosmos-db-synapse-link.png 'Azure Synapse Link')
+
         
 ### Task 2: Create Cosmos DB containers
 
-1.  Number and insert your custom workshop content here . . .
+1.  In the **Containers** section for your Cosmos DB account,select **Browse**.
 
-    -  Insert content here
+    ![In the Cosmos DB containers section, Browse is selected.](media/azure-cosmos-db-browse.png 'Browse')
 
-        -  
+2. Select **+ Add Collection** on the Browse pane to add a new collection.
 
-    **NOTE** -- Maybe need to get keys?
+    ![In the Browse pane, Add Collection is selected.](media/azure-cosmos-db-add-collection.png 'Add Collection')
+
+3. In the **Add Container** tab, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Database id                    | _select `Create new` and enter `sensors`_          |
+   | Throughput                     | _`400`_                                            |
+   | Container id                   | _`temperatureanomalies`_                           |
+   | Partition key                  | _`/machineid`_                                     |
+   | Analytical store               | _select `On`_                                      |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-cosmos-db-temp-container.png 'Create a container for temperature anomalies')
+
+4. Select **OK** to create the container. This will take you to the Data Explorer pane for Cosmos DB.
+
+5. In the Data Explorer pane, select **New Container** to add a new container.  In the **Add Container** tab, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Database id                    | _select `Use existing` and select `sensors`_       |
+   | Container id                   | _`pressure`_                                       |
+   | Partition key                  | _`/machineid`_                                     |
+   | Analytical store               | _select `On`_                                      |
+
+   ![In the Data Explorer pane, New Container is selected and details filled out in the Add Container fly-out pane.](media/azure-cosmos-db-add-collection-2.png 'Add New Container')
+
+5. Select **OK** to create the container. This will take you back to the Data Explorer pane for Cosmos DB.
+
+6. In the **Settings** menu, select **Keys** and navigate to the Keys page. Copy the primary key and store it in a text editor for a later task.
+
+    ![In the Keys pane, the Primary Key is selected for copying.](media/azure-cosmos-db-key.png 'Copy primary key')
 
 ### Task 3: Create a sensor data directory in Azure Data Lake Storage Gen2
 
-1.  Number and insert your custom workshop content here . . .
+1.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
 
-        -  
+2. Select the **modernizeappstorage#SUFFIX#** storage account which you created before the hands-on lab. Note that there may be multiple storage accounts, so be sure to choose the one you created.
 
-    **NOTE** -- Get storage account key!
+    ![The storage account named modernizeappstorage is selected.](media/azure-storage-account-select.png 'The modernizeappstorage storage account')
+
+3. In the **Data Lake Storage** section, select **Containers**. Then, select the **synapse** container you created before the hands-on lab.
+
+    ![The Container named synapse is selected.](media/azure-storage-account-synapse.png 'The synapse storage container')
+
+4. In the synapse container, select **+ Add Directory**. Enter **sensordata** for the name and select **Save**.
+
+    ![A new data lake storage directory named sensordata is created.](media/azure-storage-account-sensordata.png 'Creating a new directory named sensordata')
+
+5. Close the synapse Container pane and return to the storage account. In the **Settings** section, select **Access keys** and copy the storage account name and key1's Key, storing them in a text editor for later use.
+
+    ![The storage account name and key are selected and copied for future use.](media/azure-storage-account-key.png 'Copying the storage account name and key')
 
 ### Task 4: Create an Azure Stream Analytics job
 
-1.  Number and insert your custom workshop content here . . .
+1. In the [Azure portal](https://portal.azure.com), type in "stream analytics jobs" in the top search menu and then select **Stream Analytics jobs** from the results.
 
-    -  Insert content here
+    ![In the Services search result list, Stream Analytics jobs is selected.](media/azure-stream-analytics-search.png 'Stream Analytics jobs')
 
-        -  
+2. In the Stream Analytics jobs page, select **+ Add** to add a new container.  In the **New Stream Analytics job** tab, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Job name                       | _`modernize-app-stream`_                           |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Resource group                 | _select `modernize-app`_                           |
+   | Location                       | _select the resource group's location_             |
+   | Hosting environment            | _select `Cloud`_                                   |
+   | Streaming units                | _select `3`_                                       |
+
+   ![In the New Stream Analytics job tab, form details are filled in.](media/azure-stream-analytics-create.png 'New Stream Analytics job')
+
+3. After your deployment is complete, select **Go to resource** to open up the new Stream Analytics job.
+
+4. In the **Configure** menu, select **Storage account settings**. Then, on the Storage account settings page, select **Add storage account**.
+    
+    ![In the Configure menu, Storage account settings is selected, followed by the Add storage account option.](media/azure-stream-analytics-add-storage.png 'Add storage account')
+
+5. Choose the storage account you created before the hands-on lab and then select **Save**.
+
+    ![In the Storage account settings menu, the appropriate storage account is selected.](media/azure-stream-analytics-add-storage-2.png 'Select storage account')
+
+6. In the **Job topology** menu, select **Inputs**. Then, select **+ Add stream input** and choose **IoT Hub**.
+
+    ![In Stream Analytics job inputs, IoT Hub is selected.](media/azure-stream-analytics-input-iothub.png 'IoT Hub')
+
+7. In the **New input** tab, name your input `modernize-app-iothub` and choose the appropriate IoT Hub that you created before the lab. Leave the other settings at their default values and select **Save**.
+
+   ![In the New input tab, form details are filled in.](media/azure-stream-analytics-input-iothub-2.png 'IoT Hub')
+
+8. In the **Job topology** menu, select **Outputs**. Then, select **+ Add** and choose **Cosmos DB**.
+
+    ![In Stream Analytics job outputs, Cosmos DB is selected.](media/azure-stream-analytics-output-cosmos1.png 'Cosmos DB')
+
+9. In the **New output** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Output alias                   | _`cosmos-temperatureanomalies`_                    |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Account id                     | _select `modernize-app-#SUFFIX#`_                  |
+   | Database                       | _select `sensors`                                  |
+   | Container name                 | _`temperatureanomalies`_                           |
+
+   ![In the Cosmos DB new output, form field entries are filled in.](media/azure-stream-analytics-output-cosmos1-2.png 'Cosmos DB output')
+
+10. Select **Save** to add the new output. Then, add another Cosmos DB output with the following information:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Output alias                   | _`cosmos-pressure`_                                |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Account id                     | _select `modernize-app-#SUFFIX#`_                  |
+   | Database                       | _select `sensors`                                  |
+   | Container name                 | _`pressure`_                                       |
+
+11. Add a **Blob storage/Data Lake Storage Gen2** output with the following details:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Output alias                   | _`synapse-sensordata`_                             |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Account id                     | _select `modernizeappstorage#SUFFIX#`_             |
+   | Container                      | _select `synapse`                                  |
+   | Path pattern                   | _`sensordata/{machineid}`_                         |
+   | Minimum rows                   | _`100`_                                            |
+   | Maximum time - Hours           | _`0`_                                              |
+   | Maximum time - Minutes         | _`5`_                                              |
+   | Authentication mode            | _select `Connection string`                        |
+
+   > **NOTE**: The path pattern should  read `sensordata/{machineid}` with the braces included. Those indicate that `machineid` is an input parameter and so we will generate one folder per individual machine.
+
+   ![In the Blob storage / Data Lake Storage new output, form field entries are filled in.](media/azure-stream-analytics-output-dls.png 'Data Lake Storage output')
+
+12. Select **Save** to add the new output.
+
+13. In the **Job topology** menu, select **Query**. You should see the input and three outputs that you created, as well as sample events from IoT Hub. If you do not see sample events, select the **modernize-app-iothub** input. If you still do not see records, ensure that the virtual machine is running and IoT Hub reports no errors.
+
+    ![In the Stream Analytics query, inputs and ouptuts, as well as sample data, are visible.](media/azure-stream-analytics-query.png 'Stream Analytics query')
+
+14. In the query window, replace the existing query text with the following code.
+
+    ```
+    -- Anomolous results -- write to Cosmos anomalies endpoint
+    WITH AnomalyDetectionStep AS
+    (
+        SELECT
+            FactoryId,
+            machine.machineId AS machineid,
+            EventProcessedUtcTime,
+            CAST(machine.temperature AS float) AS Temperature,
+            AnomalyDetection_SpikeAndDip(CAST(machine.temperature AS float), 80, 60, 'spikesanddips')
+                OVER(LIMIT DURATION(minute, 5)) AS SpikeAndDipScore
+        FROM [modernize-app-iothub] TIMESTAMP BY EventProcessedUtcTime
+    )
+    SELECT
+        FactoryId,
+        machineid,
+        EventProcessedUtcTime,
+        Temperature,
+        CAST(GetRecordPropertyValue(SpikeAndDipScore, 'Score') AS float) AS SpikeAndDipScore,
+        CAST(GetRecordPropertyValue(SpikeAndDipScore, 'IsAnomaly') AS bigint) AS IsSpikeAndDipAnomaly
+    INTO [cosmos-temperatureanomalies]
+    FROM AnomalyDetectionStep
+    WHERE
+        CAST(GetRecordPropertyValue(SpikeAndDipScore, 'IsAnomaly') AS float) = 1
+        AND CAST(GetRecordPropertyValue(SpikeAndDipScore, 'Score') AS float) > 0.001;
+
+    -- Machine pressure -- write to Cosmos system wear endpoint.  Group by TumblingWindow(second, 30)
+    SELECT
+        FactoryId,
+        machine.machineId AS machineid,
+        System.TimeStamp() AS ProcessingTime,
+        AVG(machine.pressure) AS Pressure,
+        AVG(machine.temperature) AS MachineTemperature
+    INTO [cosmos-pressure]
+    FROM [modernize-app-iothub] TIMESTAMP BY EventProcessedUtcTime
+    GROUP BY
+        FactoryId,
+        machine.machineId,
+        TumblingWindow(second, 30);
+
+    -- All sensor data -- write to ADLS gen2.
+    SELECT
+        FactoryId,
+        CAST(machine.machineId AS NVARCHAR(MAX)) AS machineid,
+        machine.temperature AS MachineTemperature,
+        machine.pressure AS MachinePressure,
+        ambient.temperature AS AmbientTemperature,
+        ambient.humidity AS AmbientHumidity,
+        EventProcessedUtcTime
+    INTO [synapse-sensordata]
+    FROM [modernize-app-iothub] TIMESTAMP BY EventProcessedUtcTime;
+    ```
+
+15. Select **Test query** to ensure that the queries run. You will see only the results of the last query in the Test results window and only the inputs and outputs you created in the Inputs and Outputs sections, respectively. If you want to see the results of a different query, highlight that query and select **Test selected query**.
+
+    ![Testing the queries in stream analytics.](media/azure-stream-analytics-test-query.png 'Test query')
+
+16. Once you are satisfied with query results, select **Save query** to save your changes.
+
+17. Return to the **Overview** page and select **Start** to begin processing. In the subsequent menu, select **Start** once more. It may take approximately 1-2 minutes for the Stream Analytics job to start.
+    
+    ![The Start option in the Overview page is selected.](media/azure-stream-analytics-start.png 'Start')
+
 
 ## Exercise 4: Import anomaly data into an Azure Synapse Analytics SQL Pool
 
