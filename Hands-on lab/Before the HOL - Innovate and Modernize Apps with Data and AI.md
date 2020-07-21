@@ -269,8 +269,8 @@ The hands-on lab will use Cosmos DB as a key component in the event sourcing arc
    | Subscription                   | _select the appropriate subscription_       |
    | Resource group                 | _select `modernize-app`_                    |
    | Account name                   | _`modernize-app-#SUFFIX#`_                  |
-   | API                            | _select `Core (SQL)`                        |
-   | Notebooks                      | _select `Off`                               |
+   | API                            | _select `Core (SQL)`_                       |
+   | Notebooks                      | _select `Off`_                              |
    | Location                       | _select the resource group's location_      |
    | Apply Free Tier Discount       | _select `Apply` if available_               |
    | Account Type                   | _select `Non-Production`_                   |
@@ -376,15 +376,16 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 3. Within the **Create Synapse workspace** form, complete the following:
 
-   | Field                          | Value                                            |
-   | ------------------------------ | ------------------------------------------       |
-   | Subscription                   | _select the appropriate subscription_            |
-   | Resource group                 | _select `modernize-app`_                         |
-   | Workspace name                 | _`modernizeapp#SUFFIX#`_                         |
-   | Region                         | _select the resource group's location_           |
-   | Select Data Lake Storage Gen2  | _select `From subscription`_                     |
-   | Account name                   | _select the storage account you created earlier_ |
-   | File system name               | _select `Create new` and enter `synapse`_        |
+   | Field                                                | Value                                            |
+   | ---------------------------------------------------- | ------------------------------------------       |
+   | Subscription                                         | _select the appropriate subscription_            |
+   | Resource group                                       | _select `modernize-app`_                         |
+   | Workspace name                                       | _`modernizeapp#SUFFIX#`_                         |
+   | Region                                               | _select the resource group's location_           |
+   | Select Data Lake Storage Gen2                        | _select `From subscription`_                     |
+   | Account name                                         | _select the storage account you created earlier_ |
+   | File system name                                     | _select `Create new` and enter `synapse`_        |
+   | Assign myself the Storage Blob Data Contributor role | _ensure the box is checked_                      |
    
 
    > **NOTE**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.

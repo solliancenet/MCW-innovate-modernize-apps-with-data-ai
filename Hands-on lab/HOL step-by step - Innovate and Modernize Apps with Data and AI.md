@@ -978,39 +978,348 @@ In the prior exercise, you used the Anomaly Detector functionality built into St
 
 Duration: 30 minutes
 
-\[insert your custom Hands-on lab content here . . .\]
+This exercise will send Stream Analytics data into PostgreSQL, specifically Azure Database for PostgreSQL Hyperscale. Because there is no direct connection from Stream Analytics to PostgreSQL, you will need to create an intermediary, which is a key use case for Azure Functions.
 
 ### Task 1: Create a sensor data table
 
-1.  Number and insert your custom workshop content here . . .
+1.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
 
-        -  
+    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
+
+    From there, select the **modernize-app** resource group.
+
+2. Select the PostgreSQL server group you created before the hands-on lab. This will have a Type of **Azure Database for PostgreSQL server group**. There are other entries of type Azure Database for PostgreSQL server v2, but we will need to gather information from the server group itself.
+
+    ![In the modernize-app resource group, the PostgreSQL server group is selected.](media/azure-postgres-server-group.png 'Azure Database for PostgreSQL server group')
+
+3. On the **Overview** page, copy down the **Coordinator name** field.
+
+    ![The coordinator name for the PostgreSQL Hyperscale server group is selected.](media/azure-postgres-coordinator.png 'Coordinator name')
+
+4. Open Azure Data Studio and connect to the coordinator server by filling in the following in the Connection Details form:
+
+   | Field                          | Value                                       |
+   | ------------------------------ | ------------------------------------------  |
+   | Connection type                | _select `PostgreSQL`_                       |
+   | Server name                    | _enter the coordinator name_                |
+   | Authentication type            | _select `Password`_                         |
+   | User name                      | _enter `citus`_                             |
+   | Password                       | _enter the password_                        |
+   | Database name                  | _enter `citus`_                             |
+
+   > **NOTE**: You might need to force SSL to connect to PostgreSQL on Azure. To do this in Azure Data Studio, select the **Advanced** button and change the value for SSL mode to **Require** from its default value of Prefer.
+
+   ![The form fields are completed with the previously described settings.](media/azure-data-studio-citus-connection-details.png 'Azure Data Studio Settings')
+
+5. After connecting to PostgreSQL in Azure Data Studio, select **New Query** from the top menu to open a new query window.
+
+    ![The New Query option is selected.](media/azure-data-studio-citus-new-query.png 'New Query')
+
+6. Enter the following query and then select **Run** to create a `sensordata` table.
+
+    ```
+    CREATE TABLE sensordata(
+        id serial,
+        event_time timestamptz default now(),
+        factory_id int,
+        machine_id int,
+        machine_temperature float,
+        machine_pressure float,
+        ambient_temperature float,
+        ambient_humidity float,
+        electricity_utilization float
+    )
+    PARTITION BY RANGE (event_time);
+
+    -- Create 10-minute partitions
+    SELECT partman.create_parent('public.sensordata', 'event_time', 'native', '10 minutes');
+    UPDATE partman.part_config SET infinite_time_partitions = true;
+
+    -- Create a table up to August 2020
+    -- This demonstrates the ability to create new tables for partitions of data
+    CREATE TABLE sensordata_202007
+        partition OF sensordata(event_time)
+        FOR VALUES FROM ('1900-01-01') TO ('2020-08-01')
+
+    -- Create a table from August 2020 forward
+    CREATE TABLE sensordata_999912
+        partition OF sensordata(event_time)
+        FOR VALUES FROM ('2020-08-01') TO ('9999-12-31')
+    ```
+   
+   ![The sensordata table is created.](media/azure-data-studio-sensordata.png 'The sensordata table')
+
+7. In a new query window, run the following to ensure that you are able to insert a row into the sensordata partitioned table.
+
+    ```
+    INSERT INTO sensordata
+    (
+        event_time,
+        factory_id,
+        machine_id,
+        machine_temperature,
+        machine_pressure,
+        ambient_temperature,
+        ambient_humidity,
+        electricity_utilization
+    )
+    VALUES
+    (
+        '2020-08-01T21:53:00.000000Z',
+        2,
+        16000,
+        55.55,
+        7500.55,
+        22.06,
+        36.60,
+        10.65
+    );
+
+    select * from public.sensordata;
+    ```
+
+    You should see one row returned.
         
 ### Task 2: Create an Azure Function to write sensor data to PostgreSQL
 
-1.  Number and insert your custom workshop content here . . .
+1. Open Visual Studio Code. Select the **Azure** menu option and navigate to **Functions**. In the top-right corner, choose **Create New Project...**. Note that you may need to move your mouse to the top-right corner of the Functions pane to see these options.
 
-    -  Insert content here
+    ![Crew New Azure Functions Project is selected.](media/code-create-function-project.png 'Create New Project...')
 
-        -  
+2.  Select a folder for your IoT Edge solution, such as `C:\Temp\Azure Functions`. When you have created or found a suitable folder, click the **Select Folder** button.
+
+    ![The Azure Functions folder location is selected.](media/code-function-select-folder.png 'Select Folder')
+
+3. Choose **C#** in the **Select a language** menu.
+
+    ![The C# language is selected.](media/code-function-select-language.png 'Select a language')
+
+4. Choose **HttpTrigger** in the **Select a template for your project's first function** menu.
+
+    ![The HttpTrigger template is selected.](media/code-function-select-trigger.png 'Select a template')
+
+5. Name the function **WriteSensorDataToPostgres**.
+
+    ![The Azure Function name is entered.](media/code-function-select-name.png 'Provide a function name')
+
+6. Name the namespace **ModernApp**.
+
+    ![The Azure Functions namespace is entered.](media/code-function-select-namespace.png 'Provide a namespace')
+
+7. Choose **Function** in the **AccessRights** menu.
+
+    ![The Function access rights level is selected.](media/code-function-select-accessrights.png 'Select access rights')
+
+8. Choose **Open in current window** in the **Select how you would like to open your project** menu.
+
+    ![The Azure Function will open in the current window.](media/code-function-select-open.png 'Open in current window')
+
+9. Replace the contents of **WriteSensorDataToPostgres.cs** with the following, and then save the file.
+
+    ```
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using Npgsql;
+
+    namespace ModernApp
+    {
+        public class SensorEvent
+        {
+            public DateTime event_time {get; set;}
+            public int factory_id {get; set;}
+            public int machine_id {get; set;}
+            public float machine_temperature {get; set;}
+            public float machine_pressure {get; set;}
+            public float ambient_temperature {get; set;}
+            public float ambient_humidity {get; set;}
+            public float electricity_utilization {get; set;}
+        }
+        public static class WriteSensorDataToPostgres
+        {
+            [FunctionName("WriteSensorDataToPostgres")]
+            public static async Task<IActionResult> Run(
+                [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+                ILogger log)
+            {
+                log.LogInformation("C# HTTP trigger function processed a request.");
+
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic array = JsonConvert.DeserializeObject(requestBody);
+
+                string insertCommand = @"INSERT INTO sensordata
+                (
+                    event_time,
+                    factory_id,
+                    machine_id,
+                    machine_temperature,
+                    machine_pressure,
+                    ambient_temperature,
+                    ambient_humidity,
+                    electricity_utilization
+                )
+                VALUES
+                (
+                    @event_time,
+                    @factory_id,
+                    @machine_id,
+                    @machine_temperature,
+                    @machine_pressure,
+                    @ambient_temperature,
+                    @ambient_humidity,
+                    @electricity_utilization
+                );";
+
+                // Connect to Postgres
+                var connStr = Environment.GetEnvironmentVariable("pg_connection");
+                using (var conn = new NpgsqlConnection(connStr))
+                {
+                    conn.Open();
+
+                    foreach(var data in array)
+                    {
+                        SensorEvent se = new SensorEvent();
+                        se.event_time = data?.event_time;
+                        se.factory_id = data?.factory_id;
+                        se.machine_id = data?.machine_id;
+                        se.machine_temperature = data?.machine_temperature;
+                        se.machine_pressure = data?.machine_pressure;
+                        se.ambient_temperature = data?.ambient_temperature;
+                        se.ambient_humidity = data?.ambient_humidity;
+                        se.electricity_utilization = data?.electricity_utilization;
+
+                        using (var cmd = new NpgsqlCommand(insertCommand, conn))
+                        {
+                            cmd.Parameters.AddWithValue("event_time", se.event_time);
+                            cmd.Parameters.AddWithValue("factory_id", se.factory_id);
+                            cmd.Parameters.AddWithValue("machine_id", se.machine_id);
+                            cmd.Parameters.AddWithValue("machine_temperature", se.machine_temperature);
+                            cmd.Parameters.AddWithValue("machine_pressure", se.machine_pressure);
+                            cmd.Parameters.AddWithValue("ambient_temperature", se.ambient_temperature);
+                            cmd.Parameters.AddWithValue("ambient_humidity", se.ambient_humidity);
+                            cmd.Parameters.AddWithValue("electricity_utilization", se.electricity_utilization);
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }            
+
+                string responseMessage = "This HTTP triggered function executed successfully.";
+
+                return new OkObjectResult(responseMessage);
+            }
+        }
+    }
+    ```
+
+10. In the Visual Studio Code terminal, enter the following commands.
+
+    ```
+    dotnet add package Npgsql
+    dotnet restore
+    dotnet build
+    ```
+
+    After running these commands, you should receive a message that the build succeeded.
+
+    ![The Azure Function built successfully.](media/code-function-build-succeeded.png 'Build succeeded.')
 
 ### Task 3: Deploy and configure an Azure Function
 
-1.  Number and insert your custom workshop content here . . .
+1. Open Visual Studio Code. Select the **Azure** menu option and navigate to **Functions**. Drill down into **Local Project** to **Functions** until you see the **WriteSensorDataToPostgres** function.
 
-    -  Insert content here
+    ![The Azure Function.](media/code-function-view.png 'WriteSensorDataToPostgres')
 
-        -  
+2. Select the **WriteSensorDataToPostgres** function and then select the **Deploy to Function App...** operation. You may need to move the mouse to the top-right corner of the Functions tab to view this option.
+
+    ![Deploy to Function App is selected.](media/code-function-deploy.png 'Deploy to Function App...')
+
+3. Choose the appropriate subscription from the list. Then, choose the Function App starting with **modernize-app** from the Function App list.
+
+    ![The appropriate Function App is selected.](media/code-function-deploy-app.png 'Select Function App in Azure')
+
+4. Select **Deploy** in the ensuing modal dialog.
+
+    ![The option to deploy is selected.](media/code-function-deploy-check.png 'Deploy')
+
+5. After deployment completes, navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com). Then, select the **modernize-app** entry with a Type of **App Service**.
+
+    ![The modernize-app Function App is selected.](media/azure-function-select.png 'modernize-app')
+
+6. In the Settings menu, select **Configuration**. Then, select **Application settings** and then **+ New application setting**.
+
+    ![The New application setting is selected.](media/azure-function-new-appsetting.png 'New Application setting')
+
+7. Add an application setting with the name of `pg_connection` and a value of the PostgreSQL connection string. Take the following connection string and replace the host and password values with your values.  Then select **OK** to create the application setting and **Save** and then **Continue** on the App Service menu to save changes.
+
+    ```
+    Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true
+    ```
+
+    ![The New application setting is filled out.](media/azure-function-new-appsetting-configure.png 'New application setting details')
 
 ### Task 4: Update the Stream Analytics job
 
-1.  Number and insert your custom workshop content here . . .
+1.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com). Then, navigate to the **modernize-app-stream** Stream Analytics job. If the job is currently running, select **Stop** to stop the job temporarily, as you will not be able to modify a running job. Select **Yes** in the ensuing modal dialog to confirm that you wish to stop the job.
 
-    -  Insert content here
+    ![Stop the current stream analytics job.](media/azure-stream-analytics-stop.png 'Stop')
 
-        -  
+    >**NOTE**: Stopping a Stream Analytics job may take one or two minutes to complete. Until the job has completely stopped, you will not be able to modify any inputs, functions, queries, or outputs and the pages will appear in a read-only state.
+
+2. In the Job topology menu, select **Outputs**. Under **+ Add**, select **Azure function** to add a new Azure Function output.
+
+3. In the **New output** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Output alias                   | _`fn-writesensordatatopostgres`_                   |
+   | Subscription                   | _select the appropriate subscription_              |
+   | Function app                   | _select `modernize-app-#SUFFIX#`_                  |
+   | Function                       | _select `WriteSensorDataToPostgres`_               |
+   | Max batch count                | _`100`_                                            |
+
+   ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
+
+10. Select **Save** to add the new output.
+
+11. Select **Query** from the Job topology menu and add the following at the **end** of the existing query code. Highlight the query and then select **Test selected query** to check that you get results.
+
+    ```
+    -- Sensor data -- write to Postgres hyperscale via Azure function
+    SELECT
+        EventProcessedUtcTime AS event_time,
+        FactoryId AS factory_id,
+        machine.machineId AS machine_id,
+        machine.temperature AS machine_temperature,
+        machine.pressure AS machine_pressure,
+        ambient.temperature AS ambient_temperature,
+        ambient.humidity AS ambient_humidity,
+        machine.electricityUtilization AS electricity_utilization
+    INTO [fn-writesensordatatopostgres]
+    FROM [modernize-app-iothub] TIMESTAMP BY EventProcessedUtcTime; 
+    ```
+
+    >**IMPORTANT**: The new query should be added at the end of the existing set of queries because the first query contains a common table expression and Stream Analytics requires that common table expressions not have any code above them.
+
+12. Select **Save query** to save the query. Then, return to the **Overview** page and select **Start** to begin the Stream Analytics job once again.
+
+13. After 5 to 10 minutes, return to Azure Data Studio and run the following query. You should now see data in PostgreSQL which originated from your sensor data generator.
+
+    ```
+    select * from public.sensordata;
+    ```
+
+    ![Data is flowing into PostgreSQL.](media/azure-data-studio-postgres-data.png 'Sensor data')
 
 ## Exercise 6: Use Azure Synapse Analytics to train and register a predictive maintenance model
 
@@ -1113,8 +1422,6 @@ Duration: 15 minutes
 ## After the hands-on lab 
 
 Duration: 10 minutes
-
-\[insert your custom Hands-on lab content here . . .\]
 
 ### Task 1: Delete Lab Resources
 
