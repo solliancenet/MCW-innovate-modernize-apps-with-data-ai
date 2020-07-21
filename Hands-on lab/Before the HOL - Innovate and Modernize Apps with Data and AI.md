@@ -382,12 +382,14 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
    | Resource group                 | _select `modernize-app`_                         |
    | Workspace name                 | _`modernizeapp#SUFFIX#`_                         |
    | Region                         | _select the resource group's location_           |
-   | Select Data Lake Storage Gen2  | _select `Code`_                                  |
+   | Select Data Lake Storage Gen2  | _select `From subscription`_                     |
    | Account name                   | _select the storage account you created earlier_ |
    | File system name               | _select `Create new` and enter `synapse`_        |
    
 
    > **NOTE**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
+
+   > **IMPORTANT**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-synapse-1.png 'Create Synapse workspace')
 

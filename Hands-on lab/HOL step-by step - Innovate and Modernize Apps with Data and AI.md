@@ -864,23 +864,115 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
 Duration: 10 minutes
 
-\[insert your custom Hands-on lab content here . . .\]
+In the prior exercise, you used the Anomaly Detector functionality built into Stream Analytics to find anomalous data points and store them in Cosmos DB. Now you will use Synapse Link in Cosmos DB to load an Azure Synapse Analytics SQL Pool in order to analyze the resulting data.
 
-### Task 1: Create a new SQL Pool
+### Task 1: Import anomaly data via a Spark notebook
 
-1.  Number and insert your custom workshop content here . . .
+1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
 
-    -  Insert content here
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
 
-        -  
-        
-### Task 2: Import anomaly data via a Spark notebook
+2. Select the workspace you created before the hands-on lab.
 
-1.  Number and insert your custom workshop content here . . .
+    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
 
-    -  Insert content here
+3. Select **Launch Synapse Studio** from the Synapse workspace page.
 
-        -  
+    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
+
+4. In the Azure Synapse workspace, select the **>>** chevron to expand icons to include names and then select **Manage**.
+
+    ![The Manage option is selected.](media/azure-synapse-workspace-manage.png 'Manage')
+
+5. In the Analytics pools section, select **Apache Spark pools** and then select the **+ New** option.
+
+    ![Create a new Apache Spark pool.](media/azure-synapse-manage-spark-pool-1.png 'New Apache Spark pool')
+
+6. In the **Create Apache Spark pool** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Apache Spark pool name         | _`modernizeapp`_                                   |
+   | Autoscale                      | _select `disabled`_                                |
+   | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
+   | Number of nodes                | _select `3 - 3`                                    |
+   | Container name                 | _`temperatureanomalies`_                           |
+
+   ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
+
+7. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
+
+8. In the **Manage** page, select **Linked services** from the External connections section. Then select **+ New**.
+
+    ![The New option is selected for linked services.](media/azure-synapse-manage-linked-services.png 'New linked service')
+
+9. In the search box, type in "cosmos" and select **Azure Cosmos DB (SQL API)**. Then select **Continue**.
+
+    ![The Azure Cosmos DB SQL API linked service is selected.](media/azure-synapse-cosmos-linked-service.png 'Azure Cosmos DB (SQL API) linked service')
+
+10. In the **New linked service** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Name                           | _`modernize_app_cosmos`_                           |
+   | Account selection method       | _select `From Azure subscription`_                 |
+   | Cosmos  DB account name        | _select the appropriate account_                   |
+   | Database name                  | _select `sensors`                                  |
+
+   ![In the New linked service output, form field entries are filled in.](media/azure-synapse-cosmos-linked-service-2.png 'Azure Cosmos DB (SQL API) linked service form details')
+
+11. Select the **Test connection** option to ensure that your connection will work, and then select **Create** to create the linked service.
+
+12. In the Azure Synapse Workspace, select **Develop**
+
+    ![The Develop option is selected.](media/azure-synapse-workspace-develop.png 'Develop')
+
+13. Select the **+** and then choose **Notebook** from the ensuing dropdown list.
+
+    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')'
+
+14. In the **Properties** tab, change the **Name** to `Write Cosmos Changes to SQL Pool`.
+
+    ![Rename the Notebook to Write Cosmos Changes to SQL Pool.](media/azure-synapse-develop-cosmos-name.png 'Write Cosmos Changes to SQL Pool')
+
+15. In the notebook toolbar, change the language to **Spark (Scala)**. [The Azure Synapse Apache Spark connector to Synapse SQL connector currently only supports Scala](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/synapse-spark-sql-pool-import-export), so the default language of PySpark will not work.
+
+    ![Change the notebook language to Scala.](media/azure-synapse-develop-cosmos-language.png 'Spark (Scala)')
+
+16. In the main section, select **{ } Add Code** and paste in the following code to retrieve data from the `temperatureanomalies` container and select only the necessary columns.
+
+    ```
+    val df = spark.read.format("cosmos.olap").
+        option("spark.synapse.linkedService", "modernize_app_cosmos").
+        option("spark.cosmos.container", "temperatureanomalies").
+        load().
+        select($"FactoryId", $"machineid", $"EventProcessedUtcTime",
+            $"Temperature", $"SpikeAndDipScore", $"IsSpikeAndDipAnomaly")
+
+    df.show(10)
+    ```
+
+    Then, run the code block by selecting **Run** (shaped like a play button) or by pressing `Shift+Enter` when inside the notebook cell. After the job completes, you should see a table with the first ten anomalous results, assuming there are at least ten anomalous results by the time you reach this step.
+
+    ![Code to connect to Cosmos DB is entered and ready to run.](media/azure-synapse-develop-cosmos-connect.png 'Connect to Cosmos DB from a notebook')
+
+    >**NOTE**: it may take several minutes for a Spark session to start. The notebook cell output text will read "Starting Spark session" during this time.
+
+17. Below the first code block, select **{ } Add Code** and add a new code block. Enter and then run the following code to create a new SQL Pool table with machine anomaly data.
+
+    ```
+    // Ensure that this table does not already exist on your SQL Pool; otherwise, you will get an error!
+    df.write.sqlanalytics("modernapp.dbo.MachineAnomaly", Constants.INTERNAL)
+    ```
+
+18. After the code segment completes, select **{ } Add Code** and add a new block with the following code to ensure that the SQL pool has loaded correctly.
+
+    ```
+    val sqldf = spark.read.sqlanalytics("modernapp.dbo.MachineAnomaly") 
+    sqldf.show(10)
+    ```
+
+    ![The SQL Pool results are returned.](media/azure-synapse-develop-cosmos-success.png 'Retrieve data from a SQL Pool')
 
 ## Exercise 5: Configure Azure function to write events and aggregates to PostgreSQL
 
