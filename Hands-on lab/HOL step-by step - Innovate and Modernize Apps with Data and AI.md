@@ -929,7 +929,7 @@ In the prior exercise, you used the Anomaly Detector functionality built into St
 
 13. Select the **+** and then choose **Notebook** from the ensuing dropdown list.
 
-    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')'
+    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
 
 14. In the **Properties** tab, change the **Name** to `Write Cosmos Changes to SQL Pool`.
 
@@ -1290,9 +1290,9 @@ This exercise will send Stream Analytics data into PostgreSQL, specifically Azur
 
    ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
 
-10. Select **Save** to add the new output.
+4. Select **Save** to add the new output.
 
-11. Select **Query** from the Job topology menu and add the following at the **end** of the existing query code. Highlight the query and then select **Test selected query** to check that you get results.
+5. Select **Query** from the Job topology menu and add the following at the **end** of the existing query code. Highlight the query and then select **Test selected query** to check that you get results.
 
     ```
     -- Sensor data -- write to Postgres hyperscale via Azure function
@@ -1311,9 +1311,9 @@ This exercise will send Stream Analytics data into PostgreSQL, specifically Azur
 
     >**IMPORTANT**: The new query should be added at the end of the existing set of queries because the first query contains a common table expression and Stream Analytics requires that common table expressions not have any code above them.
 
-12. Select **Save query** to save the query. Then, return to the **Overview** page and select **Start** to begin the Stream Analytics job once again.
+6. Select **Save query** to save the query. Then, return to the **Overview** page and select **Start** to begin the Stream Analytics job once again.
 
-13. After 5 to 10 minutes, return to Azure Data Studio and run the following query. You should now see data in PostgreSQL which originated from your sensor data generator.
+7. After 5 to 10 minutes, return to Azure Data Studio and run the following query. You should now see data in PostgreSQL which originated from your sensor data generator.
 
     ```
     select * from public.sensordata;
@@ -1325,55 +1325,278 @@ This exercise will send Stream Analytics data into PostgreSQL, specifically Azur
 
 Duration: 40 minutes
 
-\[insert your custom Hands-on lab content here . . .\]
+Now that your data is streaming to data sources like Cosmos DB and Azure Database for PostgreSQL, it is time to train and build a model to predict whether machine maintenance is required. 
 
 ### Task 1: Load historical maintenance data
 
-1.  Number and insert your custom workshop content here . . .
+1. Open the hands-on lab's Resources\Synapse directory and confirm that you have a file called **HistoricalMaintenanceRecord.csv**.
 
-    -  Insert content here
+2.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-        -  
-        
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
+
+    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
+
+    From there, select the **modernize-app** resource group.
+
+3. Select the **modernizeappstorage#SUFFIX#** storage account which you created before the hands-on lab. Note that there may be multiple storage accounts, so be sure to choose the one you created.
+
+    ![The storage account named modernizeappstorage is selected.](media/azure-storage-account-select.png 'The modernizeappstorage storage account')
+
+4. In the **Data Lake Storage** section, select **Containers**. Then, select the **synapse** container you created before the hands-on lab.
+
+    ![The Container named synapse is selected.](media/azure-storage-account-synapse.png 'The synapse storage container')
+
+5. In the synapse container, select **+ Add Directory**. Enter **maintenancedata** for the name and select **Save**. Then, add another directory named **models**.
+
+6. Navigate to the **maintenancedata** directory and select the **Upload** option. In the Files section, select the folder icon to upload files. Navigate to where you saved **HistoricalMaintenanceRecord.csv** and choose this file for upload. Then select **Upload** to finish uploading the file.
+
+    ![The historical maintenance record data is uploaded.](media/azure-synapse-upload.png 'Historical maintenance record')
+
 ### Task 2: Create a new Azure Machine Learning Datastore
 
-1.  Number and insert your custom workshop content here . . .
+1. Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+2. Select the **modernize-app-#SUFFIX#** resource with a Type of **Machine Learning**.
 
-        -  
+    ![The Machine Learning resource is selected.](media/azure-ml-select.png 'Machine Learning')
 
-### Task 3: Connect Azure Synapse Analytics to Azure Data Lake Storage Gen2
+3. Select **Launch now** to open the Azure Machine Learning studio.
 
-1.  Number and insert your custom workshop content here . . .
+    ![The option to launch Azure Machine Learning Studio is selected.](media/azure-ml-select.png 'Launch now')
 
-    -  Insert content here
+4. In the Azure Machine Learning studio, select the **Datastores** option in the Manage tab. Then, select the **+ New datastore** option.
 
-        -  
+    ![The option to create a new datastore is selected.](media/azure-ml-new-datastore.png 'New datastore')
 
-### Task 4: Develop the predictive maintenance model
+5. In the **New datastore** window, complete the following:
 
-1.  Number and insert your custom workshop content here . . .
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Datastore name                 | _`modernizeappstorage`_                            |
+   | Datastore type                 | _select `Azure Blob Storage`_                      |
+   | Account selection method       | _select `From Azure subscription`_                 |
+   | Subscription ID                | _select the appropriate subscription_              |
+   | Storage account                | _select `modernizeappstorage#SUFFIX#`_             |
+   | Blob container                 | _select `synapse`_                                 |
+   | Allow Azure ML Service...      | _select `No`_                                      |
+   | Authentication type            | _select `Account key`_                             |
+   | Account key                    | _enter the account key_                            |
 
-    -  Insert content here
+   ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
 
-        -  
+6. Select **Create** to add the new output.
 
-### Task 5: Deploy the predictive maintenance model
+### Task 3: Develop the predictive maintenance model
 
-1.  Number and insert your custom workshop content here . . .
+1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
 
-    -  Insert content here
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
 
-        -  
+2. Select the workspace you created before the hands-on lab.
 
-### Task 6: Test the predictive maintenance model
+    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
 
-1.  Number and insert your custom workshop content here . . .
+3. Select **Launch Synapse Studio** from the Synapse workspace page.
 
-    -  Insert content here
+    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
 
-        -  
+4. Navigate to the **Develop** section and create a new **Notebook**. Leave this notebook's language at its default of **PySpark (Python)**.
+
+    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
+
+5. In the **Properties** section, name the notebook **Stamp Press Maintenance Model**. Add a code block to import libraries needed for the notebook and run the block. Note that this may take several minutes to start a Spark session.
+
+    ```
+    import numpy as np
+    import pyspark
+    import os
+    import urllib
+    import sys
+
+    from pyspark.sql.functions import *
+    from pyspark.ml.classification import *
+    from pyspark.ml.evaluation import *
+    from pyspark.ml.feature import *
+    from pyspark.ml import Pipeline
+    from pyspark.sql.types import StructType, StructField
+    from pyspark.sql.types import DoubleType, IntegerType, StringType
+
+    from azureml.core.run import Run
+    from azureml.core import Workspace, Environment, Datastore
+    from azureml.core.experiment import Experiment
+    from azureml.core.model import Model
+    ```
+
+6. Add a new code block to load the historical maintenance record. Be sure to replace **modernizeappstorage** on line 7 with your storage account. Then run the code block.
+
+    ```
+    schema = StructType([
+        StructField("Pressure", IntegerType(), True),
+        StructField("MachineTemperature", IntegerType(), True),
+        StructField("MaintenanceRequired", StringType(), True)
+    ])
+
+    data = spark.read.load('abfss://synapse@modernizeappstorage.dfs.core.windows.net/maintenancedata/HistoricalMaintenanceRecord.csv',
+        format='csv', header=False, schema=schema)
+    data.show(10)
+    ```
+
+    ![Results after loading the historical maintenance record data.](media/azure-synapse-develop-pred-notebook.png 'Historical maintenance record data')
+
+7. Add a new code block to build an Azure Machine Learning experiment, train the predictive maintenance model on a Spark cluster, save the artifacts to Azure Data Lake Storage, and then transmit the model artifacts to Azure Machine Learning.  Be sure to change the value of **subscription_id** on line 3 with your subscription ID. Then run the code block.
+
+    ```
+    # load workspace and environment
+    ws = Workspace(
+        subscription_id = '{ Enter your subscription ID }',
+        resource_group = 'modernize-app',
+        workspace_name = 'modernize-app')
+
+    # initialize logger and start experiment
+    experiment = Experiment(ws, "Stamp_Press_Experiment")
+    run = experiment.start_logging()
+
+    # vectorize all numerical columns into a single feature column
+    feature_cols = data.columns[:-1]
+    assembler = pyspark.ml.feature.VectorAssembler(
+        inputCols=feature_cols, outputCol='features')
+
+    # convert text labels into indices
+    label_indexer = pyspark.ml.feature.StringIndexer(
+        inputCol='MaintenanceRequired', outputCol='label').fit(data)
+
+    # use a Decision Tree Classifier to train on the training set
+    classifier = DecisionTreeClassifier(
+    featuresCol="features",
+    labelCol="label",
+    maxDepth=6,
+    maxBins=50)
+
+    pipeline = Pipeline(stages=[assembler, label_indexer, classifier])
+    train, test = data.randomSplit([0.70, 0.30])
+    model = pipeline.fit(train)
+
+
+    # predict on the test set
+    prediction = model.transform(test)
+    print("Prediction")
+    prediction.show(10)
+
+    # evaluate the accuracy of the model using the test set
+    evaluator = pyspark.ml.evaluation.MulticlassClassificationEvaluator(
+        metricName='accuracy')
+    accuracy = evaluator.evaluate(prediction)
+
+    print()
+    print('#####################################')
+    print("Accuracy is {}".format(accuracy))
+    print('#####################################')
+    print()
+
+    # log accuracy
+    run.log('Accuracy', accuracy)
+
+    # Save pipeline
+    model.write().overwrite().save("/models/stamp_press_model")
+
+    # Download model details using Azure ML Datastore
+    ds = Datastore.get(ws, "modernizeappstorage")
+
+    ds.download("/tmp/stamp_press_model", prefix="/models/stamp_press_model")
+
+    # Push model to Azure ML experiment
+    run.upload_folder(
+        name = 'stamp_press_model',
+        path = '/tmp/stamp_press_model/models/stamp_press_model'
+    )
+
+    # Register Azure ML model
+    run.register_model(
+        model_name = 'stamp_press_model',
+        model_path = 'stamp_press_model'
+    )
+
+    run.complete()
+    ```
+
+    The output of this block will include ten predictions, the overall accuracy of the test data set, and notes from Azure Machine Learning concerning the downloaded files.
+
+### Task 4: Deploy the predictive maintenance model
+
+1.  Open a console on your local machine. Navigate to the folder containing downloaded hands-on lab  resources and from there into **Resources\Azure ML**. There should be a file in this directory named **score.py**.
+
+2. Run **python** in this directory to open a Python console.
+
+    ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
+
+    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed. In this example, I am using the Anaconda distribution of Python, but any Python installation with the appropriate libraries will work.
+
+3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
+
+    ```
+    from azureml.core.webservice import AciWebservice
+    from azureml.core import Workspace, Environment 
+    from azureml.core.model import InferenceConfig, Model
+
+    ws = Workspace(
+        subscription_id = '<Your subscription>',
+        resource_group = 'modernize-app',
+        workspace_name = 'modernize-app')
+
+    env = Environment.get(ws, "AzureML-PySpark-MmlSpark-0.15")
+    inference_config = InferenceConfig(entry_script="score.py", environment=env)
+
+    model = Model(ws, 'stamp_press_model') 
+    models = [model] 
+    aciconfig = AciWebservice.deploy_configuration(cpu_cores = 2, memory_gb = 4, auth_enabled = False) 
+    service = Model.deploy(ws, "stamp-press-model", models, inference_config, aciconfig) 
+    ```
+
+    ![Python is running in the Resources\Azure ML directory.](media/python-deploy.png 'Python')
+
+4. Although `Model.deploy()` returned a result, this is an asynchronous call. If you want to check on the status of deployment, navigate to the Azure Machine Learning studio, select **Endpoints**, and select the **stamp-press-model** endpoint.
+
+    ![The stamp press model is selected.](media/azure-ml-endpoints.png 'stamp-press-model')
+
+5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. If the Deployment state is **Unhealthy**, return to the Python console and run the following command.
+
+    ```
+    service.get_logs()
+    ```
+
+    If the deployment state is **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
+
+    ![The stamp press model is deployed.](media/azure-ml-deployed.png 'Deployed model')
+
+### Task 5: Test the predictive maintenance model
+
+1. On the **stamp-press-model** endpoint, copy the **REST endpoint** value to a text editor.
+
+2. Open a command prompt and run the following command.
+
+    ```
+    curl -X POST -H "Content-Type: application/json" -d "{\"data\": [{\"Pressure\":7470, \"MachineTemperature\":69}, {\"Pressure\":7490, \"MachineTemperature\":55}, {\"Pressure\":7800, \"MachineTemperature\":30}]}" http://b2917240-e6bd-4fe1-9f09-ae4f356492ef.eastus.azurecontainer.io/score
+    ```
+
+    You should receive back a JSON array with the values `[2,0,4]`.
+
+    >**NOTE**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
+
+3. Try modifying the input JSON and seeing what results you get. The following table represents the true maintenance requirements.
+
+   | Pressure | Machine Temperature | ID | Maintenance Required  |
+   | -------- | ------------------- | -- | -------------------------- |
+   | < 7475   | < 70                | 1  | Tighten adjustment harness |
+   | > 7600   | 50 <= x < 70        | 2  | Loosen adjustment harness  |
+   | > 7600   | < 50                | 3  | Tighten restrictor plate   |
+   | < 7475   | >= 70               | 4  | Loosen restrictor plate    |
+   | > 7600   | >= 70               | 5  | Replace fabrication screws |
+   | 7475 <= x <= 7600    | 50 <= x <= 70   | 0  | No maintenance required    |
+
+    Like any realistic data set, the historical maintenance record is imperfect and so the data your model trained on will include some incorrect maintenance operations, leading to incorrect maintenance recommendations. Try a few values near the edges of pressure and machine temperature to see.
 
 ## Exercise 7: Apply predictive maintenance calculations and write to Azure Synapse Analytics
 

@@ -420,7 +420,7 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 2. Select **+ Add** on the Machine Learning page.
 
-3. Within the **Create Synapse workspace** form, complete the following:
+3. Within the **Create Machine Learning workspace** form, complete the following:
 
    | Field                          | Value                                            |
    | ------------------------------ | ------------------------------------------       |
@@ -436,3 +436,6 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 You should follow all steps provided *before* performing the Hands-on lab.
 
+### Task 11: Download the Hands-On Lab Contents
+
+TODO:  add message to download contents as a zip file.
