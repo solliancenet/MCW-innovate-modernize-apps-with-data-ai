@@ -249,11 +249,11 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![Ensure that the container username and password are correct for the selected registry.](media/code-iot-edge-env.png '.env')
 
-If you are not sure what the values should be, navigate to the container registry and then select **Access keys** from the Settings menu.
+    If you are not sure what the values should be, navigate to the container registry and then select **Access keys** from the Settings menu.
 
     ![The username and password are selected in the Access keys page for the container registry.](media/code-iot-edge-password.png 'Container registry access keys')
 
-9. Replace the contents of **deployment.template.json** and **deployment.debug.template.json** with the following JSON. Replace the **modenrizeapp** on lines 14, 15, and 16 with the name of your container registry.
+9. Replace the contents of **deployment.template.json** and **deployment.debug.template.json** with the following JSON. Replace the **modernizeapp** on lines 14, 15, and 16 with the name of your container registry.
 
     ```
     {
@@ -1812,7 +1812,7 @@ Now that you have a predictive maintenance model deployed and available, you can
 
     >**NOTE**: It may take 2-3 minutes for the new Azure Function to populate data into the **maintenancepredictions** container. If you do not see data after several minutes, navigate to the Overview panel of the App Service and **Stop** and then **Start** the functions.
 
-    ![Maintenance recommendations are coming in.](media/azure-comsos-maintenance-recommendations.png 'Maintenance recommendations')
+    ![Maintenance recommendations are coming in.](media/azure-cosmos-maintenance-recommendations.png 'Maintenance recommendations')
 
 ### Task 3: Use Synapse Link to load into an Azure Synapse Analytics SQL pool
 
