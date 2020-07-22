@@ -1236,7 +1236,7 @@ This exercise will send Stream Analytics data into PostgreSQL, specifically Azur
 
 ### Task 3: Deploy and configure an Azure Function
 
-1. Open Visual Studio Code. Select the **Azure** menu option and navigate to **Functions**. Drill down into **Local Project** to **Functions** until you see the **WriteSensorDataToPostgres** function.
+1. In Visual Studio Code, select the **Azure** menu option and navigate to **Functions**. Drill down into **Local Project** to **Functions** until you see the **WriteSensorDataToPostgres** function.
 
     ![The Azure Function.](media/code-function-view.png 'WriteSensorDataToPostgres')
 
@@ -1602,23 +1602,280 @@ Now that your data is streaming to data sources like Cosmos DB and Azure Databas
 
 Duration: 20 minutes
 
-\[insert your custom Hands-on lab content here . . .\]
+Now that you have a predictive maintenance model deployed and available, you can take sensor data streaming into Cosmos DB and generate maintenance predictions. You will store those predictions in another Cosmos DB container and then use Synapse Link to load an Azure Synapse Analytics SQL pool table with the results.
 
-### Task 1: Task name
+### Task 1: Create a new container
 
-1.  Number and insert your custom workshop content here . . .
+1.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
 
-        -  
+    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
+
+    From there, select the **modernize-app** resource group.
+
+2. Select the Cosmos DB account you created before the hands-on lab. This will have a Type of **Azure Cosmos DB account**.
+
+    ![In the Services search result list, Resource groups is selected.](media/azure-cosmos-db-select.png 'Resource groups')
+
+3.  In the **Containers** section for your Cosmos DB account,select **Browse**.
+
+    ![In the Cosmos DB containers section, Browse is selected.](media/azure-cosmos-db-browse.png 'Browse')
+
+4. Select **+ Add Collection** on the Browse pane to add a new collection.
+
+    ![In the Browse pane, Add Collection is selected.](media/azure-cosmos-db-add-collection.png 'Add Collection')
+
+5. In the **Add Container** tab, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Database id                    | _select `Use existing` and then `sensors`_         |
+   | Container id                   | _`maintenancepredictions`_                         |
+   | Partition key                  | _`/machineid`_                                     |
+   | Analytical store               | _select `On`_                                      |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-cosmos-db-maintenance-container.png 'Create a container for maintenance predictions')
+
+4. Select **OK** to create the container. This will take you to the Data Explorer pane for Cosmos DB.
+
+### Task 2: Create Azure Function application settings
+
+1. Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
+
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
+
+2. Select the **modernize-app** entry with a Type of **App Service**.
+
+    ![The modernize-app Function App is selected.](media/azure-function-select.png 'modernize-app')
+
+3. In the Settings menu, select **Configuration**. Then, select **Application settings** and then **+ New application setting**.
+
+    ![The New application setting is selected.](media/azure-function-new-appsetting.png 'New Application setting')
+
+4. Add the following application settings. For each one, select **OK** to save the setting and then **+ New application setting** to add the next.
+
+   | Name                           | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | cosmosEndpointUrl              | _enter the Cosmos DB URL, something like `https://modernize-app-#SUFFIX#.documents.azure.com:443/`_ |
+   | cosmosPrimaryKey               | _enter the primary key for your Cosmos DB account_ |
+   | azureMLEndpointUrl             | _enter the URL (with /score) from exercise 6_      |
+   | modernizeapp_DOCUMENTDB        | `AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};` |
+
+   For the `modernizeapp_DOCUMENTDB` entry, replace `{PRIMARY KEY}` with the primary key for your Cosmos DB account.
+
+5. Select **Save** and then **Continue** on the App Service menu to save the new application settings.
+
+    ![The New application settings are filled out.](media/azure-function-new-appsettings.png 'New application settings')
         
-### Task 2: Task name
+### Task 2: Create an Azure Function based on a Cosmos DB trigger
 
-1.  Number and insert your custom workshop content here . . .
+1.  Open Visual Studio Code and navigate to the folder you created in Exercise 5 for Azure Functions. In the Azure menu, navigate to the top-right corner and select **Create Function...**
 
-    -  Insert content here
+    ![Create Function is selected.](media/code-create-function.png 'Create Function')
 
-        -  
+2. Fill in the following for each step of the function creation wizard.
+
+   | Step                             | Value                                              |
+   | -------------------------------- | ------------------------------------------         |
+   | Template                         | _select `CosmosDBTrigger`_                         |
+   | Function Name                    | _`WriteMaintenancePredictionToCosmos`_             |
+   | Namespace                        | _`ModernApp`_                                      |
+   | Setting from local.settings.json | _select `Create new local app setting`_            |
+   | Subscription                     | _select the appropriate subscription_              |
+   | Database account                 | _select `modernize-app-#SUFFIX#`_                  |
+   | Database name                    | _`sensors`_                                        |
+   | Collection name                  | _`pressure`_                                       |
+
+   After entering the collection name, you may see a modal dialog which indicates that in order to debug, you must select a storage account. Choose **Select storage account** and then select the **modernizeappstorage#SUFFIX#** account.
+
+   ![Select storage account is selected.](media/code-create-function-storage.png 'In order to debug, you must select a storage account for internal use by the Azure Functions runtime.')
+
+3. In the **WriteMaintenancePredictionToCosmos.cs** file, replace the existing code with the following.
+
+    ```
+    using System;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using Microsoft.Azure.Documents;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Host;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Azure.Cosmos;
+    using Newtonsoft.Json;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Linq;
+
+    namespace ModernApp
+    {
+        
+        internal class PredictionInput
+        {
+            [JsonProperty("Pressure")]
+            internal double Pressure;
+            [JsonProperty("MachineTemperature")]
+            internal double MachineTemperature;
+        }
+        // The data structure expected by Azure ML
+        internal class InputData
+        {
+            [JsonProperty("data")]
+            internal List<PredictionInput> data;
+        }
+
+        public static class WriteMaintenancePredictionToCosmos
+        {
+            private static readonly string cosmosEndpointUrl = System.Environment.GetEnvironmentVariable("cosmosEndpointUrl");
+            private static readonly string cosmosPrimaryKey = System.Environment.GetEnvironmentVariable("cosmosPrimaryKey");
+            private static readonly string azureMLEndpointUrl = System.Environment.GetEnvironmentVariable("azureMLEndpointUrl");
+            private static readonly string databaseId = "sensors";
+            private static readonly string outputContainerId = "maintenancepredictions";
+            private static CosmosClient cosmosClient = new CosmosClient(cosmosEndpointUrl, cosmosPrimaryKey);
+
+
+            [FunctionName("WriteMaintenancePredictionToCosmos")]
+            public static async Task Run([CosmosDBTrigger(
+                databaseName: "sensors",
+                collectionName: "pressure",
+                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                LeaseCollectionName = "leases",
+                CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)
+            {
+                var maintenancepredictions = cosmosClient.GetContainer(databaseId, outputContainerId);
+
+                foreach(Document doc in input) {
+                    InputData payload = new InputData();
+                    var machinetemp = doc.GetPropertyValue<double>("MachineTemperature");
+                    var pressure = doc.GetPropertyValue<double>("Pressure");
+
+                    payload.data = new List<PredictionInput> {
+                        new PredictionInput { MachineTemperature = machinetemp, Pressure = pressure }
+                    };
+
+                    try
+                    {
+                        // Call Azure ML.  Get back response.
+                        HttpClient client = new HttpClient();
+                        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(azureMLEndpointUrl));
+                        request.Content = new StringContent(JsonConvert.SerializeObject(payload));
+                        
+                        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        var response = client.SendAsync(request).Result;
+
+                        // Azure ML returns an array of integer results, one per input item.
+                        var predictions = JsonConvert.DeserializeObject<List<int>>(response.Content.ReadAsStringAsync().Result);
+                        
+                        // Add the recommendation to our document.
+                        // We process one message at a time, so expect one result.
+                        doc.SetPropertyValue("Maintenance", predictions.ElementAt(0));
+
+                        // Write the updated document back to Cosmos DB into a new container.
+                        await maintenancepredictions.CreateItemAsync<Document>(doc);
+                    }
+                    catch (Exception e) {
+                        log.LogError("Exception pushing prediction into the maintenance predictions container: " + e);
+                    }
+                }
+            }
+        }
+    }
+    ```
+
+4. In the Visual Studio Code terminal, enter the following commands.
+
+    ```
+    dotnet add package Microsoft.Azure.Cosmos
+    dotnet restore
+    dotnet build
+    ```
+
+    After running these commands, you should receive a message that the build succeeded.
+
+    ![The Azure Function built successfully.](media/code-function-build-succeeded.png 'Build succeeded.')
+
+5. Select the **WriteMaintenancePredictionToCosmos** function and then select the **Deploy to Function App...** operation. You may need to move the mouse to the top-right corner of the Functions tab to view this option.
+
+    ![Deploy to Function App is selected.](media/code-function-deploy-2.png 'Deploy to Function App...')
+
+6. Choose the appropriate subscription from the list. Then, choose the Function App starting with **modernize-app** from the Function App list.
+
+    ![The appropriate Function App is selected.](media/code-function-deploy-app.png 'Select Function App in Azure')
+
+7. Select **Deploy** in the ensuing modal dialog.
+
+    ![The option to deploy is selected.](media/code-function-deploy-check.png 'Deploy')
+
+8. To test the function, navigate to your Cosmos DB account and select **Data Explorer**. Drill down through the **sensors** database to the **maintenancepredictions** container and select **Items**.
+
+    >**NOTE**: It may take 2-3 minutes for the new Azure Function to populate data into the **maintenancepredictions** container. If you do not see data after several minutes, navigate to the Overview panel of the App Service and **Stop** and then **Start** the functions.
+
+    ![Maintenance recommendations are coming in.](media/azure-comsos-maintenance-recommendations.png 'Maintenance recommendations')
+
+### Task 3: Use Synapse Link to load into an Azure Synapse Analytics SQL pool
+
+1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
+
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
+
+2. Select the workspace you created before the hands-on lab.
+
+    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
+
+3. Select **Launch Synapse Studio** from the Synapse workspace page.
+
+    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
+
+4. In the Azure Synapse workspace, select the **>>** chevron to expand icons to include names and then select **Develop**.
+
+    ![The Develop option is selected.](media/azure-synapse-workspace-develop.png 'Develop')
+
+13. Select the **+** and then choose **Notebook** from the ensuing dropdown list.
+
+    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
+
+14. In the **Properties** tab, change the **Name** to `Write Maintenance Predictions to SQL Pool`.
+
+15. In the notebook toolbar, change the language to **Spark (Scala)**. [The Azure Synapse Apache Spark connector to Synapse SQL connector currently only supports Scala](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/synapse-spark-sql-pool-import-export), so the default language of PySpark will not work.
+
+    ![Change the notebook language to Scala.](media/azure-synapse-develop-cosmos-language.png 'Spark (Scala)')
+
+16. In the main section, select **{ } Add Code** and paste in the following code to retrieve data from the `maintenancepredictions` container and select only the necessary columns.
+
+    ```
+    val df = spark.read.format("cosmos.olap").
+        option("spark.synapse.linkedService", "modernize_app_cosmos").
+        option("spark.cosmos.container", "maintenancepredictions").
+        load().
+        select($"FactoryId", $"machineid", $"ProcessingTime",
+            $"MachineTemperature", $"Pressure", $"Maintenance")
+
+    df.show(10)
+    ```
+
+    Then, run the code block by selecting **Run** (shaped like a play button) or by pressing `Shift+Enter` when inside the notebook cell. After the job completes, you should see a table with the first ten anomalous results, assuming there are at least ten anomalous results by the time you reach this step.
+
+    ![Code to connect to Cosmos DB is entered and ready to run.](media/azure-synapse-develop-cosmos-connect.png 'Connect to Cosmos DB from a notebook')
+
+    >**NOTE**: it may take several minutes for a Spark session to start. The notebook cell output text will read "Starting Spark session" during this time.
+
+17. Below the first code block, select **{ } Add Code** and add a new code block. Enter and then run the following code to create a new SQL Pool table with machine anomaly data.
+
+    ```
+    // Ensure that this table does not already exist on your SQL Pool; otherwise, you will get an error!
+    df.write.sqlanalytics("modernapp.dbo.MaintenancePredictions", Constants.INTERNAL)
+    ```
+
+18. After the code segment completes, select **{ } Add Code** and add a new block with the following code to ensure that the SQL pool has loaded correctly.
+
+    ```
+    val sqldf = spark.read.sqlanalytics("modernapp.dbo.MaintenancePredictions") 
+    sqldf.show(10)
+    ```
+
+    ![The SQL Pool results are returned.](media/azure-synapse-develop-cosmos-success-2.png 'Retrieve data from a SQL Pool')
 
 ## Exercise 8: View the factory status in a Power BI report
 
