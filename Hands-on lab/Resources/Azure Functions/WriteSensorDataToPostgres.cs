@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Npgsql;
 
-namespace ModernizeApps
+namespace ModernApp
 {
     public class SensorEvent
     {
