@@ -13,7 +13,7 @@
               "modernizeapp": {
                 "username": "$CONTAINER_REGISTRY_USERNAME_modernizeapp",
                 "password": "$CONTAINER_REGISTRY_PASSWORD_modernizeapp",
-                "address": "modernizeapp#SUFFIX#.azurecr.io"
+                "address": "modernizeapp.azurecr.io"
               }
             }
           }
@@ -64,16 +64,6 @@
             "restartPolicy": "always",
             "settings": {
               "image": "${MODULES.WWIFactorySensorModule.debug}",
-              "createOptions": {}
-            }
-          },
-          "SimulatedTemperatureSensor": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
               "createOptions": {}
             }
           }

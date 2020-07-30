@@ -40,6 +40,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
         - [Task 8: Deploy Azure Database for PostgreSQL](#task-8-deploy-azure-database-for-postgresql)
         - [Task 9: Provision an Azure Synapse Analytics workspace](#task-9-provision-an-azure-synapse-analytics-workspace)
         - [Task 10: Provision a Machine Learning workspace](#task-10-provision-a-machine-learning-workspace)
+        - [Task 11: Provision an Event Hub](#task-11-provision-an-event-hub)
+        - [Task 12: Download the Hands-On Lab Contents](#task-12-download-the-hands-on-lab-contents)
 
 <!-- /TOC -->
 
@@ -240,7 +242,7 @@ In the hands-on lab, you will use an Ubuntu virtual machine to send sensor data.
 
 11. After the deployment succeeds, select the **Go to resource** button.
 
-12. In the **Settings** section on the menu, select **Connect**.  This will provide instructions on how to connect to the VM, including the IP address you will use for the connection.
+12. In the **Settings** section on the menu, select **Connect** and then **SSH**.  This will provide instructions on how to connect to the VM, including the IP address you will use for the connection.
 
     ![The example command to connect to your VM is selected.](media/azure-create-linux-vm-7.png 'Connect')
 
@@ -436,6 +438,29 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 You should follow all steps provided *before* performing the Hands-on lab.
 
-### Task 11: Download the Hands-On Lab Contents
+### Task 11: Provision an Event Hub
+
+1. In the [Azure portal](https://portal.azure.com), type in "event hub" in the top search menu and then select **Event Hubs** from the results.
+
+    ![In the Services search result list, Event Hubs is selected.](media/azure-create-event-hub-search.png 'Event Hubs')
+
+2. Select **+ Add** on the Event Hubs page.
+
+3. Within the **Create Namespace** form, complete the following:
+
+   | Field                          | Value                                            |
+   | ------------------------------ | ------------------------------------------       |
+   | Subscription                   | _select the appropriate subscription_            |
+   | Resource group                 | _select `modernize-app`_                         |
+   | Namespace name                 | _`modernize-app-#SUFFIX#`_                       |
+   | Location                       | _select the resource group's location_           |
+   | Pricing tier                   | _select `Standard`_                              |
+   | Throughput Units               | _select `1`_                                     |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-event-hub.png 'Create Machine Learning workspace')
+
+4. Select **Review + create**. On the review screen, select **Create**.
+
+### Task 12: Download the Hands-On Lab Contents
 
 TODO:  add message to download contents as a zip file.

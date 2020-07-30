@@ -63,6 +63,8 @@ The Innovate and Modernize Apps with Data & AI hands-on lab is an exercise that 
 
 ## Solution architecture
 
+TODO:
+
 \[Insert your end-solution architecture here. . .\]
 
 ## Requirements
@@ -91,7 +93,7 @@ The Innovate and Modernize Apps with Data & AI hands-on lab is an exercise that 
 
 Refer to the Before the hands-on lab setup guide manual before continuing to the lab exercises.
 
-## Exercise 1: Deploy a factory load simulator and website
+## Exercise 1: Deploy a factory load simulator
 
 Duration: 40 minutes
 
@@ -133,6 +135,10 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
     ![In the modernize-app-ubuntu1 settings, the copy action for the Primary Connection String is selected.](media/azure-modernize-app-ubuntu1-cs.png 'The primary connection string for the modernize-app-ubuntu1 IoT device')
 
+8. Select **Built-in endpoints** from the Settings menu and navigate to the **Event Hub compatible endpoint** section. Copy the Event Hub-compatible endpoint and paste it into Notepad or another text editor. You will use this endpoint in Exercise 3.
+
+    ![In the Event Hub compatible endpoint settings, the endpoint connection string is selected.](media/azure-iot-hub-endpoint.png 'The Event Hub-compatible endpoint')
+
 ### Task 2: Install and configure IoT Edge on a Linux virtual machine
 
 The instructions in this task come from the guide on [how to install IoT Edge on Linux](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-install-iot-edge-linux). The instructions in this task are tailored specifically for Ubuntu Server 18.04, but if you wish to install IoT Edge on other variants of Linux, including Rasbian for the Raspberry Pi, the linked article will provide additional support.
@@ -158,8 +164,8 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ```
     sudo apt-get update
-    sudo apt-get install moby-engine
-    sudo apt-get install moby-cli
+    sudo apt-get install -y moby-engine
+    sudo apt-get install -y moby-cli
     ```
 
     ![The Moby engine and command-line interface are installed.](media/vm-install-moby.png 'Moby engine and command-line interface')
@@ -168,7 +174,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ```
     sudo apt-get update
-    sudo apt-get install iotedge
+    sudo apt-get install -y iotedge
     ```
 
     ![Azure IoT Edge is installed.](media/vm-install-iot-edge.png 'Azure IoT Edge security daemon')
@@ -199,7 +205,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
     sudo systemctl restart iotedge
     ```
 
-    To confirm that this worked successfully, return to the modernize-app-ubuntu1 device in IoT Hub and you should see a runtime response of **417 -- The device's deployment configuration is not set**.
+    To confirm that this worked successfully, return to the modernize-app-ubuntu1 device in IoT Hub and you should see a runtime response of **417 -- The device's deployment configuration is not set** within one to two minutes. You may need to select **Refresh** to update the page.
 
     ![Azure IoT Edge configuration succeeded.](media/vm-configure-iot-edge-success.png 'Azure IoT Edge device configuration succeeded')
 
@@ -499,7 +505,6 @@ The instructions in this task come from the guide on [how to install IoT Edge on
                 return res;
             }
 
-            // Reference: https://stackoverflow.com/questions/218060/random-gaussian-variables
             private double BoxMullerTransformation(Random rand, double mean, double stdDev)
             {
                 double u1 = 1.0 - rand.NextDouble();
@@ -589,35 +594,311 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![The modernize-app-ubuntu1 device is returning a 200 response code and reports that the WWIFactorySensorModule is installed.](media/azure-modernize-app-ubuntu1-status.png 'Status for the modernize-app-ubuntu1 device')
 
+## Exercise 2: Use Azure Synapse Analytics to train and register a predictive maintenance model
 
-## Exercise 2: Modernize services logic to use event sourcing and CQRS
+Duration: 40 minutes
 
-Duration: X minutes
+Now that your data is streaming into Azure IoT Hub, it is time to train and build a model to predict whether machine maintenance is required. This model will become a valuable part of data enrichment in Exercise 4.
 
-\[insert your custom Hands-on lab content here . . . \]
+### Task 1: Load historical maintenance data
 
-### Task 1: Task name
+1. Open the hands-on lab's Resources\Synapse directory and confirm that you have a file called **HistoricalMaintenanceRecord.csv**.
 
-1.  Number and insert your custom workshop content here . . . 
+2.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
 
-    -  Insert content here
+    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
 
-        -  
+    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
 
-### Task 2: Task name
+    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
 
-1.  Number and insert your custom workshop content here . . . 
+    From there, select the **modernize-app** resource group.
 
-    -  Insert content here
+3. Select the **modernizeappstorage#SUFFIX#** storage account which you created before the hands-on lab. Note that there may be multiple storage accounts, so be sure to choose the one you created.
 
-        -  
+    ![The storage account named modernizeappstorage is selected.](media/azure-storage-account-select.png 'The modernizeappstorage storage account')
+
+4. In the **Data Lake Storage** section, select **Containers**. Then, select the **synapse** container you created before the hands-on lab.
+
+    ![The Container named synapse is selected.](media/azure-storage-account-synapse.png 'The synapse storage container')
+
+5. In the synapse container, select **+ Add Directory**. Enter **maintenancedata** for the name and select **Save**. Then, add another directory named **models**.
+
+6. Navigate to the **maintenancedata** directory and select the **Upload** option. In the Files section, select the folder icon to upload files. Navigate to where you saved **HistoricalMaintenanceRecord.csv** and choose this file for upload. Then select **Upload** to finish uploading the file.
+
+    ![The historical maintenance record data is uploaded.](media/azure-synapse-upload.png 'Historical maintenance record')
+
+### Task 2: Create a new Azure Machine Learning Datastore
+
+1. Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
+
+2. Select the **modernize-app-#SUFFIX#** resource with a Type of **Machine Learning**.
+
+    ![The Machine Learning resource is selected.](media/azure-ml-select.png 'Machine Learning')
+
+3. Select **Launch now** to open the Azure Machine Learning studio.
+
+    ![The option to launch Azure Machine Learning Studio is selected.](media/azure-ml-select.png 'Launch now')
+
+4. In the Azure Machine Learning studio, select the **Datastores** option in the Manage tab. Then, select the **+ New datastore** option.
+
+    ![The option to create a new datastore is selected.](media/azure-ml-new-datastore.png 'New datastore')
+
+5. In the **New datastore** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Datastore name                 | _`modernizeappstorage`_                            |
+   | Datastore type                 | _select `Azure Blob Storage`_                      |
+   | Account selection method       | _select `From Azure subscription`_                 |
+   | Subscription ID                | _select the appropriate subscription_              |
+   | Storage account                | _select `modernizeappstorage#SUFFIX#`_             |
+   | Blob container                 | _select `synapse`_                                 |
+   | Allow Azure ML Service...      | _select `No`_                                      |
+   | Authentication type            | _select `Account key`_                             |
+   | Account key                    | _enter the account key_                            |
+
+   ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
+
+   >**NOTE**: If you have not stored your storage account key, navigate to your storage account. Then, in the **Settings** menu, select **Access keys** and copy the **Key** value in the **key1** section.
+
+6. Select **Create** to add the new output.
+
+### Task 3: Develop the predictive maintenance model
+
+1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
+
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
+
+2. Select the workspace you created before the hands-on lab.
+
+    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
+
+3. Select **Launch Synapse Studio** from the Synapse workspace page.
+
+    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
+
+4. In the Azure Synapse workspace, select the **>>** chevron to expand icons to include names and then select **Manage**.
+
+    ![The Manage option is selected.](media/azure-synapse-workspace-manage.png 'Manage')
+
+5. In the Analytics pools section, select **Apache Spark pools** and then select the **+ New** option.
+
+    ![Create a new Apache Spark pool.](media/azure-synapse-manage-spark-pool-1.png 'New Apache Spark pool')
+
+6. In the **Create Apache Spark pool** window, complete the following:
+
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Apache Spark pool name         | _`modernizeapp`_                                   |
+   | Autoscale                      | _select `disabled`_                                |
+   | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
+   | Number of nodes                | _select `3`                                        |
+
+   ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
+
+7. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
+
+8. Navigate to the **Develop** section and create a new **Notebook**. Leave this notebook's language at its default of **PySpark (Python)**.
+
+    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
+
+9. In the **Properties** section, name the notebook **Stamp Press Maintenance Model**. Add a code block to import libraries needed for the notebook and run the block. Note that it may take several minutes to start a Spark session.
+
+    ```
+    import numpy as np
+    import pyspark
+    import os
+    import urllib
+    import sys
+
+    from pyspark.sql.functions import *
+    from pyspark.ml.classification import *
+    from pyspark.ml.evaluation import *
+    from pyspark.ml.feature import *
+    from pyspark.ml import Pipeline
+    from pyspark.sql.types import StructType, StructField
+    from pyspark.sql.types import DoubleType, IntegerType, StringType
+
+    from azureml.core.run import Run
+    from azureml.core import Workspace, Environment, Datastore
+    from azureml.core.experiment import Experiment
+    from azureml.core.model import Model
+    ```
+
+10. Add a new code block to load the historical maintenance record. Be sure to replace **{modernizeappstorage}** on line 7 with your storage account name. Then run the code block.
+
+    ```
+    schema = StructType([
+        StructField("Pressure", IntegerType(), True),
+        StructField("MachineTemperature", IntegerType(), True),
+        StructField("MaintenanceRequired", StringType(), True)
+    ])
+
+    data = spark.read.load('abfss://synapse@{modernizeappstorage}.dfs.core.windows.net/maintenancedata/HistoricalMaintenanceRecord.csv',
+        format='csv', header=False, schema=schema)
+    data.show(10)
+    ```
+
+    ![Results after loading the historical maintenance record data.](media/azure-synapse-develop-pred-notebook.png 'Historical maintenance record data')
+
+11. Add a new code block to build an Azure Machine Learning experiment, train the predictive maintenance model on a Spark cluster, save the artifacts to Azure Data Lake Storage, and then transmit the model artifacts to Azure Machine Learning.  Be sure to change the value of **subscription_id** on line 3 with your subscription ID. Then run the code block.
+
+    ```
+    # load workspace and environment
+    ws = Workspace(
+        subscription_id = '{ Enter your subscription ID }',
+        resource_group = 'modernize-app',
+        workspace_name = 'modernize-app')
+
+    # initialize logger and start experiment
+    experiment = Experiment(ws, "Stamp_Press_Experiment")
+    run = experiment.start_logging()
+
+    # vectorize all numerical columns into a single feature column
+    feature_cols = data.columns[:-1]
+    assembler = pyspark.ml.feature.VectorAssembler(
+        inputCols=feature_cols, outputCol='features')
+
+    # convert text labels into indices
+    label_indexer = pyspark.ml.feature.StringIndexer(
+        inputCol='MaintenanceRequired', outputCol='label').fit(data)
+
+    # use a Decision Tree Classifier to train on the training set
+    classifier = DecisionTreeClassifier(
+    featuresCol="features",
+    labelCol="label",
+    maxDepth=6,
+    maxBins=50)
+
+    pipeline = Pipeline(stages=[assembler, label_indexer, classifier])
+    train, test = data.randomSplit([0.70, 0.30])
+    model = pipeline.fit(train)
 
 
-## Exercise 3: Set up ingest from IoT Hub to Cosmos DB
+    # predict on the test set
+    prediction = model.transform(test)
+    print("Prediction")
+    prediction.show(10)
+
+    # evaluate the accuracy of the model using the test set
+    evaluator = pyspark.ml.evaluation.MulticlassClassificationEvaluator(
+        metricName='accuracy')
+    accuracy = evaluator.evaluate(prediction)
+
+    print()
+    print('#####################################')
+    print("Accuracy is {}".format(accuracy))
+    print('#####################################')
+    print()
+
+    # log accuracy
+    run.log('Accuracy', accuracy)
+
+    # Save pipeline
+    model.write().overwrite().save("/models/stamp_press_model")
+
+    # Download model details using Azure ML Datastore
+    ds = Datastore.get(ws, "modernizeappstorage")
+
+    ds.download("/tmp/stamp_press_model", prefix="/models/stamp_press_model")
+
+    # Push model to Azure ML experiment
+    run.upload_folder(
+        name = 'stamp_press_model',
+        path = '/tmp/stamp_press_model/models/stamp_press_model'
+    )
+
+    # Register Azure ML model
+    run.register_model(
+        model_name = 'stamp_press_model',
+        model_path = 'stamp_press_model'
+    )
+
+    run.complete()
+    ```
+
+    The output of this block will include ten predictions, the overall accuracy of the test data set, and notes from Azure Machine Learning concerning the downloaded files.
+
+### Task 4: Deploy the predictive maintenance model
+
+1.  Open a console on your local machine. Navigate to the folder containing downloaded hands-on lab  resources and from there into **Resources\Azure ML**. There should be a file in this directory named **score.py**.
+
+2. Run **python** in this directory to open a Python console.
+
+    ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
+
+    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed. In this example, I am using the Anaconda distribution of Python, but any Python installation with the appropriate libraries will work.
+
+3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
+
+    ```
+    from azureml.core.webservice import AciWebservice
+    from azureml.core import Workspace, Environment 
+    from azureml.core.model import InferenceConfig, Model
+
+    ws = Workspace(
+        subscription_id = '<Your subscription>',
+        resource_group = 'modernize-app',
+        workspace_name = 'modernize-app')
+
+    env = Environment.get(ws, "AzureML-PySpark-MmlSpark-0.15")
+    inference_config = InferenceConfig(entry_script="score.py", environment=env)
+
+    model = Model(ws, 'stamp_press_model') 
+    models = [model] 
+    aciconfig = AciWebservice.deploy_configuration(cpu_cores = 2, memory_gb = 4, auth_enabled = False) 
+    service = Model.deploy(ws, "stamp-press-model", models, inference_config, aciconfig) 
+    ```
+
+    ![Python is running in the Resources\Azure ML directory.](media/python-deploy.png 'Python')
+
+4. Although `Model.deploy()` returned a result, this is an asynchronous call. If you want to check on the status of deployment, navigate to the Azure Machine Learning studio, select **Endpoints**, and select the **stamp-press-model** endpoint.
+
+    ![The stamp press model is selected.](media/azure-ml-endpoints.png 'stamp-press-model')
+
+5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. If the Deployment state is **Unhealthy**, return to the Python console and run the following command.
+
+    ```
+    service.get_logs()
+    ```
+
+    If the deployment state is **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
+
+    ![The stamp press model is deployed.](media/azure-ml-deployed.png 'Deployed model')
+
+### Task 5: Test the predictive maintenance model
+
+1. On the **stamp-press-model** endpoint, copy the **REST endpoint** value to a text editor.
+
+2. Open a command prompt and run the following command, replacing `{YOUR CONTAINER LOCATION}` with the URI of your Azure Container Instance.
+
+    ```
+    curl -X POST -H "Content-Type: application/json" -d "{\"data\": [{\"Pressure\":7470, \"MachineTemperature\":69}, {\"Pressure\":7490, \"MachineTemperature\":55}, {\"Pressure\":7800, \"MachineTemperature\":30}]}" http://{YOUR CONTAINER LOCATION}/score
+    ```
+
+    You should receive back a JSON array with the values `[2,0,4]`.
+
+    >**NOTE**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
+
+3. Try modifying the input JSON and seeing what results you get. The following table represents the true maintenance requirements.
+
+   | Pressure | Machine Temperature | ID | Maintenance Required  |
+   | -------- | ------------------- | -- | -------------------------- |
+   | < 7475   | < 70                | 1  | Tighten adjustment harness |
+   | > 7600   | 50 <= x < 70        | 2  | Loosen adjustment harness  |
+   | > 7600   | < 50                | 3  | Tighten restrictor plate   |
+   | < 7475   | >= 70               | 4  | Loosen restrictor plate    |
+   | > 7600   | >= 70               | 5  | Replace fabrication screws |
+   | 7475 <= x <= 7600    | 50 <= x <= 70   | 0  | No maintenance required    |
+
+    Like any realistic data set, the historical maintenance record is imperfect and so the data your model trained on will include some incorrect maintenance operations, leading to incorrect maintenance recommendations. Try a few values near the edges of pressure and machine temperature to see.
+
+## Exercise 3:  Create an Azure Function to send event telemetry to Cosmos DB
 
 Duration: 30 minutes
 
-Now that IoT Hub is storing data, we can begin to process the sensor data messages and insert the results into long-term storage. In this exercise, we will store messages in Cosmos DB as well as Azure Data Lake Storage Gen2.
+Now that IoT Hub is storing data, we can begin to process the sensor data messages and insert the results into long-term storage. In this exercise, we will use an Azure Function to handle IoT Hub events and store event data in Cosmos DB for downstream enrichment.
 
 ### Task 1: Enable Azure Synapse Link for Cosmos DB
 
@@ -643,7 +924,6 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
     ![In the Features section, Azure Synapse Link is selected and enabled.](media/azure-cosmos-db-synapse-link.png 'Azure Synapse Link')
 
-        
 ### Task 2: Create Cosmos DB containers
 
 1.  In the **Containers** section for your Cosmos DB account,select **Browse**.
@@ -660,7 +940,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
    | ------------------------------ | ------------------------------------------         |
    | Database id                    | _select `Create new` and enter `sensors`_          |
    | Throughput                     | _`400`_                                            |
-   | Container id                   | _`temperatureanomalies`_                           |
+   | Container id                   | _`telemetry`_                           |
    | Partition key                  | _`/machineid`_                                     |
    | Analytical store               | _select `On`_                                      |
 
@@ -673,17 +953,393 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
    | Field                          | Value                                              |
    | ------------------------------ | ------------------------------------------         |
    | Database id                    | _select `Use existing` and select `sensors`_       |
-   | Container id                   | _`pressure`_                                       |
+   | Container id                   | _`scored_telemetry`_                               |
    | Partition key                  | _`/machineid`_                                     |
    | Analytical store               | _select `On`_                                      |
 
    ![In the Data Explorer pane, New Container is selected and details filled out in the Add Container fly-out pane.](media/azure-cosmos-db-add-collection-2.png 'Add New Container')
 
-5. Select **OK** to create the container. This will take you back to the Data Explorer pane for Cosmos DB.
+6. Select **OK** to create the container. This will take you back to the Data Explorer pane for Cosmos DB. Repeat the process again for the following container details:
 
-6. In the **Settings** menu, select **Keys** and navigate to the Keys page. Copy the primary key and store it in a text editor for a later task.
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Database id                    | _select `Use existing` and select `sensors`_       |
+   | Container id                   | _`metadata`_                                       |
+   | Partition key                  | _`/metadataid`_                                    |
+   | Analytical store               | _select `On`_                                      |
+
+7. In the **Settings** menu, select **Keys** and navigate to the Keys page. Copy the primary key and store it in a text editor for a later task.
 
     ![In the Keys pane, the Primary Key is selected for copying.](media/azure-cosmos-db-key.png 'Copy primary key')
+
+### Task 3: Create an Azure Function to write event data to Cosmos DB
+
+1. Open Visual Studio Code. Select the **Azure** menu option and navigate to **Functions**. In the top-right corner, choose **Create New Project...**. Note that you may need to move your mouse to the top-right corner of the Functions pane to see these options.
+
+    ![Crew New Azure Functions Project is selected.](media/code-create-function-project.png 'Create New Project...')
+
+2.  Select a folder for your IoT Edge solution, such as `C:\Temp\Azure Functions`. When you have created or found a suitable folder, click the **Select Folder** button.
+
+    ![The Azure Functions folder location is selected.](media/code-function-select-folder.png 'Select Folder')
+
+3. Choose **C#** in the **Select a language** menu.
+
+    ![The C# language is selected.](media/code-function-select-language.png 'Select a language')
+
+4. Choose **IotHubTrigger** in the **Select a template for your project's first function** menu.
+
+    ![The IotHubTrigger template is selected.](media/code-function-select-iot-hub-trigger.png 'Select a template')
+
+5. Name the function **WriteEventsToTelemetryContainer**.
+
+    ![The Azure Function name is entered.](media/code-function-select-telemetry-name.png 'Provide a function name')
+
+6. Name the namespace **ModernApp**.
+
+    ![The Azure Functions namespace is entered.](media/code-function-select-namespace.png 'Provide a namespace')
+
+7. Choose **Create new local app setting** in the **Select setting from "local.settings.json"** menu.
+
+    ![The option to create a new local app setting is selected.](media/code-function-select-local-setting.png 'Select setting from local.settings.json')
+
+8. Select **modernize-app-iot-#SUFFIX#** from the **Select an event hub namespace** menu. If you do not see this IoT Hub but you do see the Event Hub created before the hands-on lab, select it to continue.
+
+    ![The modernize-app event hub is selected.](media/code-function-select-event-hub.png 'Select an event hub namespace')
+
+9. In the **Select an event hub** menu, select **Skip for now** if you do not see any hubs.
+
+    ![The skip for now option is selected.](media/code-function-select-event-hub-1.png 'Select an event hub')
+
+10. Enter **messages/modules/WWIFactorySensorModule/outputs** for the IoT Hub endpoint to which messages will be sent.
+
+    ![The IoT Hub endpoint is selected.](media/code-function-event-hub-endpoint.png 'The IoT Hub endpoint')
+
+11. After entering the endpoint name, you may see a modal dialog which indicates that in order to debug, you must select a storage account. Choose **Select storage account** and then select the **modernizeappstorage#SUFFIX#** account.
+
+   ![Select storage account is selected.](media/code-create-function-storage.png 'In order to debug, you must select a storage account for internal use by the Azure Functions runtime.')
+
+12. Choose **Open in current window** in the **Select how you would like to open your project** menu.
+
+    ![The Azure Function will open in the current window.](media/code-function-select-open.png 'Open in current window')
+
+13. Open **local.settings.json** and add an entry for **IoTHubTriggerConnection** using your the Event Hub-compatible endpoint in your IoT Hub. Then, add entries for **cosmosEndpointUrl** and **cosmosPrimaryKey** and fill this in with the URI and primary key for your Cosmos DB account, respectively.
+
+    ```
+    "IoTHubTriggerConnection": "{ Your Event Hub-compatible endpoint }",
+    "cosmosEndpointUrl": "https://modernize-app-#SUFFIX#.documents.azure.com:443/",
+    "cosmosPrimaryKey": "{ Your Comsos DB account's primary key }",
+    ```
+
+    >**NOTE**: The Event Hub compatible endpoint can be found in the **Built-in endpoints** selection in the Settings menu for IoT Hub if you did not collect that information in Exercise 1.
+
+    ![The new local settings are filled in.](media/azure-function-local-settings.png 'local.settings.json')
+
+14. Replace the contents of **WriteEventsToTelemetryContainer.cs** with the following, and then save the file.
+
+    ```
+    using IoTHubTrigger = Microsoft.Azure.WebJobs.EventHubTriggerAttribute;
+
+    using System.Threading.Tasks;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Host;
+    using Microsoft.Azure.EventHubs;
+    using System.Text;
+    using System.Net.Http;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using Microsoft.Azure.Cosmos;
+    using Microsoft.Azure.Documents;
+
+    namespace ModernApp
+    {
+        class MessageBody
+        {
+            public int factoryId {get; set;}
+            public Machine machine {get;set;}
+            public Ambient ambient {get; set;}
+            public string timeCreated {get; set;}
+        }
+        class Machine
+        {
+            public int machineId {get; set;}
+            public double temperature {get; set;}
+            public double pressure {get; set;}
+            public double electricityUtilization {get; set;}
+        }
+        class Ambient
+        {
+            public double temperature {get; set;}
+            public int humidity {get; set;}
+        }
+
+        internal class TelemetryOutput
+        {
+            public string id {get; set;}
+            public string event_type {get; set;}
+            public string entity_type {get; set;}
+            public string entity_id {get; set;}
+            public string event_data {get; set;}
+        }
+
+        public static class WriteEventsToTelemetryContainer
+        {
+            private static readonly string cosmosEndpointUrl = System.Environment.GetEnvironmentVariable("cosmosEndpointUrl");
+            private static readonly string cosmosPrimaryKey = System.Environment.GetEnvironmentVariable("cosmosPrimaryKey");
+            private static readonly string databaseId = "sensors";
+            private static readonly string outputContainerId = "telemetry";
+            private static CosmosClient cosmosClient = new CosmosClient(cosmosEndpointUrl, cosmosPrimaryKey);
+            private static HttpClient client = new HttpClient();
+
+            [FunctionName("WriteEventsToTelemetryContainer")]
+            public static async Task Run([IoTHubTrigger("messages/modules/WWIFactorySensorModule/outputs", ConsumerGroup = "test2", Connection = "IoTHubTriggerConnection")]EventData message, ILogger log)
+            {
+                try
+                {
+                    string body = Encoding.UTF8.GetString(message.Body.Array);
+                    MessageBody hubMessage = JsonConvert.DeserializeObject<MessageBody>(body);
+                    int? machineid = hubMessage?.machine?.machineId;
+
+                    log.LogInformation($"C# IoT Hub trigger function processed a message: {body}");
+                    log.LogInformation($"Machine ID: {machineid}");
+
+                    var telemetry = cosmosClient.GetContainer(databaseId, outputContainerId);
+                    TelemetryOutput to = new TelemetryOutput {
+                        event_type = "Telemetry Ingest",
+                        entity_type = "MachineTelemetry",
+                        entity_id = System.Guid.NewGuid().ToString(),
+                        id = System.Guid.NewGuid().ToString(),
+                        event_data = body
+                    };
+
+                    await telemetry.CreateItemAsync<TelemetryOutput>(to);
+                }
+                catch (System.Exception e) {
+                    log.LogError("Exception creating telemetry data" + e);
+                }
+            }
+        }
+    }
+    ```
+
+15. In the Visual Studio Code terminal, enter the following commands.
+
+    ```
+    dotnet add package Microsoft.Azure.Cosmos
+    dotnet add package Microsoft.Azure.DocumentDB
+    dotnet add package Microsoft.Azure.DocumentDB.Core
+    dotnet restore
+    dotnet build
+    ```
+
+    After running these commands, you should receive a message that the build succeeded.
+
+    ![The Azure Function built successfully.](media/code-function-build-succeeded.png 'Build succeeded.')
+
+### Task 3: Deploy and configure an Azure Function
+TODO:
+1. In Visual Studio Code, select the **Azure** menu option and navigate to **Functions**. Drill down into **Local Project** to **Functions** until you see the **WriteEventsToTelemetryContainer** function.
+
+    ![The Azure Function.](media/code-function-telemetry-view.png 'WriteEventsToTelemetryContainer')
+
+2. Select the **WriteEventsToTelemetryContainer** function and then select the **Deploy to Function App...** operation. You may need to move the mouse to the top-right corner of the Functions tab to view this option.
+
+    ![Deploy to Function App is selected.](media/code-function-telemetry-deploy.png 'Deploy to Function App...')
+
+3. Choose the appropriate subscription from the list. Then, choose the Function App starting with **modernize-app** from the Function App list.
+
+    ![The appropriate Function App is selected.](media/code-function-deploy-app.png 'Select Function App in Azure')
+
+4. Select **Deploy** in the ensuing modal dialog.
+
+    ![The option to deploy is selected.](media/code-function-deploy-check.png 'Deploy')
+
+5. After deployment completes, navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com). Then, select the **modernize-app** entry with a Type of **App Service**.
+
+    ![The modernize-app Function App is selected.](media/azure-function-select.png 'modernize-app')
+
+6. In the Settings menu, select **Configuration**. Then, select **Application settings** and then **+ New application setting**.
+
+    ![The New application setting is selected.](media/azure-function-new-appsetting.png 'New Application setting')
+
+7. Add an application setting with the name of `pg_connection` and a value of the PostgreSQL connection string. Take the following connection string and replace the host and password values with your values.  Then select **OK** to create the application setting and **Save** and then **Continue** on the App Service menu to save changes.
+
+    ```
+    Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true
+    ```
+
+    ![The New application setting is filled out.](media/azure-function-new-appsetting-configure.png 'New application setting details')
+
+
+
+7. Add the following application settings. For each one, select **OK** to save the setting and then **+ New application setting** to add the next.
+
+   | Name                           | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | cosmosEndpointUrl              | _enter the Cosmos DB URL, something like `https://modernize-app-#SUFFIX#.documents.azure.com:443/`_ |
+   | cosmosPrimaryKey               | _enter the primary key for your Cosmos DB account_ |
+   | azureMLEndpointUrl             | _enter the URL (with /score) from exercise 2_      |
+   | modernizeapp_DOCUMENTDB        | `AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};` |
+   | pg_connection                  | `Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true` |
+   | IoTHubTriggerConnection        | _enter the Event Hub compatible endpoint for your IoT Hub_ |
+
+
+## Exercise 4:  Enrich event telemetry with predictive maintenance results
+
+Duration: 30 minutes
+
+Events are loading into the `telemetry` container. With that, we can create a function which handles and enriches telemetry data. In this exercise, you will create two functions. The first function will write telemetry data to PostgreSQL. The second function will run telemetry data through the predictive maintenance model and then write the results to PostgreSQL and an Event Hub.
+
+### Task 1: Create an Azure Function based on a Cosmos DB trigger
+
+1.  Open Visual Studio Code and navigate to the folder you created in Exercise 5 for Azure Functions. In the Azure menu, navigate to the top-right corner and select **Create Function...**
+
+    ![Create Function is selected.](media/code-create-function.png 'Create Function')
+
+2. Fill in the following for each step of the function creation wizard.
+
+   | Step                             | Value                                              |
+   | -------------------------------- | ------------------------------------------         |
+   | Template                         | _select `CosmosDBTrigger`_                         |
+   | Function Name                    | _`WriteMaintenancePredictionToCosmos`_             |
+   | Namespace                        | _`ModernApp`_                                      |
+   | Setting from local.settings.json | _select `Create new local app setting`_            |
+   | Subscription                     | _select the appropriate subscription_              |
+   | Database account                 | _select `modernize-app-#SUFFIX#`_                  |
+   | Database name                    | _`sensors`_                                        |
+   | Collection name                  | _`pressure`_                                       |
+
+   After entering the collection name, you may see a modal dialog which indicates that in order to debug, you must select a storage account. Choose **Select storage account** and then select the **modernizeappstorage#SUFFIX#** account.
+
+   ![Select storage account is selected.](media/code-create-function-storage.png 'In order to debug, you must select a storage account for internal use by the Azure Functions runtime.')
+
+3. In the **WriteMaintenancePredictionToCosmos.cs** file, replace the existing code with the following.
+
+    ```
+    using System;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using Microsoft.Azure.Documents;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Host;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Azure.Cosmos;
+    using Newtonsoft.Json;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Linq;
+
+    namespace ModernApp
+    {
+        
+        internal class PredictionInput
+        {
+            [JsonProperty("Pressure")]
+            internal double Pressure;
+            [JsonProperty("MachineTemperature")]
+            internal double MachineTemperature;
+        }
+        // The data structure expected by Azure ML
+        internal class InputData
+        {
+            [JsonProperty("data")]
+            internal List<PredictionInput> data;
+        }
+
+        public static class WriteMaintenancePredictionToCosmos
+        {
+            private static readonly string cosmosEndpointUrl = System.Environment.GetEnvironmentVariable("cosmosEndpointUrl");
+            private static readonly string cosmosPrimaryKey = System.Environment.GetEnvironmentVariable("cosmosPrimaryKey");
+            private static readonly string azureMLEndpointUrl = System.Environment.GetEnvironmentVariable("azureMLEndpointUrl");
+            private static readonly string databaseId = "sensors";
+            private static readonly string outputContainerId = "maintenancepredictions";
+            private static CosmosClient cosmosClient = new CosmosClient(cosmosEndpointUrl, cosmosPrimaryKey);
+
+
+            [FunctionName("WriteMaintenancePredictionToCosmos")]
+            public static async Task Run([CosmosDBTrigger(
+                databaseName: "sensors",
+                collectionName: "pressure",
+                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                LeaseCollectionName = "leases",
+                CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)
+            {
+                var maintenancepredictions = cosmosClient.GetContainer(databaseId, outputContainerId);
+
+                foreach(Document doc in input) {
+                    InputData payload = new InputData();
+                    var machinetemp = doc.GetPropertyValue<double>("MachineTemperature");
+                    var pressure = doc.GetPropertyValue<double>("Pressure");
+
+                    payload.data = new List<PredictionInput> {
+                        new PredictionInput { MachineTemperature = machinetemp, Pressure = pressure }
+                    };
+
+                    try
+                    {
+                        // Call Azure ML.  Get back response.
+                        HttpClient client = new HttpClient();
+                        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(azureMLEndpointUrl));
+                        request.Content = new StringContent(JsonConvert.SerializeObject(payload));
+                        
+                        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        var response = client.SendAsync(request).Result;
+
+                        // Azure ML returns an array of integer results, one per input item.
+                        var predictions = JsonConvert.DeserializeObject<List<int>>(response.Content.ReadAsStringAsync().Result);
+                        
+                        // Add the recommendation to our document.
+                        // We process one message at a time, so expect one result.
+                        doc.SetPropertyValue("Maintenance", predictions.ElementAt(0));
+
+                        // Write the updated document back to Cosmos DB into a new container.
+                        await maintenancepredictions.CreateItemAsync<Document>(doc);
+                    }
+                    catch (Exception e) {
+                        log.LogError("Exception pushing prediction into the maintenance predictions container: " + e);
+                    }
+                }
+            }
+        }
+    }
+    ```
+
+4. In the Visual Studio Code terminal, enter the following commands.
+
+    ```
+    dotnet add package Microsoft.Azure.Cosmos
+    dotnet restore
+    dotnet build
+    ```
+
+    After running these commands, you should receive a message that the build succeeded.
+
+    ![The Azure Function built successfully.](media/code-function-build-succeeded.png 'Build succeeded.')
+
+5. Select the **WriteMaintenancePredictionToCosmos** function and then select the **Deploy to Function App...** operation. You may need to move the mouse to the top-right corner of the Functions tab to view this option.
+
+    ![Deploy to Function App is selected.](media/code-function-deploy-2.png 'Deploy to Function App...')
+
+6. Choose the appropriate subscription from the list. Then, choose the Function App starting with **modernize-app** from the Function App list.
+
+    ![The appropriate Function App is selected.](media/code-function-deploy-app.png 'Select Function App in Azure')
+
+7. Select **Deploy** in the ensuing modal dialog.
+
+    ![The option to deploy is selected.](media/code-function-deploy-check.png 'Deploy')
+
+8. To test the function, navigate to your Cosmos DB account and select **Data Explorer**. Drill down through the **sensors** database to the **maintenancepredictions** container and select **Items**.
+
+    >**NOTE**: It may take 2-3 minutes for the new Azure Function to populate data into the **maintenancepredictions** container. If you do not see data after several minutes, navigate to the Overview panel of the App Service and **Stop** and then **Start** the functions.
+
+    ![Maintenance recommendations are coming in.](media/azure-cosmos-maintenance-recommendations.png 'Maintenance recommendations')
+
+## Exercise 5:  Enrich event telemetry with automated anomaly detection
+
+## Exercise 6:  Send scored telemetry data to PostgreSQL
+
+
+## Exercise 3: Set up ingest from IoT Hub to Cosmos DB
+
 
 ### Task 3: Create a sensor data directory in Azure Data Lake Storage Gen2
 
@@ -880,27 +1536,7 @@ In the prior exercise, you used the Anomaly Detector functionality built into St
 
     ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
 
-4. In the Azure Synapse workspace, select the **>>** chevron to expand icons to include names and then select **Manage**.
 
-    ![The Manage option is selected.](media/azure-synapse-workspace-manage.png 'Manage')
-
-5. In the Analytics pools section, select **Apache Spark pools** and then select the **+ New** option.
-
-    ![Create a new Apache Spark pool.](media/azure-synapse-manage-spark-pool-1.png 'New Apache Spark pool')
-
-6. In the **Create Apache Spark pool** window, complete the following:
-
-   | Field                          | Value                                              |
-   | ------------------------------ | ------------------------------------------         |
-   | Apache Spark pool name         | _`modernizeapp`_                                   |
-   | Autoscale                      | _select `disabled`_                                |
-   | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
-   | Number of nodes                | _select `3 - 3`                                    |
-   | Container name                 | _`temperatureanomalies`_                           |
-
-   ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
-
-7. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
 
 8. In the **Manage** page, select **Linked services** from the External connections section. Then select **+ New**.
 
@@ -1321,283 +1957,6 @@ This exercise will send Stream Analytics data into PostgreSQL, specifically Azur
 
     ![Data is flowing into PostgreSQL.](media/azure-data-studio-postgres-data.png 'Sensor data')
 
-## Exercise 6: Use Azure Synapse Analytics to train and register a predictive maintenance model
-
-Duration: 40 minutes
-
-Now that your data is streaming to data sources like Cosmos DB and Azure Database for PostgreSQL, it is time to train and build a model to predict whether machine maintenance is required. 
-
-### Task 1: Load historical maintenance data
-
-1. Open the hands-on lab's Resources\Synapse directory and confirm that you have a file called **HistoricalMaintenanceRecord.csv**.
-
-2.  Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
-
-    ![The resource group named modernize-app is selected.](media/azure-modernize-app-rg.png 'The modernize-app resource group')
-
-    If you do not see the resource group in the Recent resources section, type in "resource groups" in the top search menu and then select **Resource groups** from the results.
-
-    ![In the Services search result list, Resource groups is selected.](media/azure-resource-group-search.png 'Resource groups')
-
-    From there, select the **modernize-app** resource group.
-
-3. Select the **modernizeappstorage#SUFFIX#** storage account which you created before the hands-on lab. Note that there may be multiple storage accounts, so be sure to choose the one you created.
-
-    ![The storage account named modernizeappstorage is selected.](media/azure-storage-account-select.png 'The modernizeappstorage storage account')
-
-4. In the **Data Lake Storage** section, select **Containers**. Then, select the **synapse** container you created before the hands-on lab.
-
-    ![The Container named synapse is selected.](media/azure-storage-account-synapse.png 'The synapse storage container')
-
-5. In the synapse container, select **+ Add Directory**. Enter **maintenancedata** for the name and select **Save**. Then, add another directory named **models**.
-
-6. Navigate to the **maintenancedata** directory and select the **Upload** option. In the Files section, select the folder icon to upload files. Navigate to where you saved **HistoricalMaintenanceRecord.csv** and choose this file for upload. Then select **Upload** to finish uploading the file.
-
-    ![The historical maintenance record data is uploaded.](media/azure-synapse-upload.png 'Historical maintenance record')
-
-### Task 2: Create a new Azure Machine Learning Datastore
-
-1. Navigate to the **modernize-app** resource group in the [Azure portal](https://portal.azure.com).
-
-2. Select the **modernize-app-#SUFFIX#** resource with a Type of **Machine Learning**.
-
-    ![The Machine Learning resource is selected.](media/azure-ml-select.png 'Machine Learning')
-
-3. Select **Launch now** to open the Azure Machine Learning studio.
-
-    ![The option to launch Azure Machine Learning Studio is selected.](media/azure-ml-select.png 'Launch now')
-
-4. In the Azure Machine Learning studio, select the **Datastores** option in the Manage tab. Then, select the **+ New datastore** option.
-
-    ![The option to create a new datastore is selected.](media/azure-ml-new-datastore.png 'New datastore')
-
-5. In the **New datastore** window, complete the following:
-
-   | Field                          | Value                                              |
-   | ------------------------------ | ------------------------------------------         |
-   | Datastore name                 | _`modernizeappstorage`_                            |
-   | Datastore type                 | _select `Azure Blob Storage`_                      |
-   | Account selection method       | _select `From Azure subscription`_                 |
-   | Subscription ID                | _select the appropriate subscription_              |
-   | Storage account                | _select `modernizeappstorage#SUFFIX#`_             |
-   | Blob container                 | _select `synapse`_                                 |
-   | Allow Azure ML Service...      | _select `No`_                                      |
-   | Authentication type            | _select `Account key`_                             |
-   | Account key                    | _enter the account key_                            |
-
-   ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
-
-6. Select **Create** to add the new output.
-
-### Task 3: Develop the predictive maintenance model
-
-1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
-
-    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
-
-2. Select the workspace you created before the hands-on lab.
-
-    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
-
-3. Select **Launch Synapse Studio** from the Synapse workspace page.
-
-    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
-
-4. Navigate to the **Develop** section and create a new **Notebook**. Leave this notebook's language at its default of **PySpark (Python)**.
-
-    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
-
-5. In the **Properties** section, name the notebook **Stamp Press Maintenance Model**. Add a code block to import libraries needed for the notebook and run the block. Note that this may take several minutes to start a Spark session.
-
-    ```
-    import numpy as np
-    import pyspark
-    import os
-    import urllib
-    import sys
-
-    from pyspark.sql.functions import *
-    from pyspark.ml.classification import *
-    from pyspark.ml.evaluation import *
-    from pyspark.ml.feature import *
-    from pyspark.ml import Pipeline
-    from pyspark.sql.types import StructType, StructField
-    from pyspark.sql.types import DoubleType, IntegerType, StringType
-
-    from azureml.core.run import Run
-    from azureml.core import Workspace, Environment, Datastore
-    from azureml.core.experiment import Experiment
-    from azureml.core.model import Model
-    ```
-
-6. Add a new code block to load the historical maintenance record. Be sure to replace **modernizeappstorage** on line 7 with your storage account. Then run the code block.
-
-    ```
-    schema = StructType([
-        StructField("Pressure", IntegerType(), True),
-        StructField("MachineTemperature", IntegerType(), True),
-        StructField("MaintenanceRequired", StringType(), True)
-    ])
-
-    data = spark.read.load('abfss://synapse@modernizeappstorage.dfs.core.windows.net/maintenancedata/HistoricalMaintenanceRecord.csv',
-        format='csv', header=False, schema=schema)
-    data.show(10)
-    ```
-
-    ![Results after loading the historical maintenance record data.](media/azure-synapse-develop-pred-notebook.png 'Historical maintenance record data')
-
-7. Add a new code block to build an Azure Machine Learning experiment, train the predictive maintenance model on a Spark cluster, save the artifacts to Azure Data Lake Storage, and then transmit the model artifacts to Azure Machine Learning.  Be sure to change the value of **subscription_id** on line 3 with your subscription ID. Then run the code block.
-
-    ```
-    # load workspace and environment
-    ws = Workspace(
-        subscription_id = '{ Enter your subscription ID }',
-        resource_group = 'modernize-app',
-        workspace_name = 'modernize-app')
-
-    # initialize logger and start experiment
-    experiment = Experiment(ws, "Stamp_Press_Experiment")
-    run = experiment.start_logging()
-
-    # vectorize all numerical columns into a single feature column
-    feature_cols = data.columns[:-1]
-    assembler = pyspark.ml.feature.VectorAssembler(
-        inputCols=feature_cols, outputCol='features')
-
-    # convert text labels into indices
-    label_indexer = pyspark.ml.feature.StringIndexer(
-        inputCol='MaintenanceRequired', outputCol='label').fit(data)
-
-    # use a Decision Tree Classifier to train on the training set
-    classifier = DecisionTreeClassifier(
-    featuresCol="features",
-    labelCol="label",
-    maxDepth=6,
-    maxBins=50)
-
-    pipeline = Pipeline(stages=[assembler, label_indexer, classifier])
-    train, test = data.randomSplit([0.70, 0.30])
-    model = pipeline.fit(train)
-
-
-    # predict on the test set
-    prediction = model.transform(test)
-    print("Prediction")
-    prediction.show(10)
-
-    # evaluate the accuracy of the model using the test set
-    evaluator = pyspark.ml.evaluation.MulticlassClassificationEvaluator(
-        metricName='accuracy')
-    accuracy = evaluator.evaluate(prediction)
-
-    print()
-    print('#####################################')
-    print("Accuracy is {}".format(accuracy))
-    print('#####################################')
-    print()
-
-    # log accuracy
-    run.log('Accuracy', accuracy)
-
-    # Save pipeline
-    model.write().overwrite().save("/models/stamp_press_model")
-
-    # Download model details using Azure ML Datastore
-    ds = Datastore.get(ws, "modernizeappstorage")
-
-    ds.download("/tmp/stamp_press_model", prefix="/models/stamp_press_model")
-
-    # Push model to Azure ML experiment
-    run.upload_folder(
-        name = 'stamp_press_model',
-        path = '/tmp/stamp_press_model/models/stamp_press_model'
-    )
-
-    # Register Azure ML model
-    run.register_model(
-        model_name = 'stamp_press_model',
-        model_path = 'stamp_press_model'
-    )
-
-    run.complete()
-    ```
-
-    The output of this block will include ten predictions, the overall accuracy of the test data set, and notes from Azure Machine Learning concerning the downloaded files.
-
-### Task 4: Deploy the predictive maintenance model
-
-1.  Open a console on your local machine. Navigate to the folder containing downloaded hands-on lab  resources and from there into **Resources\Azure ML**. There should be a file in this directory named **score.py**.
-
-2. Run **python** in this directory to open a Python console.
-
-    ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
-
-    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed. In this example, I am using the Anaconda distribution of Python, but any Python installation with the appropriate libraries will work.
-
-3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
-
-    ```
-    from azureml.core.webservice import AciWebservice
-    from azureml.core import Workspace, Environment 
-    from azureml.core.model import InferenceConfig, Model
-
-    ws = Workspace(
-        subscription_id = '<Your subscription>',
-        resource_group = 'modernize-app',
-        workspace_name = 'modernize-app')
-
-    env = Environment.get(ws, "AzureML-PySpark-MmlSpark-0.15")
-    inference_config = InferenceConfig(entry_script="score.py", environment=env)
-
-    model = Model(ws, 'stamp_press_model') 
-    models = [model] 
-    aciconfig = AciWebservice.deploy_configuration(cpu_cores = 2, memory_gb = 4, auth_enabled = False) 
-    service = Model.deploy(ws, "stamp-press-model", models, inference_config, aciconfig) 
-    ```
-
-    ![Python is running in the Resources\Azure ML directory.](media/python-deploy.png 'Python')
-
-4. Although `Model.deploy()` returned a result, this is an asynchronous call. If you want to check on the status of deployment, navigate to the Azure Machine Learning studio, select **Endpoints**, and select the **stamp-press-model** endpoint.
-
-    ![The stamp press model is selected.](media/azure-ml-endpoints.png 'stamp-press-model')
-
-5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. If the Deployment state is **Unhealthy**, return to the Python console and run the following command.
-
-    ```
-    service.get_logs()
-    ```
-
-    If the deployment state is **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
-
-    ![The stamp press model is deployed.](media/azure-ml-deployed.png 'Deployed model')
-
-### Task 5: Test the predictive maintenance model
-
-1. On the **stamp-press-model** endpoint, copy the **REST endpoint** value to a text editor.
-
-2. Open a command prompt and run the following command.
-
-    ```
-    curl -X POST -H "Content-Type: application/json" -d "{\"data\": [{\"Pressure\":7470, \"MachineTemperature\":69}, {\"Pressure\":7490, \"MachineTemperature\":55}, {\"Pressure\":7800, \"MachineTemperature\":30}]}" http://b2917240-e6bd-4fe1-9f09-ae4f356492ef.eastus.azurecontainer.io/score
-    ```
-
-    You should receive back a JSON array with the values `[2,0,4]`.
-
-    >**NOTE**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
-
-3. Try modifying the input JSON and seeing what results you get. The following table represents the true maintenance requirements.
-
-   | Pressure | Machine Temperature | ID | Maintenance Required  |
-   | -------- | ------------------- | -- | -------------------------- |
-   | < 7475   | < 70                | 1  | Tighten adjustment harness |
-   | > 7600   | 50 <= x < 70        | 2  | Loosen adjustment harness  |
-   | > 7600   | < 50                | 3  | Tighten restrictor plate   |
-   | < 7475   | >= 70               | 4  | Loosen restrictor plate    |
-   | > 7600   | >= 70               | 5  | Replace fabrication screws |
-   | 7475 <= x <= 7600    | 50 <= x <= 70   | 0  | No maintenance required    |
-
-    Like any realistic data set, the historical maintenance record is imperfect and so the data your model trained on will include some incorrect maintenance operations, leading to incorrect maintenance recommendations. Try a few values near the edges of pressure and machine temperature to see.
-
 ## Exercise 7: Apply predictive maintenance calculations and write to Azure Synapse Analytics
 
 Duration: 20 minutes
@@ -1876,6 +2235,28 @@ Now that you have a predictive maintenance model deployed and available, you can
     ```
 
     ![The SQL Pool results are returned.](media/azure-synapse-develop-cosmos-success-2.png 'Retrieve data from a SQL Pool')
+
+## Exercise 7: Modernize services logic to use event sourcing and CQRS
+
+Duration: X minutes
+
+\[insert your custom Hands-on lab content here . . . \]
+
+### Task 1: Task name
+
+1.  Number and insert your custom workshop content here . . . 
+
+    -  Insert content here
+
+        -  
+
+### Task 2: Task name
+
+1.  Number and insert your custom workshop content here . . . 
+
+    -  Insert content here
+
+        -  
 
 ## Exercise 8: View the factory status in a Power BI report
 
