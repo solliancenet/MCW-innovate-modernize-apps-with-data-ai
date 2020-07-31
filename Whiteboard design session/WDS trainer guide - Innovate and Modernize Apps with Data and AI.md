@@ -197,7 +197,7 @@ Wide World Importers (WWI) is a global manufacturing company that handles distri
 
 WWI has five factories, each with about 10,000 sensors, for a total of approximately 50,000 sensors sending data in real-time. Today, their sensor data is collected into a Kafka cluster and processed via a custom consumer application that aggregates the events and writes the results to PostgreSQL. They have an event data store that currently runs in PostgreSQL. A web app connects to the data store and reports the status of the factory floor.
 
-WWI is running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern, they would like to take the opportunity to modernize their infrastructure. In particular, they would like to modernize their solution to use microservices, and in particular, apply the Event Sourcing and CQRS patterns.
+WWI is running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern, they would like to take the opportunity to modernize their infrastructure. In particular, they would like to modernize their solution to use microservices, and in particular, apply the Event Sourcing and Command and Query Responsibility Segregation (CQRS) patterns.
 
 They recognize their solutions will benefit from the cloud and want to ensure that they can manage their hybrid solution in a consistent way across both cloud and on-premises resources. The factories currently collect and analyze their operational data independently. They would like to deploy a cloud-based platform to centralize and allow storage of all data across all factories.
 
@@ -275,7 +275,9 @@ Directions: With all participants at your table, respond to the following questi
 
 1. What does event sourcing mean in practice?  What kinds of considerations should Wide World Importers take when migrating from a classic application architecture to an event sourcing pattern?
 
-2. TODO
+2. How can the events flowing through the architecture be processed at scale?
+
+3. How should WWI implement the CQRS pattern in their new microservices-based web application? Provide some samples of domain entities they can use to store the event data along with state information.
 
 *Anomaly detection*
 
@@ -343,7 +345,7 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Azure IoT reference architecture | https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot |
 | What is Azure IoT Hub? | https://docs.microsoft.com/en-us/azure/iot-hub/about-iot-hub |
 | What is Azure IoT Edge  | https://docs.microsoft.com/en-us/azure/iot-edge/about-iot-edge  |
-|  What is Azure Stream Analytics? | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction  |
+| What is Azure Stream Analytics? | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction  |
 | Anomaly detection in Azure Stream Analytics  | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-machine-learning-anomaly-detection  |
 | Cognitive Services Anomaly Detector  | https://azure.microsoft.com/en-us/services/cognitive-services/anomaly-detector/  |
 | Azure Synapse Link for Cosmos DB | https://docs.microsoft.com/en-us/azure/cosmos-db/synapse-link |
@@ -356,7 +358,6 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-your-first-pipeline |
 | Use an existing model with Azure Machine Learning | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-deploy-existing-model |
 | Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/en-us/azure/machine-learning/tutorial-deploy-models-with-aml |
-
 
 # Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide
 
@@ -424,9 +425,23 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. What are the SaaS-based IoT options in Azure?
 
+    Azure IoT Central is an end-to-end SaaS solution that provides the most common features used in a broad range of IoT solutions without requiring cloud-based development expertise. Most of the configuration can be done through the provided web-based UI, and device management follows a model-based approach where device templates are created to define IoT device metadata for simplified management. Devices are added to a device set that is based on a version of the template, organizing like-devices for reporting and management. Although IoT Central uses several Azure services under the covers, such as IoT Hub, those details are hidden from the user, allowing them to focus on customizing their personalized IoT Central application through its innovative UI.
+
 2. What are the PaaS-based IoT options in Azure?
 
+    Azure IoT Hub is a PaaS service that allows users to connect and manage millions of IoT devices, ingest millions of events per second from these devices, automate IoT device provisioning, and cloud-to-device messaging for command and control. IoT Hub also helps enforce security on devices through per-device identity, allowing operators and admins to authorize and revoke device connections. Azure IoT solution accelerators are packaged solutions built on top of IoT Hub and other Azure components to kick-start PaaS-based IoT projects. When using Azure IoT solution accelerators, you have access to the underlying Azure services of the solution as well as the source code that comes with the starter solution. The flexibility level is high, but so is the skill level to customize the accelerator to your needs.
+
+    Both IoT Central and Azure IoT solution accelerators use IoT Hub along with other Azure services. However, these are not needed to use IoT Hub by itself in your own custom solution.
+
 3. Would you recommend SaaS or PaaS for this customer situation? What are the pros and cons of each?
+
+    Wide World Importers stated their interest in PaaS-based solutions that can handle managing and ingesting their existing IoT devices, and easily scale to support future growth as they bring more factories online. Azure IoT Hub's features meet the base requirements for their PoC, and can easily scale to manage and ingest telemetry from millions of devices. Since they already have staff on-hand who have IoT development and device management expertise, IoT Hub offers more advanced capabilities and flexibility to fit into their existing architecture as they transition to their new Azure-based architecture. Long-term, using IoT Hub for device management and ingest as an entry point into their custom event sourcing architecture is more cost-effective than using Azure IoT Central.
+
+    There are some additional drawbacks to WWI using IoT Central, as with any SaaS-based solution. The primary drawback is limited flexibility because the underlying infrastructure is not customizable because its components are not exposed. WWI will need to find workarounds if ever their requirements change, and they need customization beyond what is provided by IoT Central's interface and SDK. Another limiting factor is how data is accessed. Although all the data is stored within a time-series data store, you only have access to it either through IoT Central's UI, which offers flexible filtering and visualizations, or by enabling continuous export of data to Azure Storage, Azure Event Hubs, or Azure Service Bus. You cannot directly query the datastore from an external application.
+
+    Creating a microservices-based IoT solution with IoT Hub and their own web application and related services, or by starting with an Azure IoT solution accelerator, gives WWI maximum flexibility. They have full control over the development and deployment lifecycle of their solution, including automated deployments to development, staging, and production environments. The primary drawbacks to this approach are increased time to develop and deploy the solution, required expertise for end-to-end IoT development and customization, and a more opaque pricing structure where they must fine-tune the services to control costs.
+    
+    All in all, given their requirements, using the PaaS-based IoT Hub service is the recommended approach for WWI.
 
 *Hybrid IoT data management*
 
@@ -438,9 +453,49 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 *Event sourcing*
 
-1. What does event sourcing mean in practice?  What kinds of considerations should Wide World Importers take when migrating from a classic application architecture to an event sourcing pattern?
+1. What does event sourcing mean in practice? What kinds of considerations should Wide World Importers take when migrating from a classic application architecture to an event sourcing pattern?
 
-2. TODO
+    A vital pattern used in the preferred solution is the [event sourcing pattern](https://docs.microsoft.com/azure/architecture/patterns/event-sourcing). This pattern defines an approach to handling operations on data that's driven by a sequence of events, each of which is recorded in an append-only store. In our implementation, IoT devices send telemetry as a series of events that imperatively describe the state of each device over time to the event store, where they're persisted. Each event represents a set of changes to the data, which is tied back to the source IoT device.
+
+    The event store acts as the system of record (the authoritative data source) about the current state of the data. The event store used in the solution accelerator is an [Azure Cosmos DB](https://docs.microsoft.com/azure/cosmos-db/introduction) `telemetry` container that is tuned for write-heavy workloads through minimal indexing, partitioning on a key with high cardinality, and by setting a throughput adjusted for a high rate of ingesting. The Azure Cosmos DB change feed is used to publish these events so that consumers are notified so they can handle them if needed. The `scored_telemetry` container also acts as an event source for scored predictive maintenance, temperature anomaly, and windowed aggregate events.
+
+    Typical uses of the events published by the change feed are to maintain materialized views of entities as telemetry is ingested or actions in the application change them, and for integration with external systems. For example, as device telemetry is saved, materialized views are updated with aggregated information about the IoT device telemetry, which is used to populate parts of the UI such as dashboards and reports. The aggregated data in this example is saved to a different container in Azure Cosmos DB, eliminating the need to query against the event collection and perform expensive aggregates across multiple partitions. All telemetry data is stored in Azure PostgreSQL as entity data with state information, as well.
+
+    Implementing the event sourcing pattern allows data and software architects to think beyond typical CRUD operations that may be used to for their databases and applications. The components of the event sourcing pattern are loosely coupled and can often operate in parallel for maximum scalability. This pattern helps these architects consider how they can handle the rising velocity, variety, and volume of data in today's Big Data landscape.
+
+2. How can the events flowing through the architecture be processed at scale?
+
+    In the architecture for this scenario, Azure Functions play a major role in event processing. These functions execute within an Azure Function App, Microsoft's serverless solution for easily running small pieces of code, or "functions," in the cloud. You can write just the code you need for the problem at hand, without worrying about a whole application or the infrastructure to run it. Functions can make development even more productive, and you can use your development language of choice, such as C#, F#, Node.js, Java, or PHP.
+
+    This architecture uses multiple Function Apps because of how functions scale to meet demand. When you use the Azure Functions consumption plan, you only pay for the time your code runs. More importantly, Azure automatically handles scaling your functions to meet demand. It scales using an internal scale controller that evaluates the type of trigger the functions are using and applies heuristics to determine when to scale out to multiple instances. The important thing to know is that functions scale at the Function App level. Meaning, if you have one very busy function and the rest are mostly idle, that one busy function causes the entire Function App to scale. Think about this when designing your solution. It is a good idea to *divide extremely high-load functions into separate Function Apps*.
+
+3. How should WWI implement the CQRS pattern in their new microservices-based web application? Provide some samples of domain entities they can use to store the event data along with state information.
+
+    According to the Azure cloud design patterns documentation, the [Command and Query Responsibility Segregation (CQRS) pattern](https://docs.microsoft.com/azure/architecture/patterns/cqrs) separates read and update operations for a data store. Implementing CQRS in WWI's microservices-based application can maximize its performance, scalability, and security. The flexibility created by migrating to CQRS allows a system to better evolve over time and prevents update commands from causing merge conflicts at the domain level. There are multiple microservices in play throughout the solution. The Azure Functions act as microservices that perform insert operations into different data stores, such as various Azure Cosmos DB containers and Azure PostgreSQL. The web application is composed of microservices that are responsible for applying domain-specific business logic and data operations.
+
+    In traditional architectures, the same data model is used to query and update a database, which is simple and works well for basic create, read, update, and delete (CRUD) operations. In more complex applications with multiple data sources, data stores, and data velocities, this approach can become unwieldy. For example, on the read side, the application may perform many different queries, returning domain entities with different shapes. Object mapping can become complicated. On the write side, the model may implement complex validation and business logic. As a result, you can end up with an overly complex model that does too much.
+
+    As seen in WWI's case, read and write workloads are often asymmetrical, with very different performance and scale requirements. Separating these workloads into separate services helps address system configuration, security, and scale requirements that apply differently to each workload.
+
+    **Sample domain entities:**
+
+    | Entity Type | Description |
+    | --- | --- |
+    | **MachineTelemetry** | Contains telemetry event data (serialized in JSON format) and event type (state) information |
+    | **MaintenanceAggregate** | Contains windowed aggregates for machine maintenance predictions, grouped by maintenance requirement, factory, and machine |
+    | **Metadata** | Contains metadata for factories (name, location), machines, and maintenance information |
+
+    All raw event data lands in Azure Cosmos DB with a relatively short TTL (~30 days). The data is replicated long-term to the analytical store with no TTL. The analytical store saves all transactional data in columnar storage as Parquet files in Azure storage in a cost-effective way, automatically. No ETL required. In addition, the analytical store helps WWI apply the CQRS pattern by issuing complex read operations against a read-only data store that is optimized for analytical workloads.
+
+    The event source processors (Azure Functions) conform event data to the domain entities (outlined above) and save the entities to its respective storage (Cosmos DB container directly or through Event Hubs and an Azure PostgreSQL Hyperscale database). These processors act as microservices that save the data through CUD commands (CQRS pattern). These commands can be queued and be applied asynchronously. Depending on the data sink, additional event processing occurs downstream (Cosmos DB change feed). The function triggered by IoT Hub generates the `entity_id` value. Cosmos DB generates the `event_id`, which maps to the document's id field. The `machine_id` is supplied by the incoming telemetry and is used as the partition key in PostgreSQL for automated sharding and creating materialized views.
+
+    The following table shows how event data that contains state information (`event_type`) can be stored in PostgreSQL. All event data is stored in JSON format within the `event_data` field. The built-in JSON capabilities of PostgreSQL can directly access the data in this field for executing queries and other data operations.
+
+    ![This table displays](media/example-domain-entities.png "Example domain entities")
+
+    The CQRS pattern also applies to the microservices used by the new web application. In the diagram below, there is a clear line of delineation between microservices that perform create, update, and delete (CUD) operations, and those optimized for query (Read) operations. The web app uses the metadata command service to create, update, and delete metadata records stored in the `metadata` Azure Cosmos DB container. A Query microservice issues read commands against `MachineTelemetry`, `MaintenanceAggregate`, and `Metadata` microservices, which are responsible for querying their respective data stores.
+
+    ![The web microservices are shown with the CQRS pattern applied.](media/web-microservices.png "Web microservices")
 
 *Anomaly detection*
 
@@ -454,7 +509,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
 
-2. Which platform would you recommend for deploying the trained model?  This deployed model should still be part of an event sourcing solution.
+2. Which platform would you recommend for deploying the trained model? This deployed model should still be part of an event sourcing solution.
 
 ## Checklist of preferred objection handling
 
