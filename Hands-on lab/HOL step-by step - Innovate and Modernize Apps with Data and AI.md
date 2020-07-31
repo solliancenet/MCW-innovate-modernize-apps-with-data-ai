@@ -27,23 +27,46 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 <!-- TOC -->
 
-- [Innovate and Modernize Apps with Data & AI hands-on lab step-by-step](#innovate-and-modernize-apps-with-data-and-ai-hands-on-lab-step-by-step)
-    - [Abstract and learning objectives](#abstract-and-learning-objectives)
-    - [Overview](#overview)
-    - [Solution architecture](#solution-architecture)
-    - [Requirements](#requirements)
-    - [Before the hands-on lab](#before-the-hands-on-lab)
-    - [Exercise 1: Exercise name](#exercise-1-exercise-name)
-        - [Task 1: Task name](#task-1-task-name)
-        - [Task 2: Task name](#task-2-task-name)
-    - [Exercise 2: Exercise name](#exercise-2-exercise-name)
-        - [Task 1: Task name](#task-1-task-name-1)
-        - [Task 2: Task name](#task-2-task-name-1)
-    - [Exercise 3: Exercise name](#exercise-3-exercise-name)
-        - [Task 1: Task name](#task-1-task-name-2)
-        - [Task 2: Task name](#task-2-task-name-2)
-    - [After the hands-on lab](#after-the-hands-on-lab)
-        - [Task 1: Delete Lab Resources](#task-1-delete-lab-resources)
+- [Innovate and Modernize Apps with Data and AI hands-on lab step-by-step](#innovate-and-modernize-apps-with-data-and-ai-hands-on-lab-step-by-step)
+  - [Abstract and learning objectives](#abstract-and-learning-objectives)
+  - [Overview](#overview)
+  - [Solution architecture](#solution-architecture)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+  - [Exercise 1: Deploy a factory load simulator](#exercise-1-deploy-a-factory-load-simulator)
+    - [Task 1: Add a new device in IoT Hub](#task-1-add-a-new-device-in-iot-hub)
+    - [Task 2: Install and configure IoT Edge on a Linux virtual machine](#task-2-install-and-configure-iot-edge-on-a-linux-virtual-machine)
+    - [Task 3: Build and deploy an IoT Edge module](#task-3-build-and-deploy-an-iot-edge-module)
+  - [Exercise 2: Use Azure Synapse Analytics to train and register a predictive maintenance model](#exercise-2-use-azure-synapse-analytics-to-train-and-register-a-predictive-maintenance-model)
+    - [Task 1: Load historical maintenance data](#task-1-load-historical-maintenance-data)
+    - [Task 2: Create a new Azure Machine Learning Datastore](#task-2-create-a-new-azure-machine-learning-datastore)
+    - [Task 3: Develop the predictive maintenance model](#task-3-develop-the-predictive-maintenance-model)
+    - [Task 4: Deploy the predictive maintenance model](#task-4-deploy-the-predictive-maintenance-model)
+    - [Task 5: Test the predictive maintenance model](#task-5-test-the-predictive-maintenance-model)
+  - [Exercise 3:  Create an Azure Function to send event telemetry to Cosmos DB](#exercise-3-create-an-azure-function-to-send-event-telemetry-to-cosmos-db)
+    - [Task 1: Enable Azure Synapse Link for Cosmos DB](#task-1-enable-azure-synapse-link-for-cosmos-db)
+    - [Task 2: Create Cosmos DB containers](#task-2-create-cosmos-db-containers)
+    - [Task 3: Create an Azure Function to write event data to Cosmos DB](#task-3-create-an-azure-function-to-write-event-data-to-cosmos-db)
+    - [Task 4: Deploy and configure an Azure Function](#task-4-deploy-and-configure-an-azure-function)
+  - [Exercise 4:  Enrich event telemetry with predictive maintenance results](#exercise-4-enrich-event-telemetry-with-predictive-maintenance-results)
+    - [Task 1:  Create an Event Hub](#task-1-create-an-event-hub)
+    - [Task 2: Create an events table in PostgreSQL](#task-2-create-an-events-table-in-postgresql)
+    - [Task 3: Create an Azure Function based on a Cosmos DB trigger](#task-3-create-an-azure-function-based-on-a-cosmos-db-trigger)
+  - [Exercise 5:  Enrich event telemetry with automated anomaly detection](#exercise-5-enrich-event-telemetry-with-automated-anomaly-detection)
+    - [Task 1: Create an Azure Stream Analytics job](#task-1-create-an-azure-stream-analytics-job)
+  - [Exercise 6:  Send scored telemetry data to PostgreSQL](#exercise-6-send-scored-telemetry-data-to-postgresql)
+    - [Task 1: Create an Azure Function to write temperature anomalies data to PostgreSQL](#task-1-create-an-azure-function-to-write-temperature-anomalies-data-to-postgresql)
+    - [Task 2: Deploy and configure an Azure Function](#task-2-deploy-and-configure-an-azure-function)
+  - [Exercise 7: Modernize services logic to use event sourcing and CQRS](#exercise-7-modernize-services-logic-to-use-event-sourcing-and-cqrs)
+    - [Task 1: Task name](#task-1-task-name)
+    - [Task 2: Task name](#task-2-task-name)
+  - [Exercise 8: View the factory status in a Power BI report](#exercise-8-view-the-factory-status-in-a-power-bi-report)
+    - [Task 1: Import events data via a Spark notebook](#task-1-import-events-data-via-a-spark-notebook)
+    - [Task 2: Create a Power BI notebook](#task-2-create-a-power-bi-notebook)
+    - [Task 3: Embed the Power BI notebook](#task-3-embed-the-power-bi-notebook)
+  - [After the hands-on lab](#after-the-hands-on-lab)
+    - [Task 1: Delete Lab Resources](#task-1-delete-lab-resources)
+    - [Task 2:  Delete the Power BI Workspace](#task-2-delete-the-power-bi-workspace)
 
 <!-- /TOC -->
 
@@ -51,11 +74,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Abstract and learning objectives 
 
-In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  **TODO: exercise 1 website and exercise 2 explanation**
+In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
 
-Once we have data in Azure IoT Hub, we will use Azure Stream Analytics to aggregate and transform the data, including using the Anomaly Detection service built into Stream Analytics to observe and report on abnormal machine temperature readings.  Stream Analytics will then send data to three different data stores:  Azure Database for PostgreSQL Hyperscale, Azure Cosmos DB, and Azure Data Lake Storage Gen2.  The data in each source will serve different purposes, from driving analytical microservices to performing predictive maintenance to forming the basis for Power BI dashboards.
-
-You will learn how to apply historical machine temperature and stamping pressure values in the creation of a machine learning model to identify potential issues which might require machine adjustment.  You will deploy this predictive maintenance model and generate predictions on simulated stamp press data.
+Using factory-generated data, you will learn how to use the Anomaly Detection service built into Stream Analytics to observe and report on abnormal machine temperature readings.  You will also learn how to apply historical machine temperature and stamping pressure values in the creation of a machine learning model to identify potential issues which might require machine adjustment.  You will deploy this predictive maintenance model and generate predictions on simulated stamp press data.
 
 ## Overview
 
@@ -88,6 +109,8 @@ TODO:
     a. Install the [PostgreSQL extension](https://docs.microsoft.com/en-us/sql/azure-data-studio/postgres-extension).
 
 5. Install Docker. [Docker Desktop](https://www.docker.com/products/docker-desktop) will work for this hands-on lab and supports Windows and MacOS. For Linux, install the Docker engine through your distribution's package manager.
+
+6. Install [Power BI Desktop](https://aka.ms/pbidesktopstore).
 
 ## Before the hands-on lab
 
@@ -123,7 +146,7 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
 4. In the Create a device menu, name the device `modernize-app-ubuntu1` and leave the remaining settings the same.
 
-    ![In the Create a device menu, the device ID is filled in.](media/azure-add-iot-edge-device.png 'Create a device')
+    ![In the Create a device menu, the device ID is filled in.](media/azure-create-iot-edge-1.png 'Create a device')
 
 5. Click the **Save** button to complete device registration.
 
@@ -139,7 +162,7 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
     ![In the Event Hub compatible endpoint settings, the endpoint connection string is selected.](media/azure-iot-hub-endpoint.png 'The Event Hub-compatible endpoint')
 
-9. In the Consumer Groups section, add a new consumer group named **telemetry** by entering the name into the **Create new consumer group** textbox.  IoT Hub will automatically register this consumer group--which we will use in Exercise 3--without you needing to save.
+9. In the Consumer Groups section, add a new consumer group named **telemetry** by entering the name into the **Create new consumer group** textbox.  IoT Hub will automatically save and register this consumer group, which we will use in Exercise 3.
 
     ![In the Event Hub Consumer Groups settings, a new telemetry consumer group is added.](media/azure-iot-hub-consumer-group.png 'Consumer Groups')
 
@@ -199,7 +222,9 @@ The instructions in this task come from the guide on [how to install IoT Edge on
         device_connection_string: "<ADD DEVICE CONNECTION STRING HERE>"
     ```
 
-    Replace the **<ADD DEVICE CONNECTION STRING HERE>** text with the connection string you copied in the prior task.  In vim, use the arrow keys to move the cursor to the point before the angle bracket `<` and then type `35x` to delete the next 35 characters, leaving you with an empty pair of quotation marks. Then, type `i` to insert, paste in your text by right-clicking the screen (if supported) or `Shift+Insert`. Once you have your connection string copied, press `Esc` to exit insert mode and type `ZZ` to save the file.
+    Replace the **<ADD DEVICE CONNECTION STRING HERE>** text with the connection string you copied in the prior task.  In vim, use the arrow keys to move the cursor to the point before the angle bracket `<` and then type `35x` to delete the next 35 characters, leaving you with an empty pair of quotation marks. Then, type `i` to insert, paste in your text by right-clicking the screen (if supported) or `Shift+Insert`. Once you have your connection string pasted into the editor, press `Esc` to exit insert mode and type `ZZ` to save the file.
+
+    >**NOTE**: `vim` is one editor you may use to modify files in Linux, but there are others, including `nano`.  Choose the one you are most comfortable using.
 
     ![Azure IoT Edge is configured.](media/vm-configure-iot-edge.png 'Azure IoT Edge device configuration')
 
@@ -642,7 +667,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
 3. Select **Launch now** to open the Azure Machine Learning studio.
 
-    ![The option to launch Azure Machine Learning Studio is selected.](media/azure-ml-select.png 'Launch now')
+    ![The option to launch Azure Machine Learning Studio is selected.](media/azure-ml-launch.png 'Launch now')
 
 4. In the Azure Machine Learning studio, select the **Datastores** option in the Manage tab. Then, select the **+ New datastore** option.
 
@@ -662,7 +687,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
    | Authentication type            | _select `Account key`_                             |
    | Account key                    | _enter the account key_                            |
 
-   ![In the Azure function new output, form field entries are filled in.](media/azure-stream-analytics-output-function.png 'Azure function output')
+   ![In the New datastore output, form field entries are filled in.](media/azure-ml-new-datastore-1.png 'New datastore')
 
    >**NOTE**: If you have not stored your storage account key, navigate to your storage account. Then, in the **Settings** menu, select **Access keys** and copy the **Key** value in the **key1** section.
 
@@ -697,7 +722,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
    | Apache Spark pool name         | _`modernizeapp`_                                   |
    | Autoscale                      | _select `disabled`_                                |
    | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
-   | Number of nodes                | _select `3`                                        |
+   | Number of nodes                | _select `3`_                                       |
 
    ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
 
@@ -832,7 +857,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
 
-    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed. In this example, I am using the Anaconda distribution of Python, but any Python installation with the appropriate libraries will work.
+    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed.
 
 3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
 
@@ -1141,7 +1166,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
     ![The Azure Function built successfully.](media/code-function-build-succeeded.png 'Build succeeded.')
 
-### Task 3: Deploy and configure an Azure Function
+### Task 4: Deploy and configure an Azure Function
 
 1. In Visual Studio Code, select the **Azure** menu option and navigate to **Functions**. Drill down into **Local Project** to **Functions** until you see the **WriteEventsToTelemetryContainer** function.
 
@@ -1174,8 +1199,8 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
    | cosmosEndpointUrl              | _enter the Cosmos DB URL, something like `https://modernize-app-#SUFFIX#.documents.azure.com:443/`_ |
    | cosmosPrimaryKey               | _enter the primary key for your Cosmos DB account_ |
    | azureMLEndpointUrl             | _enter the URL (with /score) from exercise 2_      |
-   | modernizeapp_DOCUMENTDB        | `AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};` |
-   | pg_connection                  | `Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true` |
+   | modernizeapp_DOCUMENTDB        | _`AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};`_ |
+   | pg_connection                  | _`Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true`_ |
    | IoTHubTriggerConnection        | _enter the Event Hub compatible endpoint for your IoT Hub_ |
    | EventHubConnection             | _enter the Event Hub primary connection string, NOT the IoT Hub connection string_    |
 
@@ -1879,7 +1904,7 @@ Duration: X minutes
 
 ## Exercise 8: View the factory status in a Power BI report
 
-Duration: 20 minutes
+Duration: 30 minutes
 
 In this final exercise, you will load data from Cosmos DB containers into an Azure Synapse Analytics SQL Pool, create visualizations in Power BI, and embed your Power BI report into your event-driven website.
 
@@ -2001,12 +2026,106 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 ### Task 2: Create a Power BI notebook
 
-1.  Number and insert your custom workshop content here . . .
+1. Navigate to [Power BI](https://app.powerbi.com) and log in if prompted.
 
-    -  Insert content here
+    >**NOTE**: For this and the following task, you will need a work or school account with Power BI access.  You will not be able to use personal accounts to log into the Power BI application.
 
-        -  
-        
+2. In the Workspaces menu, select **Create a workspace** to create a new workspace.
+
+    ![The Create a workspace option is selected.](media/power-bi-create-workspace.png 'Create a workspace')
+
+3. In the Create a workspace form, enter **Modern App** as the workspace name and then select **Save**.
+
+    ![Details are filled in for a new workspace.](media/power-bi-create-workspace.png 'Create a workspace')
+
+4.  In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
+
+    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
+
+5. Select the workspace you created before the hands-on lab.
+
+    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
+
+6. Select **Launch Synapse Studio** from the Synapse workspace page.
+
+    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
+
+7. Select **Visualize** from the Synapse studio front page.
+
+    ![The Visualize option is selected.](media/azure-synapse-visualize.png 'Visualize')
+
+8. In the Connect to Power BI menu, enter **modern_app_workspace** for the Name and select the **Modern App** workspace in the Workspace name drop-down list.  Then select **Connect** to create the connection.
+
+    ![The Power BI connection settings are selected.](media/azure-synapse-visualize-create.png 'Connect to Power BI')
+
+9. Select **Visualize** from the Synapse studio front page once again.  This will take you to the Develop page.  Drill down in **Power BI** to the **Modern App** workspace and then select **Power BI datasets**.  Choose **+ New Power BI dataset** to create a new dataset.
+
+    ![The new Power BI dataset option is selected.](media/power-bi-new-dataset.png 'New Power BI dataset')
+
+10. Select **Start** to open Power BI Desktop.
+
+    ![The option to start Power BI Desktop is selected.](media/power-bi-new-dataset-1.png 'Start Power BI Desktop')
+
+11. Select the **modernapp** SQL pool to use as a data source and then select **Continue**.
+
+    ![The modernapp SQL pool is selected.](media/power-bi-new-dataset-2.png 'modernapp SQL Pool')
+
+12. Select **Download** to download the Power BI dataset file.  After download completes, select **Continue**.
+
+    ![The Power BI dataset file is downloaded.](media/power-bi-new-dataset-3.png 'Download pbids file')
+
+13. Open the downloaded Power BI dataset file in Power BI Desktop.  When prompted to enter a username and password, select **Database** and enter the Synapse username and password you created before the hands-on lab.  The username will be **sqladminuser** by default.  Then select **Connect** to connect to the SQL pool.
+
+    ![The credentials for the Synapse admin user are entered.](media/power-bi-new-dataset-4.png 'Connect to SQL Pool')
+
+14. On the Navigator page, select the **MachineTelemetry** and **TemperatureAnomaly** tables and then select **Load**.
+
+    ![The machine telemetry and temperature anomaly tables are selected.](media/power-bi-new-dataset-5.png 'Navigator')
+
+15. In the Connection settings modal dialog, select **Import** and then select **OK**.
+
+    ![The Import option is selected.](media/power-bi-new-dataset-6.png 'Connection settings')
+
+16. Once the tables are loaded, select **Publish** to publish the data set to your workspace.  You can also publish by selecting the **File** menu and then navigating to the **Publish** sub-menu and choosing **Publish to Power BI**.  When prompted, save your file as **Modern App Dataset**.
+
+    ![The Publish option is selected.](media/power-bi-new-dataset-7.png 'Publish')
+
+17. Select the **Modern App** workspace and then **Select** to publish the data set to Power BI Online.
+
+    ![The Modern App workspace is selected.](media/power-bi-new-dataset-8.png 'Publish to Power BI')
+
+18. Return to Azure Synapse Studio and select **Close and refresh** to see the new dataset.
+
+    ![The dataset is loaded and now you can close the wizard and refresh the list of Power BI datasets.](media/power-bi-new-dataset-9.png 'Close and refresh')
+
+19. In the **Power BI reports** menu, select **Modern App Dataset**.
+
+    ![The new Power BI report option is selected.](media/power-bi-new-report-1.png 'New Power BI report')
+
+20. You will now test two conjectures from the manufacturing floor.  The first is that spikes in electricity utilization drive temperature anomalies.  Here, you will perform a simple comparison of average electricity utilization for anomalies versus average overall electricity utilization.  To do so, first, select a card visual from the Power BI Visualizations menu.  In the **TemperatureAnomalies** dataset, select and drag **electricityUtilization** to the **Fields** menu for the card.
+
+    ![The average of electricity utilization for anomalous data is displayed.](media/power-bi-new-report-2.png 'Anomalous electricity utilization')
+
+21. Deselect the card displaying anomalous data by clicking somewhere on the Power BI canvas, and then select the card visual again.  This time, choose the **electricityUtilization** field from the **MachineTelemetry** dataset.  The end result is that temperature anomalies do not seem to correspond with changes in electricity utilization.
+
+    ![The average of electricity utilization was the same for anomalous and non-anomalous data.](media/power-bi-new-report-3.png 'Electricity utilization')
+
+22. The second conjecture from the manufacturing floor is that pressure and machine temperature are independent from one another--that is, warmer or colder temperatures do not affect the amount of stamping pressure measured.  To test this conjecture, deselect the card displaying electricity utilization.  Then, select the scatterplot visual.  Drag **temperature** from **MachineTelemetry** to the X Axis and **pressure** to the Y Axis.  Note that only one data point appears, as these are the *sums* of temperature and pressure, not individual data points.
+
+    ![A scatter plot showing the sum of temperature versus the sum of pressure.](media/power-bi-new-report-4.png 'Temperature versus pressure')
+
+23. In the drop-down menu for temperature, select **Don't summarize** to remove the summarization.  Repeat the process for pressure.
+
+    ![Removing summarization for the temperature and pressure variables.](media/power-bi-new-report-5.png 'Do not summarize')
+
+24. With the summarizations removed, observe that temperature and pressure do not appear to be related:  as temperature increases, pressure behaves the same.
+
+    ![A scatter plot showing the lack of relationship between temperature and pressure.](media/power-bi-new-report-6.png 'Temperature versus pressure')
+
+25. You may add additional visuals.  When you are done, select **Save** to save the changes and make them available.
+
+    ![The Save option is selected.](media/power-bi-new-report-7.png 'Save')
+
 ### Task 3: Embed the Power BI notebook
 
 1.  Number and insert your custom workshop content here . . .
@@ -2038,5 +2157,19 @@ Duration: 10 minutes
 6. Type in the resource group name (`modernize-app`) and then select **Delete**.
 
     ![Confirm the resource group to delete.](media/azure-delete-resource-group-2.png 'Confirm resource group deletion')
+
+### Task 2:  Delete the Power BI Workspace
+
+1. Navigate to [Power BI](https://app.powerbi.com) and log in if prompted.
+
+    >**NOTE**: If you did not create a Power BI workspace as part of exercise 8, there is no need to follow this cleanup task.
+
+2. In the Workspaces menu, select the **...** menu option for the **Modern App** workspace and then choose **Workspace settings**.
+
+    ![The workspace settings option is selected.](media/power-bi-workspace-settings.png 'Workspace settings')
+
+3. In the Settings panel, select **Delete workspace** to delete the workspace.
+
+    ![The option to delete a workspace is selected.](media/power-bi-delete-workspace.png 'Delete workspace')
 
 You should follow all steps provided *after* attending the Hands-on lab.
