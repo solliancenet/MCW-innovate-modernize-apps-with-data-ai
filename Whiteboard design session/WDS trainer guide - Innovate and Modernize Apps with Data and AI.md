@@ -28,30 +28,30 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 <!-- TOC -->
 
 - [Trainer information](#trainer-information)
-    - [Role of the trainer](#role-of-the-trainer)
-    - [Whiteboard design session flow](#whiteboard-design-session-flow)
-    - [Before the whiteboard design session: How to prepare](#before-the-whiteboard-design-session-how-to-prepare)
-    - [During the whiteboard design session: Tips for an effective whiteboard design session](#during-the-whiteboard-design-session-tips-for-an-effective-whiteboard-design-session)
+  - [Role of the trainer](#role-of-the-trainer)
+  - [Whiteboard design session flow](#whiteboard-design-session-flow)
+  - [Before the whiteboard design session: How to prepare](#before-the-whiteboard-design-session-how-to-prepare)
+  - [During the whiteboard design session: Tips for an effective whiteboard design session](#during-the-whiteboard-design-session-tips-for-an-effective-whiteboard-design-session)
 - [Innovate and Modernize Apps with Data and AI whiteboard design session student guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-student-guide)
-    - [Abstract and learning objectives](#abstract-and-learning-objectives)
-    - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study)
-        - [Customer situation](#customer-situation)
-        - [Customer needs](#customer-needs)
-        - [Customer objections](#customer-objections)
-        - [Infographic for common scenarios](#infographic-for-common-scenarios)
-    - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution)
-    - [Step 3: Present the solution](#step-3-present-the-solution)
-    - [Wrap-up](#wrap-up)
-    - [Additional references](#additional-references)
-- Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-trainer-guide)
-    - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study-1)
-    - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution-1)
-    - [Step 3: Present the solution](#step-3-present-the-solution-1)
-    - [Wrap-up](#wrap-up-1)
-    - [Preferred target audience](#preferred-target-audience)
-    - [Preferred solution](#preferred-solution)
-    - [Checklist of preferred objection handling](#checklist-of-preferred-objection-handling)
-    - [Customer quote (to be read back to the attendees at the end)](#customer-quote-to-be-read-back-to-the-attendees-at-the-end)
+  - [Abstract and learning objectives](#abstract-and-learning-objectives)
+  - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study)
+    - [Customer situation](#customer-situation)
+    - [Customer needs](#customer-needs)
+    - [Customer objections](#customer-objections)
+    - [Infographic for common scenarios](#infographic-for-common-scenarios)
+  - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution)
+  - [Step 3: Present the solution](#step-3-present-the-solution)
+  - [Wrap-up](#wrap-up)
+  - [Additional references](#additional-references)
+- [Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-trainer-guide)
+  - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study-1)
+  - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution-1)
+  - [Step 3: Present the solution](#step-3-present-the-solution-1)
+  - [Wrap-up](#wrap-up-1)
+  - [Preferred target audience](#preferred-target-audience)
+  - [Preferred solution](#preferred-solution)
+  - [Checklist of preferred objection handling](#checklist-of-preferred-objection-handling)
+  - [Customer quote (to be read back to the attendees at the end)](#customer-quote-to-be-read-back-to-the-attendees-at-the-end)
 
 <!-- /TOC -->
 
@@ -195,44 +195,37 @@ Directions:  With all participants in the session, the facilitator/SME presents 
 
 Wide World Importers (WWI) is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs. They have data coming from CNC machines and sensors, as well as Manufacturing Execution Systems (MES).
 
-WWI has 5 factories each with about 10,000 sensors, for a total of approximately 50,000 sensors sending data in real time. Today, their sensor data is collected into a Kafka cluster, collected via a custom consumer application that aggregates the events and writes the results to PostgreSQL.
+WWI has five factories, each with about 10,000 sensors, for a total of approximately 50,000 sensors sending data in real-time. Today, their sensor data is collected into a Kafka cluster and processed via a custom consumer application that aggregates the events and writes the results to PostgreSQL. They have an event data store that currently runs in PostgreSQL. A web app connects to the data store and reports the status of the factory floor.
 
-The have event data store that currently runs in PostgreSQL. The status of the factory floor is reported using a web app hosted on-premises that connects to PostgreSQL.
+WWI is running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern, they would like to take the opportunity to modernize their infrastructure. In particular, they would like to modernize their solution to use microservices, and in particular, apply the Event Sourcing and CQRS patterns.
 
-They are running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern they would like to take the opportunity to modernize their infrastructure.
+They recognize their solutions will benefit from the cloud and want to ensure that they can manage their hybrid solution in a consistent way across both cloud and on-premises resources. The factories currently collect and analyze their operational data independently. They would like to deploy a cloud-based platform to centralize and allow storage of all data across all factories.
 
-In particular, they would like to modernize their solution to use microservices, and in particular apply the Event Sourcing and CQRS patterns.
-
-They recognize their solutions will benefit from the cloud and want to ensure that their hybrid solution can be managed in a consistent way across both cloud and on-premises resources.
-
-The factories currently collect and analyze their operational data independently, and they would like to deploy a cloud based platform to centralize and allow storage of all data across all factories.
-
-### Customer needs 
+### Customer needs
 
 1. We want to centralize our factory sensor data into the cloud, using PaaS services wherever possible.
 
-2. We want to replace our local installations of Apache Kafka with a service which does not require on-premises administrators.  Not all of our factories have dedicated Kafka administrators, and this has led to avoidable data loss issues in the past.
+2. We want to replace our local installations of Apache Kafka with a service that does not require on-premises administrators.  Not all of our factories have dedicated Kafka administrators, which has led to avoidable data loss issues in the past.
 
-3. In addition, the consumer group application we have built to process data from Kafka is our data pipeline bottleneck--when factory managers need to wait for information to come in, it typically is because the consumer group has fallen behind again.  We want a system which can keep up with the torrent of device data our sensors generate.
+3. The consumer group application we have built to process data from Kafka is our data pipeline bottleneck. When factory managers need to wait for information to come in, it typically is because the consumer group has fallen behind again.  We want a system that can keep up with the torrent of device data our sensors generate.
 
-4. Our factories are spread out across the world and factory managers are used to near-real-time responses from the web applications hosted on on-premises servers.  Instead of a pure cloud solution, we would like a hybrid cloud solution which allows our central office, located in Seattle, Washington, to oversee operations while still enabling factory managers to get the information they need at the speed to which they are accustomed.
+4. Our factories are spread out across the world, and factory managers are used to near-real-time responses from the web applications hosted on on-premises servers.  Instead of a pure cloud solution, we would like a hybrid cloud solution that allows our central office, located in Seattle, Washington, to oversee operations while still enabling factory managers to get the information they need at the speed to which they are accustomed.
 
 5. In addition to storing data in the cloud, we would like to integrate machine learning into our application processing, including detecting anomalies in sensor data and predicting when machine maintenance will be necessary based on sensor data.
 
-6. We would like to reduce our reliance on a classic web application server for data processing and move toward a microservice approach.
+6. We want to reduce our reliance on a classic web application server for data processing and move toward a microservice approach.
 
 7. Our developers and administrators are very familiar with PostgreSQL and want to use this as the primary relational database on-premises and in Azure. We are concerned about performance in Azure, however--because we will collect data from all of our factories, we would like to have a solution which allows us to scale out our PostgreSQL services easily.
 
-### Customer objections 
+### Customer objections
 
 1. We process a large amount of sensor data at each factory.  Will a cloud service be able to keep up with our data requirements?
 
-2. Does Azure have any capabilities available to perform anomaly detection on our sensor data?  How quickly could we get a service in place?
+2. Does Azure have any capabilities available to perform anomaly detection on our sensor data?  How quickly could we get such a service in place?
 
 3. Will a hybrid Azure and on-premises solution require additional administrators?  We do not have the budget to hire new IT staff this fiscal year, and so we want to limit the amount of new maintenance work required.
 
-4. How quickly could we add new sensors to this solution?  We have new manufacturing devices coming online and wish to expand the numbers of sensors on our existing devices, so we need a solution which will scale over time.
-
+4. How quickly could we add new sensors to this solution?  We have new manufacturing devices coming online and wish to expand the numbers of sensors on our existing devices, so we need a solution that will scale over time.
 
 ### Infographic for common scenarios
 
@@ -417,13 +410,47 @@ The primary audience is business and technology decision-makers. From the case s
 
 \[insert your custom workshop content here . . . \]
 
-*Title*
+*High-level architecture*
 
-1.  Number and insert questions and answers here
+1. Without getting into the details (the following sections will address the particular details), diagram your initial vision for building a hybrid data services approach, combining on-premises infrastructure with Azure, along with custom dashboards, real-time anomaly detection, and predictive maintenance.  If you can, include the underlying architecture of the solution by identifying its major components.
 
-*Title*
+![High-level architecture, as described below.](media/architecture-diagram.png "High-level architecture")
 
-1.  Number and insert questions and answers here
+*IoT options in Azure*
+
+1. What are the SaaS-based IoT options in Azure?
+
+2. What are the PaaS-based IoT options in Azure?
+
+3. Would you recommend SaaS or PaaS for this customer situation? What are the pros and cons of each?
+
+*Hybrid IoT data management*
+
+1. How do you collect data from on-premises devices and share it between on-premises services and cloud services?
+
+2. How do you aggregate or re-shape IoT data for consumption by downstream services?
+
+3. Will Wide World Importers be able to support a major influx of new sensors with this solution?
+
+*Event sourcing*
+
+1. What does event sourcing mean in practice?  What kinds of considerations should Wide World Importers take when migrating from a classic application architecture to an event sourcing pattern?
+
+2. TODO
+
+*Anomaly detection*
+
+1. Given historical data for a sensor, how would you propose Wide World Importers detect anomalies?
+
+2. How would this process integrate with their IoT data management solution?
+
+3. How would you apply anomaly detection in an event sourcing system?
+
+*Predictive maintenance*
+
+1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
+
+2. Which platform would you recommend for deploying the trained model?  This deployed model should still be part of an event sourcing solution.
 
 ## Checklist of preferred objection handling
 
@@ -435,7 +462,7 @@ The primary audience is business and technology decision-makers. From the case s
 
     Within Cognitive Services, there is an Anomaly Detector service available. This service allows customers to query a REST API or integrate directly with a client library to perform anomaly detection on time series data.
 
-    Furthermore, this anomaly detection enigne is built into Azure Stream Analytics, allowing you to perform Changepoint and Spike-and-Dip anomaly detection with streamed data.
+    Furthermore, this anomaly detection engine is built into Azure Stream Analytics, allowing you to perform Changepoint and Spike-and-Dip anomaly detection with streamed data.
 
 3. Will a hybrid Azure and on-premises solution require additional administrators?  We do not have the budget to hire new IT staff this fiscal year, and so we want to limit the amount of new maintenance work required.
 
@@ -444,7 +471,6 @@ The primary audience is business and technology decision-makers. From the case s
 4. How quickly could we add new sensors to this solution?  We have new manufacturing devices coming online and wish to expand the numbers of sensors on our existing devices, so we need a solution which will scale over time.
 
     With the proposed solution, adding a new device or a new sensor means configuring the sensor to use Azure IoT Edge to communicate with the existing IoT Hub. All of the other pieces continue to work as expected with no additional development effort, and all of the Platform-as-a-Service solutions allow for scaling out over time as Wide World Importers further automates its business.
- 
 
 ## Customer quote (to be read back to the attendees at the end)
 
