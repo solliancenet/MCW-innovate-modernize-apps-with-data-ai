@@ -436,8 +436,6 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 4. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 5** minutes.
 
-You should follow all steps provided *before* performing the Hands-on lab.
-
 ### Task 11: Provision an Event Hub
 
 1. In the [Azure portal](https://portal.azure.com), type in "event hub" in the top search menu and then select **Event Hubs** from the results.
@@ -461,6 +459,18 @@ You should follow all steps provided *before* performing the Hands-on lab.
 
 4. Select **Review + create**. On the review screen, select **Create**.
 
+5. Select **Overview** to view the deployment details, then select **Go to resource**.
+
+6. In the Event Hubs Namespace, select **Shared access policies** in the Settings menu and then select the **RootManageSharedAccessKey**.
+
+    ![The shared access key is selected.](media/azure-event-hub-policy.png 'Shared Access Key')
+
+7. In the SAS Policy screen, copy the primary key connection string and save it to Notepad or another text editor.
+
+    ![The primary connection string is selected.](media/azure-event-hub-connection-string.png 'Connection String - Primary Key')
+
 ### Task 12: Download the Hands-On Lab Contents
 
 TODO:  add message to download contents as a zip file.
+
+You should follow all steps provided *before* performing the Hands-on lab.
