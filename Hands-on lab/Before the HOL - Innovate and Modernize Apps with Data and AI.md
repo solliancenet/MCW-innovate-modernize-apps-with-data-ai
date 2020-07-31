@@ -40,6 +40,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
         - [Task 8: Deploy Azure Database for PostgreSQL](#task-8-deploy-azure-database-for-postgresql)
         - [Task 9: Provision an Azure Synapse Analytics workspace](#task-9-provision-an-azure-synapse-analytics-workspace)
         - [Task 10: Provision a Machine Learning workspace](#task-10-provision-a-machine-learning-workspace)
+        - [Task 11: Provision an Event Hub](#task-11-provision-an-event-hub)
+        - [Task 12: Download the Hands-On Lab Contents](#task-12-download-the-hands-on-lab-contents)
 
 <!-- /TOC -->
 
@@ -50,6 +52,24 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 1. Microsoft Azure subscription must be pay-as-you-go or MSDN.
 
     a. Trial subscriptions will not work.
+
+2. Install [Visual Studio Code](https://code.visualstudio.com/).
+
+    a. Install the [Azure IoT Tools extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.azure-iot-tools).
+
+    b. Install the [C# for Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp).
+
+    c. Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
+
+3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py).
+
+4. Install [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio).
+
+    a. Install the [PostgreSQL extension](https://docs.microsoft.com/en-us/sql/azure-data-studio/postgres-extension).
+
+5. Install Docker. [Docker Desktop](https://www.docker.com/products/docker-desktop) will work for this hands-on lab and supports Windows and MacOS. For Linux, install the Docker engine through your distribution's package manager.
+
+6. Install [Power BI Desktop](https://aka.ms/pbidesktopstore).
 
 ## Before the hands-on lab
 
@@ -75,7 +95,7 @@ In this task, you will use the Azure Portal to create a new Azure Resource Group
 
    ![Add Resource Group Menu](media/add-resource-group-menu.png 'Resource Group Menu')
 
-5. Create a new resource group with the name **modernize-app**, ensure the proper subscription and region nearest you are selected. **Please note** that currently, the only regions available for deploying to the Azure Database for PostgreSQL Hyperscale (Citus) deployment option are East US, East US 2, West US 2, North Central US, Canada Central, Australia East, Southeast Asia, North Europe, UK South, West Europe. It is therefore recommended that you choose one of these regions for your resource group and all created resources. Once you have chosen a location, select **Review + Create**.
+5. Create a new resource group with the name **modernize-app**, ensuring that the proper subscription and region nearest you are selected. **Please note** that currently, the only regions available for deploying to the Azure Database for PostgreSQL Hyperscale (Citus) deployment option are East US, East US 2, West US 2, North Central US, Canada Central, Australia East, Southeast Asia, North Europe, UK South, and West Europe. It is therefore recommended that you choose one of these regions for your resource group and all created resources. Once you have chosen a location, select **Review + Create**.
 
    ![Create Resource Group](media/create-resource-group.png 'Resource Group')
 
@@ -145,7 +165,7 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
 
 4. Select **Size and scale** from the menu. In the **Pricing and scale tier** menu, select the option **F1: Free tier**.
 
-    > **NOTE**: The free tier is limited to routing 8,000 messages per day and this includes messages sent from IoT devices into IoT Hub as well as messages which IoT Hub consumers process. Throughout the course of the hands-on lab, we can expect to generate and process upwards of 3000 messages. If you run the sensor data generator longer than five hours, you might hit the daily limit for Iot Hub's free tier. If this is a concern, choose **S1: Standard tier** instead.
+    > **NOTE**: The free tier is limited to routing 8,000 messages per day and this includes messages sent from IoT devices into IoT Hub as well as messages which IoT Hub consumers process. Throughout the course of the hands-on lab, we can expect to generate and process upwards of 3,000 messages. If you run the sensor data generator longer than five hours, you might hit the daily limit for Iot Hub's free tier. If this is a concern, choose **S1: Standard tier** instead.  The Basic tier does not include functionality which we will use during the lab, so selecting it is not recommended.
 
     ![The Size and scale form fields are completed with the Free tier option selected in the Pricing and scale tier menu.](media/azure-create-iot-hub-2.png 'Iot Hub Size and scale')
 
@@ -240,7 +260,7 @@ In the hands-on lab, you will use an Ubuntu virtual machine to send sensor data.
 
 11. After the deployment succeeds, select the **Go to resource** button.
 
-12. In the **Settings** section on the menu, select **Connect**.  This will provide instructions on how to connect to the VM, including the IP address you will use for the connection.
+12. In the **Settings** section on the menu, select **Connect** and then **SSH**.  This will provide instructions on how to connect to the VM, including the IP address you will use for the connection.
 
     ![The example command to connect to your VM is selected.](media/azure-create-linux-vm-7.png 'Connect')
 
@@ -310,7 +330,7 @@ The hands-on lab will use Cosmos DB as a key component in the event sourcing arc
 
    ![The form fields are completed with the previously described settings.](media/azure-create-function-app-1.png 'Create Function App')
 
-4. Select **Next : Hosting >** to move on to the Hosting page.  On the Hosting page, select the Azure Data Lake Storage Gen2 account you created earlier for storage account.  Leave the Operating System as Windows and the Plan type as Consumption (Serverless).
+4. Select **Next : Hosting >** to move on to the Hosting page.  On the Hosting page, select the Azure Data Lake Storage Gen2 account you created earlier for storage account.  Leave the Operating System as **Windows** and the Plan type as **Consumption (Serverless)**.
 
     ![The Hosting page with the correct storage account selected.](media/azure-create-function-app-2.png 'Hosting')
 
@@ -434,8 +454,47 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 4. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 5** minutes.
 
+### Task 11: Provision an Event Hub
+
+1. In the [Azure portal](https://portal.azure.com), type in "event hub" in the top search menu and then select **Event Hubs** from the results.
+
+    ![In the Services search result list, Event Hubs is selected.](media/azure-create-event-hub-search.png 'Event Hubs')
+
+2. Select **+ Add** on the Event Hubs page.
+
+3. Within the **Create Namespace** form, complete the following:
+
+   | Field                          | Value                                            |
+   | ------------------------------ | ------------------------------------------       |
+   | Subscription                   | _select the appropriate subscription_            |
+   | Resource group                 | _select `modernize-app`_                         |
+   | Namespace name                 | _`modernize-app-#SUFFIX#`_                       |
+   | Location                       | _select the resource group's location_           |
+   | Pricing tier                   | _select `Standard`_                              |
+   | Throughput Units               | _select `1`_                                     |
+
+   ![The form fields are completed with the previously described settings.](media/azure-create-event-hub.png 'Create Machine Learning workspace')
+
+4. Select **Review + create**. On the review screen, select **Create**.
+
+5. Select **Overview** to view the deployment details, then select **Go to resource**.
+
+6. In the Event Hubs Namespace, select **Shared access policies** in the Settings menu and then select the **RootManageSharedAccessKey**.
+
+    ![The shared access key is selected.](media/azure-event-hub-policy.png 'Shared Access Key')
+
+7. In the SAS Policy screen, copy the primary key connection string and save it to Notepad or another text editor.
+
+    ![The primary connection string is selected.](media/azure-event-hub-connection-string.png 'Connection String - Primary Key')
+
+### Task 12: Download the Hands-On Lab Contents
+
+1. Read through both steps of this task.  Once you have done that, scroll back to the top of this document and return to the top level of the repository.
+
+    ![The link back to the top level of this workshop is selected.](media/github-top-level.png 'Microsoft Cloud Workshop')
+
+2. Select **Code** and then select **Download ZIP** to download a compressed archive file contents. This includes files in the **Hands-on lab\Resources** folder which will be necessary for the hands-on lab.
+
+    ![The Download ZIP option is selected.](media/github-download-zip.png 'Download ZIP of Code')
+
 You should follow all steps provided *before* performing the Hands-on lab.
-
-### Task 11: Download the Hands-On Lab Contents
-
-TODO:  add message to download contents as a zip file.
