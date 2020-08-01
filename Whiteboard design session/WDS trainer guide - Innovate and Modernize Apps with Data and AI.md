@@ -450,6 +450,8 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
     Using IoT Edge, Wide World Importers can develop code in languages like C#, Java, Node.js, and Python to run on edge devices.  This code will interface with sensors on the edge devices, collecting signal data and converting it to telemetry data.  Each IoT Edge device is assigned to a particular IoT Hub and interactions between the two are seamless--as long as there is an Internet connection, edge devices can broadcast messages on their own schedules to IoT Hub.
 
+    From there, data in IoT Hub can be partitioned by factory, allowing downstream readers such as the Azure Function acting as an event processor to send messages back to the factories' PostgreSQL databases as well as pushing those messages on toward the `telemetry` container in Cosmos DB. This eliminates the need to manage a separate Apache Kafka cluster at each factory and thereby reduces the burden on the IT staff at each factory.
+
 2. How do you aggregate or re-shape IoT data for consumption by downstream services?
 
     There are a few techniques for aggregating and reshaping IoT data.  In this whiteboard design session, we see the heavy use of Azure Functions to process individual messages and perform a variety of transformations.  In other scenarios, products like Azure Stream Analytics can aggregate and reshape device messages for ingestion into data platform technologies such as Cosmos DB and Azure SQL Database.
