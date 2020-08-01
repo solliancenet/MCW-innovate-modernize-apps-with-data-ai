@@ -285,8 +285,6 @@ Directions: With all participants at your table, respond to the following questi
 
 2. How would this process integrate with their IoT data management solution?
 
-3. How would you apply anomaly detection in an event sourcing system?
-
 *Predictive maintenance*
 
 1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
@@ -358,6 +356,9 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-your-first-pipeline |
 | Use an existing model with Azure Machine Learning | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-deploy-existing-model |
 | Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/en-us/azure/machine-learning/tutorial-deploy-models-with-aml |
+| Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs |
+| Implement a microservice domain model with .NET Core | https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |
+
 
 # Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide
 
@@ -415,7 +416,7 @@ The primary audience is business and technology decision-makers. From the case s
 
 ![High-level architecture, as described below.](media/architecture-diagram.png "High-level architecture")
 
-The solution begins with multiple IoT devices, located within multiple factories, that securely connect to Azure IoT Hub to send telemetry. IoT Hub provides IoT device management, telemetry ingest at high volume, and the ability to send commands to devices as needed. <<TODO: ADD IOT EDGE INFO HERE>>. Telemetry from IoT Hub automatically triggers an Azure function, which processes the events, assigns a unique `entity_id`, and stores them in an Azure Cosmos DB telemetry container. The document TTL (time-to-live) is set to 30 days, after which time they will automatically expire. The data is replicated long-term to the analytical store with no TTL. The analytical store saves all transactional data in columnar storage as Parquet files in Azure storage in a cost-effective way, automatically. No ETL required. A different Azure function implements event sourcing by triggering off the Azure Cosmos DB change feed for additional processing, including predictive maintenance scoring via a custom-trained Machine Learning model deployed to Azure Kubernetes Service (AKS) for real-time scoring. The function sends the scored data to an Azure Event Hub. Another function that consumes the change feed and saves the event data to domain entities, including state data, and stores them in Azure PostgreSQL Hyperscale (Citus). This database stores all sensor data as domain entities, partitioned by device Id, which the Hyperscale features uses to automatically shard the data for horizontal scaling and high performance reads and writes. An Azure Stream Analytics job reads the device telemetry, which includes the predictive maintenance prediction, and applies additional processing through a SQL-like query language. It uses an Azure Cognitive Services Anomaly Detector service to perform Changepoint and Spike-and-Dip anomaly detection. It also performs windowed aggregate queries against the time series data to create aggregates on machine maintenance predictions, grouped by maintenance requirement, factory, and machine. The temperature anomalies, telemetry with predictive maintenance scores, and temperature anomaly data is saved to another Azure Cosmos DB container, named `scored_telemetry`. Another Azure function implements event sourcing by triggering off the Azure Cosmos DB change feed from the `scored_telemetry` container. It saves the anomaly detection, windowed aggregates, and scored predictive maintenance event data to domain entities, including state data, and writes them to Azure PostgreSQL.
+The solution begins with multiple IoT devices, located within multiple factories, that securely connect to Azure IoT Hub to send telemetry. IoT Hub provides IoT device management, telemetry ingest at high volume, and the ability to send commands to devices as needed. IoT Edge allows individual manufacturing machines to interact with IoT Hub by sending telemetry messages to IoT Hub and by ensuring that edge devices are running the latest versions of deployed modules. Telemetry from IoT Hub automatically triggers an Azure function, which processes the events, assigns a unique `entity_id`, and stores them in an Azure Cosmos DB telemetry container. The document TTL (time-to-live) is set to 30 days, after which time they will automatically expire. The data is replicated long-term to the analytical store with no TTL. The analytical store saves all transactional data in columnar storage as Parquet files in Azure storage in a cost-effective way, automatically. No ETL required. A different Azure function implements event sourcing by triggering off the Azure Cosmos DB change feed for additional processing, including predictive maintenance scoring via a custom-trained Machine Learning model deployed to Azure Kubernetes Service (AKS) for real-time scoring. The function sends the scored data to an Azure Event Hub. Another function that consumes the change feed and saves the event data to domain entities, including state data, and stores them in Azure PostgreSQL Hyperscale (Citus). This database stores all sensor data as domain entities, partitioned by device Id, which the Hyperscale features uses to automatically shard the data for horizontal scaling and high performance reads and writes. An Azure Stream Analytics job reads the device telemetry, which includes the predictive maintenance prediction, and applies additional processing through a SQL-like query language. It uses an Azure Cognitive Services Anomaly Detector service to perform Changepoint and Spike-and-Dip anomaly detection. It also performs windowed aggregate queries against the time series data to create aggregates on machine maintenance predictions, grouped by maintenance requirement, factory, and machine. The temperature anomalies, telemetry with predictive maintenance scores, and temperature anomaly data is saved to another Azure Cosmos DB container, named `scored_telemetry`. Another Azure function implements event sourcing by triggering off the Azure Cosmos DB change feed from the `scored_telemetry` container. It saves the anomaly detection, windowed aggregates, and scored predictive maintenance event data to domain entities, including state data, and writes them to Azure PostgreSQL.
 
 An Azure Synapse Analytics workspace securely connects to Azure Cosmos DB through a linked service, and uses the Synapse Link feature to access both the transactional store (OLTP) and analytical store (OLAP) of each Azure Cosmos DB container. The analytical store is optimized for read-heavy queries, which do not consume Azure Cosmos DB resource units (RUs), as opposed to reading the transactional store. All raw historical event data is accessible through the analytical store, which serves as the data lake, but with no ETL requirements. Synapse Spark notebooks read the analytical store to perform Machine Learning model training and deployments through Azure Machine Learning, data exploration, and batch scoring. Synapse pipelines are used for batch processing at scale over data fed into the analytical store from IoT devices originating from all factories. Wide World Importers data analysts use the Power BI integration capabilities of Synapse Analytics to create reports against Synapse Serverless views that display data from the analytical stores, as well as data stored in the SQL Pools. These reports are also embedded in the web application, making them available to end-users who do not have access to the Synapse Analytics workspace or Power BI online.
 
@@ -447,9 +448,15 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. How do you collect data from on-premises devices and share it between on-premises services and cloud services?
 
+    Using IoT Edge, Wide World Importers can develop code in languages like C#, Java, Node.js, and Python to run on edge devices.  This code will interface with sensors on the edge devices, collecting signal data and converting it to telemetry data.  Each IoT Edge device is assigned to a particular IoT Hub and interactions between the two are seamless--as long as there is an Internet connection, edge devices can broadcast messages on their own schedules to IoT Hub.
+
 2. How do you aggregate or re-shape IoT data for consumption by downstream services?
 
+    There are a few techniques for aggregating and reshaping IoT data.  In this whiteboard design session, we see the heavy use of Azure Functions to process individual messages and perform a variety of transformations.  In other scenarios, products like Azure Stream Analytics can aggregate and reshape device messages for ingestion into data platform technologies such as Cosmos DB and Azure SQL Database.
+
 3. Will Wide World Importers be able to support a major influx of new sensors with this solution?
+
+    Absolutely.  It is possible to register IoT Edge devices programmatically with IoT Hub, meaning that hundreds or even thousands of device configurations can be assigned from a central administrative server.  From there, IoT Edge devices may be automatically configured as part of the setup process, eliminating the need for manually linking IoT Edge devices to an IoT Hub.
 
 *Event sourcing*
 
@@ -501,15 +508,25 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. Given historical data for a sensor, how would you propose Wide World Importers detect anomalies?
 
+    If Wide World Importers has historical data which includes whether values were anomalous, then a classification model could help separate anomalous from non-anomalous data.  Typically, however, we tend to have recent history but no labels indicating what, in fact, was anomalous.  This leads us to other techniques for anomaly detection comparing the direction and distance of changes over time.
+
+    Within Azure, Cognitive Services includes [an Anomaly Detector service](https://azure.microsoft.com/en-us/services/cognitive-services/anomaly-detector/).  This service allows you to pass in a time series set of data points and determine if the most recent data point is anomalous given the inputs.  This is available as an API you can call from languages like C#, JavaScript, or Python; it is also available as a REST API if there is not a [Software Development Kit (SDK) for your language of choice](https://docs.microsoft.com/en-us/azure/cognitive-services/anomaly-detector/).
+
+    The Anomaly Detector service is also included in Azure Stream Analytics, allowing for easy processing of data points over time in just a few lines of code.
+
 2. How would this process integrate with their IoT data management solution?
 
-3. How would you apply anomaly detection in an event sourcing system?
+    Azure Stream Analytics jobs can have as destinations data platform technologies like Cosmos DB and Azure SQL Database.  If the IoT data management solution is already in Azure, it is easy to configure that system as an output and feed anomaly data into the solution.  If not, storing the data in Cosmos DB allows use of the Cosmos DB change feed to fire Azure Functions, and these functions can send anomaly information to a destination database.
 
 *Predictive maintenance*
 
 1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
 
+    Typically, predictive maintenance model development happens in a language such as R or Python on a single machine.  With enormous amounts of data, however, data scientists can quickly run out of memory on a single machine.  For this reason, a Spark cluster hosted in a service like [Azure Synapse Analytics Spark Pools](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-overview) allows data scientists to build machine learning models with data distributed across multiple machines, allowing for complex, memory-hungry algorithms to process large amounts of data.
+
 2. Which platform would you recommend for deploying the trained model? This deployed model should still be part of an event sourcing solution.
+
+    Given that the deployed model will be part of an event sourcing solution, it is important that the model return results quickly and generate predictions in a streaming fashion rather than in batches.  For this reason, deployment on Azure Machine Learning using Azure Kubernetes Service is an ideal solution:  the ability to scale out with Kubernetes allows IT administrators to control prediction performance by increasing the number of nodes available for responding to queries, and Azure Machine Learning deployments offer a REST API which makes it easy to interface with events being handled through Azure Functions.
 
 ## Checklist of preferred objection handling
 
@@ -533,6 +550,6 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 ## Customer quote (to be read back to the attendees at the end)
 
-TODO
+"We thought we were at the forefront of technological innovation, but this engagement taught us just how much room we have to grow."
 
-Molly Fischer, CIO, Wide World Importers
+-- Molly Fischer, CIO, Wide World Importers.
