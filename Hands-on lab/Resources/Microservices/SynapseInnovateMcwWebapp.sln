@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynapseInnovateMcwWebapp", "SynapseInnovateMcwWebapp\SynapseInnovateMcwWebapp.csproj", "{EAA7E151-82F8-46AF-89C1-A88C598F69B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineTelemetryRead", "MachineTelemetryRead\MachineTelemetryRead.csproj", "{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataRead", "MetadataRead\MetadataRead.csproj", "{465322C8-6D05-4743-A114-92BB4E8A0654}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataWrite", "MetadataWrite\MetadataWrite.csproj", "{1187B254-CB29-4A15-B66B-003287014052}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryService", "QueryService\QueryService.csproj", "{F7A334A9-B877-49AF-9590-648BAEE515EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadServices", "ReadServices", "{1D905E51-13BC-4D81-B43A-E235C022A74D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{31BD29E6-90C6-426E-921F-7138B3384B79}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAA7E151-82F8-46AF-89C1-A88C598F69B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAA7E151-82F8-46AF-89C1-A88C598F69B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAA7E151-82F8-46AF-89C1-A88C598F69B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAA7E151-82F8-46AF-89C1-A88C598F69B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{465322C8-6D05-4743-A114-92BB4E8A0654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{465322C8-6D05-4743-A114-92BB4E8A0654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{465322C8-6D05-4743-A114-92BB4E8A0654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{465322C8-6D05-4743-A114-92BB4E8A0654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1187B254-CB29-4A15-B66B-003287014052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1187B254-CB29-4A15-B66B-003287014052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1187B254-CB29-4A15-B66B-003287014052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1187B254-CB29-4A15-B66B-003287014052}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A334A9-B877-49AF-9590-648BAEE515EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A334A9-B877-49AF-9590-648BAEE515EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A334A9-B877-49AF-9590-648BAEE515EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A334A9-B877-49AF-9590-648BAEE515EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31BD29E6-90C6-426E-921F-7138B3384B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31BD29E6-90C6-426E-921F-7138B3384B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31BD29E6-90C6-426E-921F-7138B3384B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31BD29E6-90C6-426E-921F-7138B3384B79}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC} = {1D905E51-13BC-4D81-B43A-E235C022A74D}
+		{465322C8-6D05-4743-A114-92BB4E8A0654} = {1D905E51-13BC-4D81-B43A-E235C022A74D}
+	EndGlobalSection
+EndGlobal
