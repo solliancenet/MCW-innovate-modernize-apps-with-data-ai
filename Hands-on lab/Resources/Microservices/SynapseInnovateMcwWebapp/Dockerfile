@@ -22,5 +22,5 @@ RUN dotnet publish "SynapseInnovateMcwWebapp/SynapseInnovateMcwWebapp.csproj" -c
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=publish /app/out .
 ENTRYPOINT ["dotnet", "SynapseInnovateMcwWebapp.dll"]
