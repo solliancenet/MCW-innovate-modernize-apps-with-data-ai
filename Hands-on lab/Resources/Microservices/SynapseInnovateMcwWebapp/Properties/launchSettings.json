@@ -1,0 +1,38 @@
+﻿{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:7184",
+      "sslPort": 44309
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "SynapseInnovateMcwWebapp": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "SynapseInnovateMcwWebapp (Kestrel)": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "QUERY_SERVICE_URL": "http://localhost:8085",
+        "METADATA_WRITE_SERVICE_URL": "http://localhost:8084",
+        "POWER_BI_DASHBOARD_URL": "https://app.powerbi.com/reportEmbed?reportId=3042c411-de53-435b-a5dd-1695bcecab03&autoAuth=true&ctid=d280491c-b27a-41bf-9623-21b60cf430b3&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLXdlc3QtdXMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQvIn0%3D"
+      }
+    }
+  }
+}
