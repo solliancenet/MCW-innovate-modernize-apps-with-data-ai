@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.DTOs;
 using Common.Entities;
@@ -58,9 +59,15 @@ namespace SynapseInnovateMcwWebapp.Controllers
 
         [HttpGet]
         [Route("powerBiDashboard")]
-        public string GetPowerBiDashboardUrl()
+        public ActionResult<string> GetPowerBiDashboardUrl()
         {
-            return EnvUtils.Get("POWER_BI_DASHBOARD_URL");
+            var url = Environment.GetEnvironmentVariable("POWER_BI_DASHBOARD_URL");
+            if (url == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return url;
         }
     }
 }
