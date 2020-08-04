@@ -23,9 +23,7 @@
       "launchUrl": "weatherforecast",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",      
-        "COSMOS_DB_ACCOUNT_ENDPOINT": "https://modernize-app.documents.azure.com:443/",
-        "COSMOS_DB_AUTH_KEY": "nX3zyy1eZViOFovDnvIlyOtqU9xEk0K4pmG7Fd9B3UR1yyFkQftwkJwc6O7V0QxadUfeoQGpObGAYx2x1L7t1Q=="
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
