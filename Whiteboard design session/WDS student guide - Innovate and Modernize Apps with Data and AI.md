@@ -18,9 +18,9 @@ Microsoft may have patents, patent applications, trademarks, copyrights, or othe
 
 The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
 
-© 2019 Microsoft Corporation. All rights reserved.
+© 2020 Microsoft Corporation. All rights reserved.
 
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
+Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
 
 **Contents**
 
@@ -213,21 +213,21 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 |    |            |
 |----------|:-------------:|
 | **Description** | **Links** |
-| Azure IoT reference architecture | https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot |
-| What is Azure IoT Hub? | https://docs.microsoft.com/en-us/azure/iot-hub/about-iot-hub |
-| What is Azure IoT Edge  | https://docs.microsoft.com/en-us/azure/iot-edge/about-iot-edge  |
-| What is Azure Stream Analytics? | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction  |
-| Anomaly detection in Azure Stream Analytics  | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-machine-learning-anomaly-detection  |
-| Cognitive Services Anomaly Detector  | https://azure.microsoft.com/en-us/services/cognitive-services/anomaly-detector/  |
-| Azure Synapse Link for Cosmos DB | https://docs.microsoft.com/en-us/azure/cosmos-db/synapse-link |
-| What is Azure Cosmos DB Analytical Store? | https://docs.microsoft.com/en-us/azure/cosmos-db/analytical-store-introduction |
-| Azure Database for PostgreSQL | https://azure.microsoft.com/en-us/services/postgresql/ |
-| An introduction to Azure Functions | https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview |
-| Tutorial: Run Azure Functions from Azure Stream Analytics jobs | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-with-azure-functions |
-| What is Azure Synapse Analytics? | https://docs.microsoft.com/en-us/azure/synapse-analytics/overview-what-is |
-| Build a machine learning app with Apache Spark MLlib and Azure Synapse Analytics | https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-machine-learning-mllib-notebook |
-| Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-your-first-pipeline |
-| Use an existing model with Azure Machine Learning | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-deploy-existing-model |
-| Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/en-us/azure/machine-learning/tutorial-deploy-models-with-aml |
-| Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs |
-| Implement a microservice domain model with .NET Core | https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |
+| Azure IoT reference architecture | https://docs.microsoft.com/azure/architecture/reference-architectures/iot |
+| What is Azure IoT Hub? | https://docs.microsoft.com/azure/iot-hub/about-iot-hub |
+| What is Azure IoT Edge  | https://docs.microsoft.com/azure/iot-edge/about-iot-edge  |
+| What is Azure Stream Analytics? | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-introduction  |
+| Anomaly detection in Azure Stream Analytics  | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-machine-learning-anomaly-detection  |
+| Cognitive Services Anomaly Detector  | https://azure.microsoft.com/services/cognitive-services/anomaly-detector/  |
+| Azure Synapse Link for Cosmos DB | https://docs.microsoft.com/azure/cosmos-db/synapse-link |
+| What is Azure Cosmos DB Analytical Store? | https://docs.microsoft.com/azure/cosmos-db/analytical-store-introduction |
+| Azure Database for PostgreSQL | https://azure.microsoft.com/services/postgresql/ |
+| An introduction to Azure Functions | https://docs.microsoft.com/azure/azure-functions/functions-overview |
+| Tutorial: Run Azure Functions from Azure Stream Analytics jobs | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-with-azure-functions |
+| What is Azure Synapse Analytics? | https://docs.microsoft.com/azure/synapse-analytics/overview-what-is |
+| Build a machine learning app with Apache Spark MLlib and Azure Synapse Analytics | https://docs.microsoft.com/azure/synapse-analytics/spark/apache-spark-machine-learning-mllib-notebook |
+| Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/azure/machine-learning/how-to-create-your-first-pipeline |
+| Use an existing model with Azure Machine Learning | https://docs.microsoft.com/azure/machine-learning/how-to-deploy-existing-model |
+| Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/azure/machine-learning/tutorial-deploy-models-with-aml |
+| Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/azure/architecture/patterns/cqrs |
+| Implement a microservice domain model with .NET Core | https://docs.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |

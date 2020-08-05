@@ -18,9 +18,9 @@ Microsoft may have patents, patent applications, trademarks, copyrights, or othe
 
 The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
 
-© 2019 Microsoft Corporation. All rights reserved.
+© 2020 Microsoft Corporation. All rights reserved.
 
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
+Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
 
 **Contents**
 
@@ -339,24 +339,24 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 |    |            |
 |----------|:-------------:|
 | **Description** | **Links** |
-| Azure IoT reference architecture | https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot |
-| What is Azure IoT Hub? | https://docs.microsoft.com/en-us/azure/iot-hub/about-iot-hub |
-| What is Azure IoT Edge  | https://docs.microsoft.com/en-us/azure/iot-edge/about-iot-edge  |
-| What is Azure Stream Analytics? | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction  |
-| Anomaly detection in Azure Stream Analytics  | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-machine-learning-anomaly-detection  |
-| Cognitive Services Anomaly Detector  | https://azure.microsoft.com/en-us/services/cognitive-services/anomaly-detector/  |
-| Azure Synapse Link for Cosmos DB | https://docs.microsoft.com/en-us/azure/cosmos-db/synapse-link |
-| What is Azure Cosmos DB Analytical Store? | https://docs.microsoft.com/en-us/azure/cosmos-db/analytical-store-introduction |
-| Azure Database for PostgreSQL | https://azure.microsoft.com/en-us/services/postgresql/ |
-| An introduction to Azure Functions | https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview |
-| Tutorial: Run Azure Functions from Azure Stream Analytics jobs | https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-with-azure-functions |
-| What is Azure Synapse Analytics? | https://docs.microsoft.com/en-us/azure/synapse-analytics/overview-what-is |
-| Build a machine learning app with Apache Spark MLlib and Azure Synapse Analytics | https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-machine-learning-mllib-notebook |
-| Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-your-first-pipeline |
-| Use an existing model with Azure Machine Learning | https://docs.microsoft.com/en-us/azure/machine-learning/how-to-deploy-existing-model |
-| Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/en-us/azure/machine-learning/tutorial-deploy-models-with-aml |
-| Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs |
-| Implement a microservice domain model with .NET Core | https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |
+| Azure IoT reference architecture | https://docs.microsoft.com/azure/architecture/reference-architectures/iot |
+| What is Azure IoT Hub? | https://docs.microsoft.com/azure/iot-hub/about-iot-hub |
+| What is Azure IoT Edge  | https://docs.microsoft.com/azure/iot-edge/about-iot-edge  |
+| What is Azure Stream Analytics? | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-introduction  |
+| Anomaly detection in Azure Stream Analytics  | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-machine-learning-anomaly-detection  |
+| Cognitive Services Anomaly Detector  | https://azure.microsoft.com/services/cognitive-services/anomaly-detector/  |
+| Azure Synapse Link for Cosmos DB | https://docs.microsoft.com/azure/cosmos-db/synapse-link |
+| What is Azure Cosmos DB Analytical Store? | https://docs.microsoft.com/azure/cosmos-db/analytical-store-introduction |
+| Azure Database for PostgreSQL | https://azure.microsoft.com/services/postgresql/ |
+| An introduction to Azure Functions | https://docs.microsoft.com/azure/azure-functions/functions-overview |
+| Tutorial: Run Azure Functions from Azure Stream Analytics jobs | https://docs.microsoft.com/azure/stream-analytics/stream-analytics-with-azure-functions |
+| What is Azure Synapse Analytics? | https://docs.microsoft.com/azure/synapse-analytics/overview-what-is |
+| Build a machine learning app with Apache Spark MLlib and Azure Synapse Analytics | https://docs.microsoft.com/azure/synapse-analytics/spark/apache-spark-machine-learning-mllib-notebook |
+| Create and run machine learning pipelines with Azure Machine Learning SDK | https://docs.microsoft.com/azure/machine-learning/how-to-create-your-first-pipeline |
+| Use an existing model with Azure Machine Learning | https://docs.microsoft.com/azure/machine-learning/how-to-deploy-existing-model |
+| Tutorial: Deploy an image classification model in Azure Container Instances | https://docs.microsoft.com/azure/machine-learning/tutorial-deploy-models-with-aml |
+| Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/azure/architecture/patterns/cqrs |
+| Implement a microservice domain model with .NET Core | https://docs.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |
 
 # Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide
 
@@ -510,7 +510,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
     If Wide World Importers has historical data which includes whether values were anomalous, then a classification model could help separate anomalous from non-anomalous data.  Typically, however, we tend to have recent history but no labels indicating what, in fact, was anomalous.  This leads us to other techniques for anomaly detection comparing the direction and distance of changes over time.
 
-    Within Azure, Cognitive Services includes [an Anomaly Detector service](https://azure.microsoft.com/en-us/services/cognitive-services/anomaly-detector/).  This service allows you to pass in a time series set of data points and determine if the most recent data point is anomalous given the inputs.  This is available as an API you can call from languages like C#, JavaScript, or Python; it is also available as a REST API if there is not a [Software Development Kit (SDK) for your language of choice](https://docs.microsoft.com/en-us/azure/cognitive-services/anomaly-detector/).
+    Within Azure, Cognitive Services includes [an Anomaly Detector service](https://azure.microsoft.com/services/cognitive-services/anomaly-detector/).  This service allows you to pass in a time series set of data points and determine if the most recent data point is anomalous given the inputs.  This is available as an API you can call from languages like C#, JavaScript, or Python; it is also available as a REST API if there is not a [Software Development Kit (SDK) for your language of choice](https://docs.microsoft.com/azure/cognitive-services/anomaly-detector/).
 
     The Anomaly Detector service is also included in Azure Stream Analytics, allowing for easy processing of data points over time in just a few lines of code.
 
@@ -522,7 +522,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
 
-    Typically, predictive maintenance model development happens in a language such as R or Python on a single machine.  With enormous amounts of data, however, data scientists can quickly run out of memory on a single machine.  For this reason, a Spark cluster hosted in a service like [Azure Synapse Analytics Spark Pools](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-overview) allows data scientists to build machine learning models with data distributed across multiple machines, allowing for complex, memory-hungry algorithms to process large amounts of data.
+    Typically, predictive maintenance model development happens in a language such as R or Python on a single machine.  With enormous amounts of data, however, data scientists can quickly run out of memory on a single machine.  For this reason, a Spark cluster hosted in a service like [Azure Synapse Analytics Spark Pools](https://docs.microsoft.com/azure/synapse-analytics/spark/apache-spark-overview) allows data scientists to build machine learning models with data distributed across multiple machines, allowing for complex, memory-hungry algorithms to process large amounts of data.
 
 2. Which platform would you recommend for deploying the trained model? This deployed model should still be part of an event sourcing solution.
 
@@ -532,7 +532,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. We process a large amount of sensor data at each factory.  Will a cloud service be able to keep up with our data requirements?
 
-    Yes!  [Azure IoT Hub can scale to 6,000 device-to-cloud send operations per unit per second](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-quotas-throttling), with a total of 50 IoT hubs per Azure subscription. Each IoT Hub unit can support 300,000,000 messages per day, so if we assume a device sends an update every five seconds, we can support over 17,000 devices on a single IoT Hub, or just over 868,000 in a subscription.
+    Yes!  [Azure IoT Hub can scale to 6,000 device-to-cloud send operations per unit per second](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-quotas-throttling), with a total of 50 IoT hubs per Azure subscription. Each IoT Hub unit can support 300,000,000 messages per day, so if we assume a device sends an update every five seconds, we can support over 17,000 devices on a single IoT Hub, or just over 868,000 in a subscription.
 
 2. Does Azure have any capabilities available to perform anomaly detection on our sensor data?  How quickly could we get a service in place?
 
