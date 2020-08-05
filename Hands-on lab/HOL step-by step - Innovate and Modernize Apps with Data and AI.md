@@ -19,9 +19,9 @@ Microsoft may have patents, patent applications, trademarks, copyrights, or othe
 
 The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
 
-© 2019 Microsoft Corporation. All rights reserved.
+© 2020 Microsoft Corporation. All rights reserved.
 
-Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
+Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
 
 **Contents** 
 
@@ -75,7 +75,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 
 ## Abstract and learning objectives 
 
-In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
+In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
 
 Using factory-generated data, you will learn how to use the Anomaly Detection service built into Stream Analytics to observe and report on abnormal machine temperature readings.  You will also learn how to apply historical machine temperature and stamping pressure values in the creation of a machine learning model to identify potential issues which might require machine adjustment.  You will deploy this predictive maintenance model and generate predictions on simulated stamp press data.
 
@@ -107,11 +107,11 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
     c. Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
 
-3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py).
+3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py).
 
-4. Install [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio).
+4. Install [Azure Data Studio](https://docs.microsoft.com/sql/azure-data-studio/download-azure-data-studio).
 
-    a. Install the [PostgreSQL extension](https://docs.microsoft.com/en-us/sql/azure-data-studio/postgres-extension).
+    a. Install the [PostgreSQL extension](https://docs.microsoft.com/sql/azure-data-studio/postgres-extension).
 
 5. Install Docker. [Docker Desktop](https://www.docker.com/products/docker-desktop) will work for this hands-on lab and supports Windows and MacOS. For Linux, install the Docker engine through your distribution's package manager.
 
@@ -125,9 +125,9 @@ Refer to the Before the hands-on lab setup guide manual before continuing to the
 
 Duration: 40 minutes
 
-[Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/) is a Microsoft offering which provides secure and reliable communication between IoT devices and cloud services in Azure. The aim of this service is to provide bidirectional communication at scale. The core focus of many industrial companies is not on cloud computing; therefore, they do not necessarily have the personnel skilled to provide guidance and to stand up a reliable and scalable infrastructure for an IoT solution. It is imperative for these types of companies to enter the IoT space not only for the cost savings associated with remote monitoring, but also to improve safety for their workers and the environment.
+[Azure IoT Hub](https://azure.microsoft.com/services/iot-hub/) is a Microsoft offering which provides secure and reliable communication between IoT devices and cloud services in Azure. The aim of this service is to provide bidirectional communication at scale. The core focus of many industrial companies is not on cloud computing; therefore, they do not necessarily have the personnel skilled to provide guidance and to stand up a reliable and scalable infrastructure for an IoT solution. It is imperative for these types of companies to enter the IoT space not only for the cost savings associated with remote monitoring, but also to improve safety for their workers and the environment.
 
-Wide World Importers is one such company that could use a helping hand entering the IoT space.  They have an existing suite of sensors and on-premises data collection mechanisms at each factory but would like to centralize data in the cloud. To achieve this, we will stand up a IoT Hub and assist them with the process of integrating existing sensors with IoT Hub via [Azure IoT Edge](https://azure.microsoft.com/en-us/services/iot-edge/). A [predictable cost model](https://azure.microsoft.com/en-us/pricing/details/iot-hub/) also ensures that there are no financial surprises.
+Wide World Importers is one such company that could use a helping hand entering the IoT space.  They have an existing suite of sensors and on-premises data collection mechanisms at each factory but would like to centralize data in the cloud. To achieve this, we will stand up a IoT Hub and assist them with the process of integrating existing sensors with IoT Hub via [Azure IoT Edge](https://azure.microsoft.com/services/iot-edge/). A [predictable cost model](https://azure.microsoft.com/pricing/details/iot-hub/) also ensures that there are no financial surprises.
 
 ### Task 1: Add a new device in IoT Hub
 
@@ -153,9 +153,9 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
     ![In the Create a device menu, the device ID is filled in.](media/azure-create-iot-edge-1.png 'Create a device')
 
-5. Click the **Save** button to complete device registration.
+5. Select **Save** to complete device registration.
 
-6. Click on the device named `modernize-app-ubuntu1`.
+6. Select the device named `modernize-app-ubuntu1`.
 
     ![In the IoT Edge devices section, the device named modernize-app-ubuntu1 is selected.](media/azure-modernize-app-ubuntu1.png 'The modernize-app-ubuntu1 IoT device')
 
@@ -173,7 +173,7 @@ The first task is to register a new IoT Edge device in IoT Hub.
 
 ### Task 2: Install and configure IoT Edge on a Linux virtual machine
 
-The instructions in this task come from the guide on [how to install IoT Edge on Linux](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-install-iot-edge-linux). The instructions in this task are tailored specifically for Ubuntu Server 18.04, but if you wish to install IoT Edge on other variants of Linux, including Rasbian for the Raspberry Pi, the linked article will provide additional support.
+The instructions in this task come from the guide on [how to install IoT Edge on Linux](https://docs.microsoft.com/azure/iot-edge/how-to-install-iot-edge-linux). The instructions in this task are tailored specifically for Ubuntu Server 18.04, but if you wish to install IoT Edge on other variants of Linux, including Rasbian for the Raspberry Pi, the linked article will provide additional support.
 
 1. Use SSH to connect to the virtual machine you configured before the hands-on lab. If you do not have the IP address of the virtual machine, navigate to the **modernize-app** resource group and search for the name **modernize-app-vm** with a Type of **Virtual machine**.
 
@@ -253,7 +253,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![Create a new IoT Edge Solution.](media/code-iot-edge-solution.png 'Azure IoT Edge: New IoT Edge Solution')
 
-2. Select a folder for your IoT Edge solution, such as `C:\Temp\IoT Edge`. When you have created or found a suitable folder, click the **Select Folder** button.
+2. Select a folder for your IoT Edge solution, such as `C:\Temp\IoT Edge`. When you have created or found a suitable folder, select **Select Folder**.
 
     ![The IoT Edge folder location is selected.](media/code-iot-edge-select-folder.png 'Select Folder')
 
@@ -618,7 +618,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![The Create Deployment for Single Device option is selected.](media/code-iot-edge-create-deployment.png 'Create Deployment for Single Device')
 
-18. In the **Open** menu, navigate to  the **config** folder and select **deployment.amd64.json** and then click **Select Edge Deployment Manifest**.
+18. In the **Open** menu, navigate to  the **config** folder and select **deployment.amd64.json** and then select **Select Edge Deployment Manifest**.
 
     ![The amd64 configuration is selected.](media/code-iot-edge-amd64-deployment.png 'Select Edge Deployment Manifest')
 
@@ -862,7 +862,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
 
-    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/en-us/python/api/overview/azure/ml/install?view=azure-ml-py) installed.
+    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py) installed.
 
 3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
 
@@ -1012,7 +1012,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
     ![Crew New Azure Functions Project is selected.](media/code-create-function-project.png 'Create New Project...')
 
-2. Select a folder for your IoT Edge solution, such as `C:\Temp\Azure Functions`. When you have created or found a suitable folder, click the **Select Folder** button.
+2. Select a folder for your IoT Edge solution, such as `C:\Temp\Azure Functions`. When you have created or found a suitable folder, select **Select Folder**.
 
     ![The Azure Functions folder location is selected.](media/code-function-select-folder.png 'Select Folder')
 
@@ -2105,7 +2105,7 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
     ![Rename the Notebook to Write Cosmos Changes to SQL Pool.](media/azure-synapse-develop-cosmos-name.png 'Write Cosmos Changes to SQL Pool')
 
-11. In the notebook toolbar, change the language to **Spark (Scala)**. [The Azure Synapse Apache Spark connector to Synapse SQL connector currently only supports Scala](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/synapse-spark-sql-pool-import-export), so the default language of PySpark will not work.
+11. In the notebook toolbar, change the language to **Spark (Scala)**. [The Azure Synapse Apache Spark connector to Synapse SQL connector currently only supports Scala](https://docs.microsoft.com/azure/synapse-analytics/spark/synapse-spark-sql-pool-import-export), so the default language of PySpark will not work.
 
     ![Change the notebook language to Scala.](media/azure-synapse-develop-cosmos-language.png 'Spark (Scala)')
 
@@ -2278,7 +2278,7 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 ### Task 3: Embed the Power BI notebook
 
-1. In your Power BI report click the three dots next to the **Favorite** button and select `Embed > Website or portal`.
+1. In your Power BI report, select the three dots next to the **Favorite** button and select `Embed > Website or portal`.
 
     ![The menu for embedding the report.](media/embed-website-or-portal.png "Embed on Website or portal")
 
