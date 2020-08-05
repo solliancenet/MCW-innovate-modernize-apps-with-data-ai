@@ -1,136 +1,68 @@
-# Outline - Innovate and Modernize Apps with Data & AI
+# Innovate and Modernize Apps with Data & AI
 
-Wide World Importers is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C.
+Wide World Importers (WWI) is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C. WWI has 5 factories each with about 10,000 sensors each, meaning 50,000 sensors sending data in real time.
 
-· For B2B, they manufacture automotive parts and accessories such as alloy wheels, brake pads, mufflers spoilers.
+Their sensor data is collected into a Kafka cluster, collected via a custom consumer application that aggregates the events and writes the results to PostgreSQL. The have event data store that currently runs in PostgreSQL. The status of the factory floor is reported using a web app hosted on-premises that connects to PostgreSQL.
 
-· For B2C, they manufacture sports gear helmets, sunglasses etc.
+They are running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern they would like to take the opportunity to modernize their infrastructure. In particular, they would like to modernize their solution to use microservices, and in particular apply the Event Sourcing and Command Query Responsibility Segregation (CQRS) patterns.
 
-They have data coming from CNC machines and sensors, Manufacturing Execution Systems (MES).
-
-WWI has 5 factories each with about 10,000 sensors. If we have similar number of sensors in other factories as well, then we have 50,000 sensors sending data in real time. 
-
-Three types of data are coming to the IoT Hub:
-1. Manufacturing machine data – real time production telemetry data.
-2. MES Data – quality data including the number of Good, Snag and Reject pieces. This helps to determine performance quality and availability of systems.
-3. Pump Data - raw telemetry data from HVAC (Heating, Ventilation and Air Conditioning) pumps. This helps to maintain the optimum temperature for each machine.
-
-They have an on-premises datacenter that is used to operate and monitor the factory. 
-
-Their sensor data is collected into a Kafka cluster, collected via a custom consumer application that aggregates the events and writes the results to PostgreSQL.
-
-The have event data store that currently runs in PostgreSQL. The status of the factory floor is reported using a web app hosted on-premises that connects to PostgreSQL.
-
-They are running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern they would like to take the opportunity to modernize their infrastructure.
- 
-In particular, they would like to modernize their solution to use microservices, and in particular apply the Event Sourcing and CQRS patterns. 
-
-They recognize their solutions will benefit from the cloud and want to ensure that their hybrid solution can be managed in a consistent way across both cloud and on-premises resources.
-
-The factories currently collect and analyze their operational data independently, and they would like to deploy a cloud based platform to centralize and allow storage of all data across all factories.
-
-## Preferred Solution Architecture
-
-### On-Premises (Single Factory)
-
-Azure IoT Edge
-- ingests device events to local IoT Hub
-- runs Stream Analytics on-premises
-- forwards events to IoT Hub in cloud
-  
-IoT Hub
-- runs within container on-premises in IoT Edge
-
-Kubernetes (on-premises cluster)
-- hosting of website 
-- hosting of Azure Functions (the microservices) in container
-- hosting of anomaly detector container
-- hosting of PostgreSQL Hyperscale database
-
-PostgreSQL Hyperscale
-- Factory/plant specific operational analytics data store
-- Deploy PostgreSQL to on-premises Kubernetes clusters using Azure Arc
-
-Azure Functions
-- IoT Hub event consumer, writing events to PostgreSQL
-- microservices logic runs on Kubernetes
-- invoked from IoT Edge
-- coordinates calls to anomaly detector service and alerting service
-
-Cognitive Services
-- Anomaly Detector service deployed in container to on-premises Kubernetes cluster
-- Used to detect anomalies in equipment telemetry
-- Invoked from Azure Function microservice
-
-Azure ARC 
-- Control plane for hybrid solution
-- Support managed data services (PostgreSQL)
-- Dynamically scale data workloads based on capacity without application downtime
-- Azure Arc enabled Kubernetes installs an agent on Kubernetes cluster that can communicate with the Azure control plane. 
-- A representation of the cluster is created in Azure, allowing one to configure policies, monitoring, and GitOps integrations.
-
-### Cloud Based (All Factories)
-IoT Hub
-- cloud based message ingest store
-- writes messages to Azure Storage
-
-Azure Stream Analytics
-- queries device messages from IoT Hub and writes them to Cosmos DB
-
-Cosmos DB
-- used as the event store in the cloud
-- consumer applications subscribe to the change feed 
-- change feed raises event about new events, handled by Functions
-- change feed enables event sourcing approach which enables extensibility of cloud processing
-
-Azure Functions
-- microservices logic 
-- responding to Cosmos DB change feed
-- Function writing events from ALL plants to PostgreSQL 
-- Function used to aggregate events into snapshots and materialized views for easier querying and reporting
-
-Azure Synapse Analytics
-- Support analysis of historical data across all factories/plants
-- Serverless used to explore messages written by IoT Hub in Storage
-- SQL Pool tables loaded with telemetry current state data to support querying and reporting with Power BI
-- Spark structured stream processing in notebooks, applies predictive maintenance model to identify devices needing service soon.
-
-Azure Database for PostgreSQL Hyperscale
-- Operational analytics data store support ALL factories/plants
-
-Azure Machine Learning
-- Predictive maintenance model, estimates days until anticipated service need.
-- Used to provide experiment and model management. 
-
-## Lab Exercises
-1. Deploy factory load simulator/generator and website
-2. Modernize services logic to use event sourcing and CQRS
-3. Setup ingest from IoT Hub to Cosmos DB
-4. Configure Azure functions to respond to change feed
-5. Configure Azure function to write events and aggregates to PostgreSQL
-6. Use Synapse to train predictive maintenance model and register with AML
-7. Use Synapse to score streaming telemetry from Cosmos DB change feed to apply predictive maintenance calculations and write to SQL Pool Table
-8. Deploy Anomaly Detector in container as Azure Container Instance
-9. Use Synapse to score streaming telemetry from Cosmos DB change feed to call Anomaly Detector and write anomlies to SQL Pool table
-10. View the factory status in website (aggregates, maintenance events and anomalies) with embedded Power BI report
+August 2020
 
 ## Target audience
--	Application developer
--	AI developer
--	Data scientist
--   Data engineer
+
+- Application developer
+- AI developer
+- Data engineer
+- Data scientist
+
+## Abstract
+
+### Workshop
+
+In this workshop, you will look at the process of implementing a modern application with Azure services. The workshop will cover event sourcing and the Command and Query Responsibility Segregation (CQRS) pattern, data loading, data preparation, data transformation, data serving, anomaly detection, creation of a predictive maintenance model, and real-time scoring of a predictive maintenance model.
+
+### Whiteboard design session
+
+In this whiteboard design session, you will work with a group to design a solution for ingesting and preparing manufacturing device sensor data, as well as detecting anomalies in sensor data and creating, training, and deploying a machine learning model which can predict when device maintenance will become necessary.
+
+At the end of this whiteboard design session, you will have learned how to capture Internet of Things (IoT) device data with Azure IoT Hub, process device data with Azure Stream Analytics, apply the Command and Query Responsibility Segregation (CQRS) pattern with Azure Functions, build a predictive maintenance model using Azure Synapse Analytics Spark notebooks, deploy the model to an Azure Machine Learning model registry, deploy the model to an Azure Container Instance, and generate predictions with Azure Functions accessing a Cosmos DB change feed.  These skills will help you modernize applications and integrate Artificial Intelligence into the application.
+
+### Hands-on lab
+
+In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
+
+Using factory-generated data, you will learn how to use the Anomaly Detection service built into Stream Analytics to observe and report on abnormal machine temperature readings.  You will also learn how to apply historical machine temperature and stamping pressure values in the creation of a machine learning model to identify potential issues which might require machine adjustment.  You will deploy this predictive maintenance model and generate predictions on simulated stamp press data.
 
 ## Azure services and related products
-- Azure Cognitive Services Anomaly Detector in containers
-- Azure Cosmos DB
-- Azure Database for PostgreSQL Hyperscale
-- Azure Functions in containers	
-- Kubernetes
-- Azure Machine Learning
+
+- Azure Container Registry
+- Azure Virtual Machines with Linux
+- IoT Hub
+- Function App
+- Cosmos DB with Synapse Link
 - Azure Synapse Analytics
+- Azure Data Lake Storage Gen2
+- Azure Machine Learning
+- Azure Kubernetes Service
+- Event Hubs
+- Azure Stream Analytics
+- Azure PostgreSQL Hyperscale
+- Power BI through Azure Synapse Analytics
 
+## Related references
 
-## Resources
-- https://azure.microsoft.com/mediahandler/files/resourcefiles/how-to-guide-on-azure-data-services-anywhere/How-to%20guide%20on%20Azure%20data%20services%20anywhere.pdf
+- [MCW](https://github.com/Microsoft/MCW)
 
+## Help & Support
 
+We welcome feedback and comments from Microsoft SMEs & learning partners who deliver MCWs.  
+
+***Having trouble?***
+
+- First, verify you have followed all written lab instructions (including the Before the Hands-on lab document).
+- Next, submit an issue with a detailed description of the problem.
+- Do not submit pull requests. Our content authors will make all changes and submit pull requests for approval.  
+
+If you are planning to present a workshop, *review and test the materials early*! We recommend at least two weeks prior.
+
+### Please allow 5 - 10 business days for review and resolution of issues.

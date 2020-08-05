@@ -9,9 +9,8 @@ Before the hands-on lab setup guide
 </div>
 
 <div class="MCWHeader3">
-July 2020
+August 2020
 </div>
-
 
 Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
 
@@ -28,20 +27,20 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
 <!-- TOC -->
 
 - [Innovate and Modernize Apps with Data and AI before the hands-on lab setup guide](#innovate-and-modernize-apps-with-data-and-ai-before-the-hands-on-lab-setup-guide)
-    - [Requirements](#requirements)
-    - [Before the hands-on lab](#before-the-hands-on-lab)
-        - [Task 1: Create an Azure resource group using the Azure Portal](#task-1-create-an-azure-resource-group-using-the-azure-portal)
-        - [Task 2: Provision Azure Data Lake Storage Gen2](#task-2-provision-azure-data-lake-storage-gen2)
-        - [Task 3: Provision an IoT Hub](#task-3-provision-an-iot-hub)
-        - [Task 4: Provision an Azure Container Registry](#task-4-provision-an-azure-container-registry)
-        - [Task 5: Provision an Ubuntu Virtual Machine](#task-5-provision-an-ubuntu-virtual-machine)
-        - [Task 6: Provision Cosmos DB](#task-6-provision-cosmos-db)
-        - [Task 7: Provision a Function App](#task-7-provision-a-function-app)
-        - [Task 8: Deploy Azure Database for PostgreSQL](#task-8-deploy-azure-database-for-postgresql)
-        - [Task 9: Provision an Azure Synapse Analytics workspace](#task-9-provision-an-azure-synapse-analytics-workspace)
-        - [Task 10: Provision a Machine Learning workspace](#task-10-provision-a-machine-learning-workspace)
-        - [Task 11: Provision an Event Hub](#task-11-provision-an-event-hub)
-        - [Task 12: Download the Hands-On Lab Contents](#task-12-download-the-hands-on-lab-contents)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+    - [Task 1: Create an Azure resource group using the Azure Portal](#task-1-create-an-azure-resource-group-using-the-azure-portal)
+    - [Task 2: Provision Azure Data Lake Storage Gen2](#task-2-provision-azure-data-lake-storage-gen2)
+    - [Task 3: Provision an IoT Hub](#task-3-provision-an-iot-hub)
+    - [Task 4: Provision an Azure Container Registry](#task-4-provision-an-azure-container-registry)
+    - [Task 5: Provision an Ubuntu Virtual Machine](#task-5-provision-an-ubuntu-virtual-machine)
+    - [Task 6: Provision Cosmos DB](#task-6-provision-cosmos-db)
+    - [Task 7: Provision a Function App](#task-7-provision-a-function-app)
+    - [Task 8: Deploy Azure Database for PostgreSQL](#task-8-deploy-azure-database-for-postgresql)
+    - [Task 9: Provision an Azure Synapse Analytics workspace](#task-9-provision-an-azure-synapse-analytics-workspace)
+    - [Task 10: Provision a Machine Learning workspace](#task-10-provision-a-machine-learning-workspace)
+    - [Task 11: Provision an Event Hub](#task-11-provision-an-event-hub)
+    - [Task 12: Download the Hands-On Lab Contents](#task-12-download-the-hands-on-lab-contents)
 
 <!-- /TOC -->
 
@@ -126,11 +125,11 @@ Azure Data Lake Storage Gen2 will be critical for several integration points thr
    | Replication                    | _select Locally-redundant storage (LRS)_    |
    | Access tier                    | _select Hot_                                |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the storage account name with a suffix you would like to use. Names of storage accounts must be globally unique.
+    > **NOTE**: Please replace the `#SUFFIX#` tag in the storage account name with a suffix you would like to use. Names of storage accounts must be globally unique.
 
-   ![The form fields are completed with the previously described settings.](media/azure-create-storage-account-1.png 'Storage Account Settings')
+    ![The form fields are completed with the previously described settings.](media/azure-create-storage-account-1.png 'Storage Account Settings')
 
-Then select **Next : Networking >**.
+    Then select **Next : Networking >**.
 
 5. Leave the networking settings at their default values: a connectivity method of **Public endpoint (all networks)** and a network routing preference of **Microsoft network routing (default)**.  Select **Next : Data protection >** and leave these settings at their default values.
 
@@ -406,7 +405,6 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
    | Account name                                         | _select the storage account you created earlier_ |
    | File system name                                     | _select `Create new` and enter `synapse`_        |
    | Assign myself the Storage Blob Data Contributor role | _ensure the box is checked_                      |
-   
 
    > **NOTE**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
 
