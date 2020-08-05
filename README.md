@@ -1,33 +1,79 @@
-# Outline - Innovate and Modernize Apps with Data & AI
+# Innovate and Modernize Apps with Data & AI
 
-Wide World Importers is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C.
+Wide World Importers (WWI) is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C. WWI has 5 factories each with about 10,000 sensors each, meaning 50,000 sensors sending data in real time.
 
-· For B2B, they manufacture automotive parts and accessories such as alloy wheels, brake pads, mufflers spoilers.
+Their sensor data is collected into a Kafka cluster, collected via a custom consumer application that aggregates the events and writes the results to PostgreSQL. The have event data store that currently runs in PostgreSQL. The status of the factory floor is reported using a web app hosted on-premises that connects to PostgreSQL.
 
-· For B2C, they manufacture sports gear helmets, sunglasses etc.
+They are running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern they would like to take the opportunity to modernize their infrastructure. In particular, they would like to modernize their solution to use microservices, and in particular apply the Event Sourcing and Command Query Responsibility Segregation (CQRS) patterns.
 
-They have data coming from CNC machines and sensors, Manufacturing Execution Systems (MES).
+August 2020
 
-WWI has 5 factories each with about 10,000 sensors. If we have similar number of sensors in other factories as well, then we have 50,000 sensors sending data in real time. 
+## Target audience
 
-Three types of data are coming to the IoT Hub:
-1. Manufacturing machine data – real time production telemetry data.
-2. MES Data – quality data including the number of Good, Snag and Reject pieces. This helps to determine performance quality and availability of systems.
-3. Pump Data - raw telemetry data from HVAC (Heating, Ventilation and Air Conditioning) pumps. This helps to maintain the optimum temperature for each machine.
+- Data Engineer
+- Data Scientist
+- Machine Learning Engineer
 
-They have an on-premises datacenter that is used to operate and monitor the factory. 
+## Abstracts
 
-Their sensor data is collected into a Kafka cluster, collected via a custom consumer application that aggregates the events and writes the results to PostgreSQL.
+### Workshop
 
-The have event data store that currently runs in PostgreSQL. The status of the factory floor is reported using a web app hosted on-premises that connects to PostgreSQL.
+In this workshop, you will look at the process of creating an end-to-end solution using Azure Synapse Analytics. The workshop will cover data loading, data preparation, data transformation and data serving, along with performing machine learning and handling of both batch and real-time data.
 
-They are running into scalability issues as they add manufacturing capacity, but in the course of addressing this concern they would like to take the opportunity to modernize their infrastructure.
- 
-In particular, they would like to modernize their solution to use microservices, and in particular apply the Event Sourcing and CQRS patterns. 
+At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
 
-They recognize their solutions will benefit from the cloud and want to ensure that their hybrid solution can be managed in a consistent way across both cloud and on-premises resources.
+### Whiteboard design session
 
-The factories currently collect and analyze their operational data independently, and they would like to deploy a cloud based platform to centralize and allow storage of all data across all factories.
+In this whiteboard design session, you will work in a group to look at the process of designing an end-to-end solution using Azure Synapse Analytics. The design session will cover data loading, data preparation, data transformation and data serving, along with performing machine learning and handling of both batch and real-time data.
+
+At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
+
+### Hands-on lab
+
+[Coming Soon]
+
+## Azure services and related products
+
+- Azure Container Registry
+- Azure Virtual Machines with Linux
+- IoT Hub
+- Function App
+- Cosmos DB with Synapse Link
+- Azure Synapse Analytics
+- Azure Data Lake Storage Gen2
+- Azure Machine Learning
+- Azure Kubernetes Service
+- Event Hubs
+- Azure Stream Analytics
+- Azure PostgreSQL Hyperscale
+- Power BI through Azure Synapse Analytics
+
+## Related references
+
+- [MCW](https://github.com/Microsoft/MCW)
+
+## Help & Support
+
+We welcome feedback and comments from Microsoft SMEs & learning partners who deliver MCWs.  
+
+***Having trouble?***
+
+- First, verify you have followed all written lab instructions (including the Before the Hands-on lab document).
+- Next, submit an issue with a detailed description of the problem.
+- Do not submit pull requests. Our content authors will make all changes and submit pull requests for approval.  
+
+If you are planning to present a workshop, *review and test the materials early*! We recommend at least two weeks prior.
+
+### Please allow 5 - 10 business days for review and resolution of issues.
+
+
+
+
+
+
+
+
+
 
 ## Preferred Solution Architecture
 

@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-[Insert workshop name here]
+Innovate and Modernize Apps with Data & AI
 </div>
 
 <div class="MCWHeader2">
@@ -9,7 +9,7 @@ Whiteboard design session student guide
 </div>
 
 <div class="MCWHeader3">
-[Insert date here Month Year]
+August 2020
 </div>
 
 
@@ -85,7 +85,7 @@ They recognize their solutions will benefit from the cloud and want to ensure th
 
 3. The consumer group application we have built to process data from Kafka is our data pipeline bottleneck. When factory managers need to wait for information to come in, it typically is because the consumer group has fallen behind again.  We want a system that can keep up with the torrent of device data our sensors generate.
 
-4. Our factories are spread out across the world, and factory managers are used to near-real-time responses from the web applications hosted on on-premises servers.  Instead of a pure cloud solution, we would like a hybrid cloud solution that allows our central office, located in Seattle, Washington, to oversee operations while still enabling factory managers to get the information they need at the speed to which they are accustomed.
+4. Our factories are spread out across the world, and factory managers are used to near-real-time responses from the web applications hosted on on-premises servers.  Instead of a pure cloud solution, we would like a hybrid cloud solution that allows our central office, located in the northwestern United States, to oversee operations while still enabling factory managers to get the information they need at the speed to which they are accustomed.
 
 5. In addition to storing data in the cloud, we would like to integrate machine learning into our application processing, including detecting anomalies in sensor data and predicting when machine maintenance will be necessary based on sensor data.
 
