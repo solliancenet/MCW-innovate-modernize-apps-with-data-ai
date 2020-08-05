@@ -10,27 +10,28 @@ August 2020
 
 ## Target audience
 
-- Data Engineer
-- Data Scientist
-- Machine Learning Engineer
+- Application developer
+- AI developer
+- Data engineer
+- Data scientist
 
-## Abstracts
+## Abstract
 
 ### Workshop
 
-In this workshop, you will look at the process of creating an end-to-end solution using Azure Synapse Analytics. The workshop will cover data loading, data preparation, data transformation and data serving, along with performing machine learning and handling of both batch and real-time data.
-
-At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
+In this workshop, you will look at the process of implementing a modern application with Azure services. The workshop will cover event sourcing and the Command and Query Responsibility Segregation (CQRS) pattern, data loading, data preparation, data transformation, data serving, anomaly detection, creation of a predictive maintenance model, and real-time scoring of a predictive maintenance model.
 
 ### Whiteboard design session
 
-In this whiteboard design session, you will work in a group to look at the process of designing an end-to-end solution using Azure Synapse Analytics. The design session will cover data loading, data preparation, data transformation and data serving, along with performing machine learning and handling of both batch and real-time data.
+In this whiteboard design session, you will work with a group to design a solution for ingesting and preparing manufacturing device sensor data, as well as detecting anomalies in sensor data and creating, training, and deploying a machine learning model which can predict when device maintenance will become necessary.
 
-At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
+At the end of this whiteboard design session, you will have learned how to capture Internet of Things (IoT) device data with Azure IoT Hub, process device data with Azure Stream Analytics, apply the Command and Query Responsibility Segregation (CQRS) pattern with Azure Functions, build a predictive maintenance model using Azure Synapse Analytics Spark notebooks, deploy the model to an Azure Machine Learning model registry, deploy the model to an Azure Container Instance, and generate predictions with Azure Functions accessing a Cosmos DB change feed.  These skills will help you modernize applications and integrate Artificial Intelligence into the application.
 
 ### Hands-on lab
 
-[Coming Soon]
+In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
+
+Using factory-generated data, you will learn how to use the Anomaly Detection service built into Stream Analytics to observe and report on abnormal machine temperature readings.  You will also learn how to apply historical machine temperature and stamping pressure values in the creation of a machine learning model to identify potential issues which might require machine adjustment.  You will deploy this predictive maintenance model and generate predictions on simulated stamp press data.
 
 ## Azure services and related products
 
@@ -65,118 +66,3 @@ We welcome feedback and comments from Microsoft SMEs & learning partners who del
 If you are planning to present a workshop, *review and test the materials early*! We recommend at least two weeks prior.
 
 ### Please allow 5 - 10 business days for review and resolution of issues.
-
-
-
-
-
-
-
-
-
-
-## Preferred Solution Architecture
-
-### On-Premises (Single Factory)
-
-Azure IoT Edge
-- ingests device events to local IoT Hub
-- runs Stream Analytics on-premises
-- forwards events to IoT Hub in cloud
-  
-IoT Hub
-- runs within container on-premises in IoT Edge
-
-Kubernetes (on-premises cluster)
-- hosting of website 
-- hosting of Azure Functions (the microservices) in container
-- hosting of anomaly detector container
-- hosting of PostgreSQL Hyperscale database
-
-PostgreSQL Hyperscale
-- Factory/plant specific operational analytics data store
-- Deploy PostgreSQL to on-premises Kubernetes clusters using Azure Arc
-
-Azure Functions
-- IoT Hub event consumer, writing events to PostgreSQL
-- microservices logic runs on Kubernetes
-- invoked from IoT Edge
-- coordinates calls to anomaly detector service and alerting service
-
-Cognitive Services
-- Anomaly Detector service deployed in container to on-premises Kubernetes cluster
-- Used to detect anomalies in equipment telemetry
-- Invoked from Azure Function microservice
-
-Azure ARC 
-- Control plane for hybrid solution
-- Support managed data services (PostgreSQL)
-- Dynamically scale data workloads based on capacity without application downtime
-- Azure Arc enabled Kubernetes installs an agent on Kubernetes cluster that can communicate with the Azure control plane. 
-- A representation of the cluster is created in Azure, allowing one to configure policies, monitoring, and GitOps integrations.
-
-### Cloud Based (All Factories)
-IoT Hub
-- cloud based message ingest store
-- writes messages to Azure Storage
-
-Azure Stream Analytics
-- queries device messages from IoT Hub and writes them to Cosmos DB
-
-Cosmos DB
-- used as the event store in the cloud
-- consumer applications subscribe to the change feed 
-- change feed raises event about new events, handled by Functions
-- change feed enables event sourcing approach which enables extensibility of cloud processing
-
-Azure Functions
-- microservices logic 
-- responding to Cosmos DB change feed
-- Function writing events from ALL plants to PostgreSQL 
-- Function used to aggregate events into snapshots and materialized views for easier querying and reporting
-
-Azure Synapse Analytics
-- Support analysis of historical data across all factories/plants
-- Serverless used to explore messages written by IoT Hub in Storage
-- SQL Pool tables loaded with telemetry current state data to support querying and reporting with Power BI
-- Spark structured stream processing in notebooks, applies predictive maintenance model to identify devices needing service soon.
-
-Azure Database for PostgreSQL Hyperscale
-- Operational analytics data store support ALL factories/plants
-
-Azure Machine Learning
-- Predictive maintenance model, estimates days until anticipated service need.
-- Used to provide experiment and model management. 
-
-## Lab Exercises
-1. Deploy factory load simulator/generator and website
-2. Modernize services logic to use event sourcing and CQRS
-3. Setup ingest from IoT Hub to Cosmos DB
-4. Configure Azure functions to respond to change feed
-5. Configure Azure function to write events and aggregates to PostgreSQL
-6. Use Synapse to train predictive maintenance model and register with AML
-7. Use Synapse to score streaming telemetry from Cosmos DB change feed to apply predictive maintenance calculations and write to SQL Pool Table
-8. Deploy Anomaly Detector in container as Azure Container Instance
-9. Use Synapse to score streaming telemetry from Cosmos DB change feed to call Anomaly Detector and write anomlies to SQL Pool table
-10. View the factory status in website (aggregates, maintenance events and anomalies) with embedded Power BI report
-
-## Target audience
--	Application developer
--	AI developer
--	Data scientist
--   Data engineer
-
-## Azure services and related products
-- Azure Cognitive Services Anomaly Detector in containers
-- Azure Cosmos DB
-- Azure Database for PostgreSQL Hyperscale
-- Azure Functions in containers	
-- Kubernetes
-- Azure Machine Learning
-- Azure Synapse Analytics
-
-
-## Resources
-- https://azure.microsoft.com/mediahandler/files/resourcefiles/how-to-guide-on-azure-data-services-anywhere/How-to%20guide%20on%20Azure%20data%20services%20anywhere.pdf
-
-
