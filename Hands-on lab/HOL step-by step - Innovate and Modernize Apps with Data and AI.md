@@ -1893,9 +1893,9 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
 
 ### Task 1: Build and push the containers
 
-1.  In Powershell, change your directory to `Hands-on lab\Resources\Microservices`.
+1. In Powershell, change your directory to `Hands-on lab\Resources\Microservices`.
 
-2.  Run the following commands to build the docker containers, substituting the name of the container registry you created before the Hands-on Lab:
+2. Run the following commands to build the docker containers, substituting the name of the container registry you created before the Hands-on Lab:
 
     ```powershell
     docker build -f .\SynapseInnovateMcwWebapp\Dockerfile -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-webapp .
@@ -1919,11 +1919,11 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
 
 1. In the `Hands-on lab\Resources\Microservices` directory create a new file named `deploy-aci.yaml`.
 
-2. Paste in the file contents below, making sure to replace the text in square brackets with the appropriate values:
+2. Paste in the file contents below, making sure to replace the text in angle brackets with the appropriate values:
 
     ```yaml
     apiVersion: 2019-12-01
-    location: eastus
+    location: <REGION_CODE>
     name: modernizeappmicroservices
     properties:
       imageRegistryCredentials:
@@ -1982,7 +1982,7 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
             value: <COSMOS_PRIMARY_KEY>
   
       - name: medatawrite
-        properties: 
+        properties:
           image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-write
           resources:
             requests:
@@ -2006,7 +2006,7 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
               memoryInGb: 1.5
           ports:
           - port: 8085
-          environmentVariables: 
+          environmentVariables:
           - name: ASPNETCORE_URLS
             value: http://localhost:8085
           - name: METADATA_READ_URL
@@ -2028,6 +2028,7 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
 
         | Field                         | Value                                                                                                                                                                                                             |
         | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+        | <REGION_CODE>                 | The region your resource group is hosted in, such as `eastus`. Review the results of `Get-AzureRmLocation | Format-Table` if you are not sure. |
         | <CONTAINER_REGISTRY_URL>      | The url of the container registry you created before the Hands-on Lab.                                                                                                                                            |
         | <CONTAINER_REGISTRY_USERNAME> | The username of the container registry you created before the Hands-on Lab.                                                                                                                                       |
         | <CONTAINER_REGISTRY_PASSWORD> | The Primary Password of the container registry you created before the Hands-on Lab.                                                                                                                               |
@@ -2279,21 +2280,26 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 1. In your Power BI report click the three dots next to the **Favorite** button and select `Embed > Website or portal`.
 
-    ![The menu for embedding the report.](media/embed-website-or-portal.png)
+    ![The menu for embedding the report.](media/embed-website-or-portal.png "Embed on Website or portal")
+
+    If you are using the new Power BI look, navigate to the **File** menu and select **Embed**.
+
+    ![The new look menu for embedding the report.](media/power-bi-embed-file-menu.png "Embed")
 
 2. When the **Secure Embed Code** window pops up, copy the value of the iframe's src attribute.
 
     >**NOTE**: You may need to copy the whole iframe html out to a text editor in order to access the src attribute's value.
 
-    ![The Secure Embed Code Window.](media/secure-embed-window.png)
+    ![In the secure embed code window, the source URL is selected.](media/secure-embed-window.png "The Secure embed code")
 
-
-3.  In your `deploy-aci.yaml` file add a new environment variable entry to the **webapp** container, replacing the <EMBED_URL> with the value of the src attribute you just got:
+3. In your `deploy-aci.yaml` file add a new environment variable entry to the **webapp** container, replacing the <EMBED_URL> with the value of the src attribute you just got:
 
     ```yaml
     - name: POWER_BI_DASHBOARD_URL
       value: <EMBED_URL>
-    ``` 
+    ```
+
+    ![Adding the new environment variable.](media/yaml-add-power-bi-dashboard.png "Adding a new environment variable")
 
 4. Re-deploy your container group:
 
@@ -2303,9 +2309,9 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 5. If you visit your webapp, your Power BI Dashboard should now be displayed on the home page.
 
-    ![The Power BI Dashboard.](media/power-bi-dashboard.png)
-        
-## After the hands-on lab 
+    ![The Power BI Dashboard is now visible on the event sourced web application.](media/power-bi-dashboard.png "Power BI dashboard")
+
+## After the hands-on lab
 
 Duration: 10 minutes
 
