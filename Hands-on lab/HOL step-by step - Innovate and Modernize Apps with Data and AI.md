@@ -58,8 +58,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: Create an Azure Function to write temperature anomalies data to PostgreSQL](#task-1-create-an-azure-function-to-write-temperature-anomalies-data-to-postgresql)
     - [Task 2: Deploy and configure an Azure Function](#task-2-deploy-and-configure-an-azure-function)
   - [Exercise 7: Modernize services logic to use event sourcing and CQRS](#exercise-7-modernize-services-logic-to-use-event-sourcing-and-cqrs)
-    - [Task 1: Task name](#task-1-task-name)
-    - [Task 2: Task name](#task-2-task-name)
+    - [Task 1: Build and push the containers](#task-1-build-and-push-the-containers)
+    - [Task 2: Create a deployment file](#task-2-create-a-deployment-file)
+    - [Task 3: Deploy the container group](#task-3-deploy-the-container-group)
   - [Exercise 8: View the factory status in a Power BI report](#exercise-8-view-the-factory-status-in-a-power-bi-report)
     - [Task 1: Import events data via a Spark notebook](#task-1-import-events-data-via-a-spark-notebook)
     - [Task 2: Create a Power BI notebook](#task-2-create-a-power-bi-notebook)
@@ -1886,25 +1887,169 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
 
 ## Exercise 7: Modernize services logic to use event sourcing and CQRS
 
-Duration: X minutes
+Duration: 15 minutes
 
-\[insert your custom Hands-on lab content here . . . \]
+In this exercise you will deploy a group of microservices that use the CQRS pattern to read and write your data through a web application.
 
-### Task 1: Task name
+### Task 1: Build and push the containers
 
-1. Number and insert your custom workshop content here . . . 
+1.  In Powershell, change your directory to `Hands-on lab\Resources\Microservices`.
 
-    -  Insert content here
+2.  Run the following commands to build the docker containers, substituting the name of the container registry you created before the Hands-on Lab:
 
-        -  
+    ```powershell
+    docker build -f .\SynapseInnovateMcwWebapp\Dockerfile -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-webapp .
+    docker build -f .\QueryService\Dockerfile             -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-query-service .
+    docker build -f .\MachineTelemetryRead\Dockerfile     -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-machine-telemetry-read .
+    docker build -f .\MetadataRead\Dockerfile             -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-read .
+    docker build -f .\MetadataWrite\Dockerfile            -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-write .
+    ```
 
-### Task 2: Task name
+3. Run the following commands to push the containers to your container registry:
 
-1. Number and insert your custom workshop content here . . . 
+    ```powershell
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-webapp
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-query-service
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-machine-telemetry-read
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-read
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-write
+    ```
 
-    -  Insert content here
+### Task 2: Create a deployment file
 
-        -  
+1. In the `Hands-on lab\Resources\Microservices` directory create a new file named `deploy-aci.yaml`.
+
+2. Paste in the file contents below, making sure to replace the text in square brackets with the appropriate values:
+
+    ```yaml
+    apiVersion: 2019-12-01
+    location: eastus
+    name: modernizeappmicroservices
+    properties:
+      imageRegistryCredentials:
+      - server: <CONTAINER_REGISTRY_URL>
+        username: <CONTAINER_REGISTRY_USERNAME>
+        password: <CONTAINER_REGISTRY_PASSWORD>
+      containers:
+      - name: webapp
+        properties:
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-webapp:latest
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          ports:
+          - port: 80
+          - port: 5000
+          environmentVariables:
+          - name: ASPNETCORE_URLS
+            value: http://0.0.0.0:80;http://0.0.0.0:5000
+          - name: QUERY_SERVICE_URL
+            value: http://localhost:8085
+          - name: METADATA_WRITE_SERVICE_URL
+            value: http://localhost:8084
+  
+      - name: machinetelemetryread
+        properties:
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-machine-telemetry-read
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          ports:
+          - port: 8081
+          environmentVariables:
+          - name: ASPNETCORE_URLS
+            value: http://localhost:8081
+          - name: CITUS_CONNECTION_STRING
+            value: <PG_CONNECTION_STRING>
+  
+      - name: metadataread
+        properties:
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-read
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          ports:
+          - port: 8083
+          environmentVariables:
+          - name: ASPNETCORE_URLS
+            value: http://localhost:8083
+          - name: COSMOS_DB_ACCOUNT_ENDPOINT
+            value: <COSMOS_ENDPOINT_URL>
+          - name: COSMOS_DB_AUTH_KEY
+            value: <COSMOS_PRIMARY_KEY>
+  
+      - name: medatawrite
+        properties: 
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-metadata-write
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          ports:
+          - port: 8084
+          environmentVariables:
+          - name: ASPNETCORE_URLS
+            value: http://localhost:8084
+          - name: COSMOS_DB_ACCOUNT_ENDPOINT
+            value: <COSMOS_ENDPOINT_URL>
+          - name: COSMOS_DB_AUTH_KEY
+            value: <COSMOS_PRIMARY_KEY>
+      - name: queryservice
+        properties:
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-query-service
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          ports:
+          - port: 8085
+          environmentVariables: 
+          - name: ASPNETCORE_URLS
+            value: http://localhost:8085
+          - name: METADATA_READ_URL
+            value: http://localhost:8083
+          - name: MACHINE_TELEMETRY_READ_URL
+            value: http://localhost:8081
+  
+      osType: Linux
+      ipAddress:
+        type: Public
+        ports:
+        - protocol: tcp
+          port: 80
+    tags: null
+    type: Microsoft.ContainerInstance/containerGroups
+    ```
+
+    - You can reference this table if you're not sure which values you should substitute:
+
+        | Field                         | Value                                                                                                                                                                                                             |
+        | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+        | <CONTAINER_REGISTRY_URL>      | The url of the container registry you created before the Hands-on Lab.                                                                                                                                            |
+        | <CONTAINER_REGISTRY_USERNAME> | The username of the container registry you created before the Hands-on Lab.                                                                                                                                       |
+        | <CONTAINER_REGISTRY_PASSWORD> | The Primary Password of the container registry you created before the Hands-on Lab.                                                                                                                               |
+        | <PG_CONNECTION_STRING>        | Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true *(Replacing values where appropriate)* | 
+        | <COSMOS_ENDPOINT_URL>         | Something like https://modernize-app-#SUFFIX#.documents.azure.com:443/                                                                                                                                            |
+        | <COSMOS_PRIMARY_KEY>          | The Primary Key of your Cosmos DB account.                                                                                                                                                                        |
+
+### Task 3: Deploy the container group
+
+1. Run the following command in Powershell to deploy the container group:
+
+    ```powershell
+    az container create --resource-group modernize-app --file .\deploy-aci.yaml
+    ```
+
+2. Run the following command to retrieve information about the deployed container group:
+
+    ```powershell
+    az container show --resource-group modernize-app --name modernizeappmicroservices --output table
+    ```
+
+3. You can navigate to the IP address in the table to visit the web app.
 
 ## Exercise 8: View the factory status in a Power BI report
 
@@ -2132,11 +2277,33 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 ### Task 3: Embed the Power BI notebook
 
-1. Number and insert your custom workshop content here . . .
+1. In your Power BI report click the three dots next to the **Favorite** button and select `Embed > Website or portal`.
 
-    -  Insert content here
+    ![The menu for embedding the report.](media/embed-website-or-portal.png)
 
-        -  
+2. When the **Secure Embed Code** window pops up, copy the value of the iframe's src attribute.
+
+    >**NOTE**: You may need to copy the whole iframe html out to a text editor in order to access the src attribute's value.
+
+    ![The Secure Embed Code Window.](media/secure-embed-window.png)
+
+
+3.  In your `deploy-aci.yaml` file add a new environment variable entry to the **webapp** container, replacing the <EMBED_URL> with the value of the src attribute you just got:
+
+    ```yaml
+    - name: POWER_BI_DASHBOARD_URL
+      value: <EMBED_URL>
+    ``` 
+
+4. Re-deploy your container group:
+
+    ```powershell
+    az container create --resource-group modernize-app --file .\deploy-aci.yaml
+    ```
+
+5. If you visit your webapp, your Power BI Dashboard should now be displayed on the home page.
+
+    ![The Power BI Dashboard.](media/power-bi-dashboard.png)
         
 ## After the hands-on lab 
 
