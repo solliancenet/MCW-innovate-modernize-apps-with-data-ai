@@ -1204,7 +1204,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
    | cosmosEndpointUrl              | _enter the Cosmos DB URL, something like `https://modernize-app-#SUFFIX#.documents.azure.com:443/`_ |
    | cosmosPrimaryKey               | _enter the primary key for your Cosmos DB account_ |
    | azureMLEndpointUrl             | _enter the URL (with /score) from exercise 2_      |
-   | modernizeapp\_DOCUMENTDB        | _`AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};`_ |
+   | modernizeapp\_COSMOSDB         | _`AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};`_ |
    | pg\_connection                  | _`Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true`_ |
    | IoTHubTriggerConnection        | _enter the Event Hub compatible endpoint for your IoT Hub_ |
    | EventHubConnection             | _enter the Event Hub primary connection string, NOT the IoT Hub connection string_    |
@@ -1431,7 +1431,7 @@ Events are loading into the `telemetry` container. Using that data, we can creat
             public static async Task Run([CosmosDBTrigger(
                 databaseName: "sensors",
                 collectionName: "telemetry",
-                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                ConnectionStringSetting = "modernizeapp_COSMOSDB",
                 LeaseCollectionName = "leases",
                 CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)
             {
@@ -1755,7 +1755,7 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
    | Template                         | _select `CosmosDBTrigger`_                         |
    | Function Name                    | _`ProcessTemperatureAnomalyEvents`_                |
    | Namespace                        | _`ModernApp`_                                      |
-   | Setting from local.settings.json | _select `modernizeapp_DOCUMENTDB`_                 |
+   | Setting from local.settings.json | _select `modernizeapp_COSMOSDB`_                   |
    | Database name                    | _`sensors`_                                        |
    | Collection name                  | _`scored_telemetry`_                               |
 
@@ -1778,7 +1778,7 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
             public static void Run([CosmosDBTrigger(
                 databaseName: "sensors",
                 collectionName: "scored_telemetry",
-                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                ConnectionStringSetting = "modernizeapp_COSMOSDB",
                 LeaseCollectionName = "leases")]IReadOnlyList<Document> input, ILogger log)
             {
                 foreach (Document doc in input) {
