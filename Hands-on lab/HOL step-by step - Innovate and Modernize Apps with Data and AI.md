@@ -1038,6 +1038,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
         public class TelemetryOutput
         {
             public string id {get; set;}
+            public int machineid {get; set;}
             public string event_type {get; set;}
             public string entity_type {get; set;}
             public string entity_id {get; set;}
