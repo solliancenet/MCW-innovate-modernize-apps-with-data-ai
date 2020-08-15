@@ -1070,10 +1070,11 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
                     var telemetry = cosmosClient.GetContainer(databaseId, outputContainerId);
                     TelemetryOutput to = new TelemetryOutput {
+                        id = System.Guid.NewGuid().ToString(),
+                        machineid = machineid ?? 0,
                         event_type = "Telemetry Ingest",
                         entity_type = "MachineTelemetry",
                         entity_id = System.Guid.NewGuid().ToString(),
-                        id = System.Guid.NewGuid().ToString(),
                         event_data = body
                     };
 
