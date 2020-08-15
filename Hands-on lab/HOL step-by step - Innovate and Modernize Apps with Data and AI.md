@@ -794,7 +794,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     ![A prompt to enter the authentication code.](media/azure-ml-notebook-authentication-2.png 'Enter code')
 
-    Once you have authenticated, the code will run and return a result for accuracy. This result should be approximately 94-95%
+    Once you have authenticated, the code will run and return a result for accuracy. This result should be approximately 94-95%.
 
 ### Task 4: Deploy the predictive maintenance model
 
