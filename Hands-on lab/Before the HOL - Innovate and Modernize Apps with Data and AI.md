@@ -430,6 +430,23 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
 9. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 10** minutes. While this is underway, it is safe to continue to the next task.
 
+10. In the Synapse workspace, select **+ New Apache Spark pool** to create a new Spark pool.
+
+    ![The Synapse workspace page with New Spark Pool selected.](media/azure-create-synapse-5.png 'Synapse workspace Spark pool')
+
+11. In the **Create Apache Spark pool** window, complete the following:
+
+    | Field                          | Value                                              |
+    | ------------------------------ | ------------------------------------------         |
+    | Apache Spark pool name         | _`modernizeapp`_                                   |
+    | Autoscale                      | _select `disabled`_                                |
+    | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
+    | Number of nodes                | _select `3`_                                       |
+
+    ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
+
+12. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
+
 ### Task 10: Provision a Machine Learning workspace
 
 1. In the [Azure portal](https://portal.azure.com), type in "machine learning" in the top search menu and then select **Machine Learning** from the results.
