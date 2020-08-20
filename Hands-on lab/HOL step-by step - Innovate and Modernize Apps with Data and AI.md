@@ -61,6 +61,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
     - [Task 1: Build and push the containers](#task-1-build-and-push-the-containers)
     - [Task 2: Create a deployment file](#task-2-create-a-deployment-file)
     - [Task 3: Deploy the container group](#task-3-deploy-the-container-group)
+    - [Task 4: Migrate the Change Feed Processor Function to a Container](#task-4-migrate-the-change-feed-processor-function-to-a-container)
   - [Exercise 8: View the factory status in a Power BI report](#exercise-8-view-the-factory-status-in-a-power-bi-report)
     - [Task 1: Import events data via a Spark notebook](#task-1-import-events-data-via-a-spark-notebook)
     - [Task 2: Create a Power BI notebook](#task-2-create-a-power-bi-notebook)
@@ -1982,6 +1983,62 @@ In this exercise you will deploy a group of microservices that use the CQRS patt
     ```
 
 3. You can navigate to the IP address in the table to visit the web app.
+
+### Task 4: Migrate the Change Feed Processor Function to a Container
+
+In a high-load production environment, instead of using an Azure Function to process our Cosmos DB Change Feed we could use a Kubernetes Pod in AKS. Because of new additions to the Cosmos DB SDK in version 3, the AKS pod could auto-scale in and out based on the volume of changes. For the sake of this lab though, we're just going to host it in our ACI Container Group.
+
+The business logic in our container will be nearly the same as in our Function from Exercise 4, Task 3. You can view the new code at `Hands-on lab/Resources/Microservices/ProcessTelemetryEventsContainer/ProcessTelemetryEvents.cs`.
+
+1. With `Hands-on lab\Resources\Microservices` as your working directory in Powershell, run the following command (remembering to substitute the name of the container registry): 
+
+    ```powershell
+    docker build -f .\ProcessTelemetryEventsContainer\Dockerfile -t <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-process-telemetry-events-container .
+    ```
+
+2. Run the following command to push this container to your container registry as well: 
+
+    ```powershell
+    docker push <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-process-telemetry-events-container
+    ```
+
+3. In your `deploy-aci.yml` file add the following text right after the `queryservice` section (remembering to substitute your real values for the values in brackets):
+
+    ```yml
+      - name: processtelemetryeventscontainer
+        properties: 
+          image: <CONTAINER_REGISTRY_URL>/microservices/synapse-innovate-mcw-process-telemetry-events-container
+          resources:
+            requests:
+              cpu: 0.5
+              memoryInGb: 1.5
+          environmentVariables:
+            - name: COSMOS_DB_ACCOUNT_ENDPOINT
+              value: <COSMOS_ENDPOINT_URL>
+            - name: COSMOS_DB_AUTH_KEY
+              value: <COSMOS_PRIMARY_KEY>
+            - name: azureMLEndpointUrl
+              value: <AZURE_ML_ENDPOINT_URL>
+            - name: eventHubConnection
+              value: <EVENT_HUB_CONNECTION>
+            - name: eventHubName
+              value: <EVENT_HUB_NAME>
+            - name: pg_connection
+              value: <PG_CONNECTION>
+    ```
+
+4. Deploy your container group again with:
+
+    ```powershell
+    az container create --resource-group modernize-app --file .\deploy-aci.yaml
+    ```
+
+5. You can view the logs of your new container and verify it's running by executing this command: 
+
+    ```powershell
+    az container logs --resource-group modernize-app --name modernizeappmicroservices --container-name processtelemetryeventscontainer
+    ```
+
 
 ## Exercise 8: View the factory status in a Power BI report
 
