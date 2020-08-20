@@ -37,7 +37,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
     - [Task 1: Add a new device in IoT Hub](#task-1-add-a-new-device-in-iot-hub)
     - [Task 2: Install and configure IoT Edge on a Linux virtual machine](#task-2-install-and-configure-iot-edge-on-a-linux-virtual-machine)
     - [Task 3: Build and deploy an IoT Edge module](#task-3-build-and-deploy-an-iot-edge-module)
-  - [Exercise 2: Use Azure Synapse Analytics to train and register a predictive maintenance model](#exercise-2-use-azure-synapse-analytics-to-train-and-register-a-predictive-maintenance-model)
+  - [Exercise 2: Use Azure Machine Learning to train and register a predictive maintenance model](#exercise-2-use-azure-machine-learning-to-train-and-register-a-predictive-maintenance-model)
     - [Task 1: Load historical maintenance data](#task-1-load-historical-maintenance-data)
     - [Task 2: Create a new Azure Machine Learning Datastore](#task-2-create-a-new-azure-machine-learning-datastore)
     - [Task 3: Develop the predictive maintenance model](#task-3-develop-the-predictive-maintenance-model)
@@ -107,7 +107,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
     c. Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
 
-3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py).
+3. Install [the Azure Machine Learning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py).
 
 4. Install [Azure Data Studio](https://docs.microsoft.com/sql/azure-data-studio/download-azure-data-studio).
 
@@ -628,7 +628,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![The modernize-app-ubuntu1 device is returning a 200 response code and reports that the WWIFactorySensorModule is installed.](media/azure-modernize-app-ubuntu1-status.png 'Status for the modernize-app-ubuntu1 device')
 
-## Exercise 2: Use Azure Synapse Analytics to train and register a predictive maintenance model
+## Exercise 2: Use Azure Machine Learning to train and register a predictive maintenance model
 
 Duration: 40 minutes
 
@@ -700,204 +700,133 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
 ### Task 3: Develop the predictive maintenance model
 
-1. In the [Azure portal](https://portal.azure.com), type in "azure synapse analytics" in the top search menu and then select **Azure Synapse Analytics (workspaces preview)** from the results.
+1. Navigate to the **Notebooks** section and then select the **Create new file** option.
 
-    ![In the Services search result list, Azure Synapse Analytics (workspaces preview) is selected.](media/azure-create-synapse-search.png 'Azure Synapse Analytics (workspaces preview)')
+    ![In the Notebooks menu, Create new file is selected.](media/azure-ml-new-notebook.png 'Create new notebook')
 
-2. Select the workspace you created before the hands-on lab.
+2. Enter the name **Stamp Press Maintenance Model** and select **Notebook** as the file type.  Then select **Create** to create the notebook.
 
-    ![The Azure Synapse Analytics workspace for the lab is selected.](media/azure-synapse-select.png 'modernizeapp workspace')
+    ![Create a new notebook named Stamp Press Maintenance Model.](media/azure-ml-notebook-name.png 'Stamp Press Maintenance Model notebook')
 
-3. Select **Launch Synapse Studio** from the Synapse workspace page.
+3. In the Compute menu, select **+** to add new compute.
 
-    ![Launch Synapse Studio is selected.](media/azure-synapse-launch-studio.png 'Launch Synapse Studio')
+    ![The New Compute option is selected.](media/azure-ml-notebook-add-compute.png 'Add new compute')
 
-4. In the Azure Synapse workspace, select the **>>** chevron to expand icons to include names and then select **Manage**.
-
-    ![The Manage option is selected.](media/azure-synapse-workspace-manage.png 'Manage')
-
-5. In the Analytics pools section, select **Apache Spark pools** and then select the **+ New** option.
-
-    ![Create a new Apache Spark pool.](media/azure-synapse-manage-spark-pool-1.png 'New Apache Spark pool')
-
-6. In the **Create Apache Spark pool** window, complete the following:
+4. In the **New compute instance** section, complete the following and then select **Create**.
 
    | Field                          | Value                                              |
    | ------------------------------ | ------------------------------------------         |
-   | Apache Spark pool name         | _`modernizeapp`_                                   |
-   | Autoscale                      | _select `disabled`_                                |
-   | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
-   | Number of nodes                | _select `3`_                                       |
+   | Compute name                   | _`modernizeapp`_                                   |
+   | Virtual machine type           | _select `CPU (Central Processing Unit)`_           |
+   | Virtual machine size           | _select `Standard_DS3_v2`_                         |
 
-   ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
+   ![In the New compute instance output, form field entries are filled in.](media/azure-ml-notebook-add-compute-2.png 'New compute instance')
 
-7. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
-
-8. Navigate to the **Develop** section and create a new **Notebook**. Leave this notebook's language at its default of **PySpark (Python)**.
-
-    ![Add a new Notebook.](media/azure-synapse-develop-notebook.png 'Add a new Notebook')
-
-9. In the **Properties** section, name the notebook **Stamp Press Maintenance Model**. Add a code block to import libraries needed for the notebook and run the block. Note that it may take several minutes to start a Spark session.
+5. Copy and paste the following code into the notebook code block.
 
     ```python
-    import numpy as np
-    import pyspark
-    import os
-    import urllib
-    import sys
-
-    from pyspark.sql.functions import *
-    from pyspark.ml.classification import *
-    from pyspark.ml.evaluation import *
-    from pyspark.ml.feature import *
-    from pyspark.ml import Pipeline
-    from pyspark.sql.types import StructType, StructField
-    from pyspark.sql.types import DoubleType, IntegerType, StringType
-
-    from azureml.core.run import Run
     from azureml.core import Workspace, Environment, Datastore
     from azureml.core.experiment import Experiment
+    from azureml.core.run import Run
     from azureml.core.model import Model
-    ```
 
-10. Add a new code block to load the historical maintenance record. Be sure to replace **{modernizeappstorage}** on line 7 with your storage account name. Then run the code block.
+    from sklearn.tree import DecisionTreeClassifier
+    from sklearn.model_selection import cross_val_score, train_test_split
+    from sklearn.metrics import accuracy_score
+    import joblib
+    import numpy as np
+    import pandas as pd
 
-    ```python
-    schema = StructType([
-        StructField("Pressure", IntegerType(), True),
-        StructField("MachineTemperature", IntegerType(), True),
-        StructField("MaintenanceRequired", StringType(), True)
-    ])
+    ws = Workspace.from_config()
 
-    data = spark.read.load('abfss://synapse@{modernizeappstorage}.dfs.core.windows.net/maintenancedata/HistoricalMaintenanceRecord.csv',
-        format='csv', header=False, schema=schema)
-    data.show(10)
-    ```
+    # Load data
+    ds = Datastore.get(ws, "modernizeappstorage")
+    ds.download(".", prefix="maintenancedata/HistoricalMaintenanceRecord.csv")
+    f = open("maintenancedata/HistoricalMaintenanceRecord.csv")
+    data = np.loadtxt(f, delimiter=",")
+    df = pd.DataFrame(data=data, columns=['Pressure','MachineTemperature','Label'])
+    X = df[['Pressure','MachineTemperature']]
+    y = df[['Label']]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 
-    ![Results after loading the historical maintenance record data.](media/azure-synapse-develop-pred-notebook.png 'Historical maintenance record data')
-
-11. Add a new code block to build an Azure Machine Learning experiment, train the predictive maintenance model on a Spark cluster, save the artifacts to Azure Data Lake Storage, and then transmit the model artifacts to Azure Machine Learning.  Be sure to change the value of **subscription_id** on line 3 with your subscription ID. Then run the code block.
-
-    ```python
-    # load workspace and environment
-    ws = Workspace(
-        subscription_id = '{ Enter your subscription ID }',
-        resource_group = 'modernize-app',
-        workspace_name = 'modernize-app')
-
-    # initialize logger and start experiment
-    experiment = Experiment(ws, "Stamp_Press_Experiment")
+    # Begin experiment
+    experiment = Experiment(workspace=ws, name="Stamp_Press_Experiment")
     run = experiment.start_logging()
 
-    # vectorize all numerical columns into a single feature column
-    feature_cols = data.columns[:-1]
-    assembler = pyspark.ml.feature.VectorAssembler(
-        inputCols=feature_cols, outputCol='features')
+    # Fit the data to a decision tree
+    clf = DecisionTreeClassifier()
+    clf.fit(X_train, y_train)
 
-    # convert text labels into indices
-    label_indexer = pyspark.ml.feature.StringIndexer(
-        inputCol='MaintenanceRequired', outputCol='label').fit(data)
+    # Try the model on the hold-out data set and print accuracy.
+    y_predict = clf.predict(X_test)
+    accuracy = accuracy_score(y_test, y_predict)
 
-    # use a Decision Tree Classifier to train on the training set
-    classifier = DecisionTreeClassifier(
-    featuresCol="features",
-    labelCol="label",
-    maxDepth=6,
-    maxBins=50)
-
-    pipeline = Pipeline(stages=[assembler, label_indexer, classifier])
-    train, test = data.randomSplit([0.70, 0.30])
-    model = pipeline.fit(train)
-
-
-    # predict on the test set
-    prediction = model.transform(test)
-    print("Prediction")
-    prediction.show(10)
-
-    # evaluate the accuracy of the model using the test set
-    evaluator = pyspark.ml.evaluation.MulticlassClassificationEvaluator(
-        metricName='accuracy')
-    accuracy = evaluator.evaluate(prediction)
-
-    print()
-    print('#####################################')
-    print("Accuracy is {}".format(accuracy))
-    print('#####################################')
-    print()
-
-    # log accuracy
+    # Log the accuracy
     run.log('Accuracy', accuracy)
 
-    # Save pipeline
-    model.write().overwrite().save("/models/stamp_press_model")
+    print()
+    print('#############################')
+    print('Accuracy is {}'.format(accuracy))
+    print('#############################')
+    print()
 
-    # Download model details using Azure ML Datastore
-    ds = Datastore.get(ws, "modernizeappstorage")
+    # Save the model and upload it to the run
+    model_file_name = 'outputs/model.pkl'
+    joblib.dump(value = clf, filename = model_file_name)
+    run.upload_file(name = model_file_name, path_or_stream = model_file_name)
 
-    ds.download("/tmp/stamp_press_model", prefix="/models/stamp_press_model")
-
-    # Push model to Azure ML experiment
-    run.upload_folder(
-        name = 'stamp_press_model',
-        path = '/tmp/stamp_press_model/models/stamp_press_model'
-    )
-
-    # Register Azure ML model
-    run.register_model(
-        model_name = 'stamp_press_model',
-        model_path = 'stamp_press_model'
-    )
-
+    # Complete the run
     run.complete()
+
+    # Register the model with the workspace
+    model = run.register_model(model_name = 'stamp_press_model', model_path = model_file_name)
     ```
 
-    The output of this block will include ten predictions, the overall accuracy of the test data set, and notes from Azure Machine Learning concerning the downloaded files.
+6. After the **Compute** has been created, select **Run cell** on the cell. This will train and test a predictive maintenance model and then register the final model with Azure ML.
+
+    ![Running code to train an Azure ML model.](media/azure-ml-notebook-run.png 'Run cell')
+
+    You may receive a prompt to sign in. If you do, copy the code in your notebook and then select the link to authenticate.
+
+    ![A prompt to perform interactive authentication.](media/azure-ml-notebook-authentication.png 'Performing interactive authentication')
+
+    After selecting the link, enter the code and select **Next**. You may be prompted to select an account; if so, choose your Azure account and continue.
+
+    ![A prompt to enter the authentication code.](media/azure-ml-notebook-authentication-2.png 'Enter code')
+
+    Once you have authenticated, the code will run and return a result for accuracy. This result should be approximately 94-95%.
 
 ### Task 4: Deploy the predictive maintenance model
 
-1. Open a console on your local machine. Navigate to the folder containing downloaded hands-on lab  resources and from there into **Resources\Azure ML**. There should be a file in this directory named **score.py**.
+1. Navigate to the **Models** section and then select **stamp_press_model**.
 
-2. Run **python** in this directory to open a Python console.
+    ![The stamp_press_model is selected.](media/azure-ml-models.png 'stamp_press_model')
 
-    ![Python is running in the Resources\Azure ML directory.](media/python-anaconda-prompt.png 'Python')
+2. On the model's page, select **Deploy** to deploy the model.
 
-    >**NOTE**: the installation of Python you choose must have [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py) installed.
+    ![The deploy option is selected.](media/azure-ml-model-deploy.png 'Deploy')
 
-3. Run the following code in Python to deploy an instance of your Azure Machine Learning model using the `AzureML-PySpark-MmlSpark-0.15` environment. Be sure to change the value of **subscription_id** with your subscription.
+    >**NOTE**: in a production scenario, you will likely wish to use [Azure Machine Learning's MLOps](https://azure.microsoft.com/services/machine-learning/mlops/) instead of deploying models by hand through Azure ML Studio.
 
-    ```python
-    from azureml.core.webservice import AciWebservice
-    from azureml.core import Workspace, Environment 
-    from azureml.core.model import InferenceConfig, Model
+3. In the **Deploy a model** section, complete the following and then select **Deploy**. The **Entry script file** and **Conda dependencies file** are located in the folder containing hands-on lab resources, in the **Resources\Azure ML** directory.
 
-    ws = Workspace(
-        subscription_id = '<Your subscription>',
-        resource_group = 'modernize-app',
-        workspace_name = 'modernize-app')
+   | Field                          | Value                                              |
+   | ------------------------------ | ------------------------------------------         |
+   | Name                           | _`stamp-press-model`_                              |
+   | Compute type                   | _select `Azure Container Instance`_                |
+   | Entry script file              | _navigate to and select `score.py`_                |
+   | Conda dependencies file        | _navigate to and select `env.yml`_                 |
+   | Advanced                       | _select this to display advanced settings_         |
+   | CPU reserve capacity           | _`1`_                                              |
+   | Memory reserve capacity        | _`2`_                                              |
 
-    env = Environment.get(ws, "AzureML-PySpark-MmlSpark-0.15")
-    inference_config = InferenceConfig(entry_script="score.py", environment=env)
+   ![The model deployment settings are selected.](media/azure-ml-model-deploy-2.png 'Deploy a model')
 
-    model = Model(ws, 'stamp_press_model') 
-    models = [model] 
-    aciconfig = AciWebservice.deploy_configuration(cpu_cores = 2, memory_gb = 4, auth_enabled = False) 
-    service = Model.deploy(ws, "stamp-press-model", models, inference_config, aciconfig) 
-    ```
+4. Navigate to **Endpoints** and select the **stamp-press-model** endpoint.
 
-    ![Python is running in the Resources\Azure ML directory.](media/python-deploy.png 'Python')
+    ![The stamp press model is selected.](media/azure-ml-endpoints.png 'Endpoints')
 
-4. Although `Model.deploy()` returned a result, this is an asynchronous call. If you want to check on the status of deployment, navigate to the Azure Machine Learning studio, select **Endpoints**, and select the **stamp-press-model** endpoint.
-
-    ![The stamp press model is selected.](media/azure-ml-endpoints.png 'stamp-press-model')
-
-5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. If the Deployment state is **Unhealthy**, return to the Python console and run the following command.
-
-    ```python
-    service.get_logs()
-    ```
-
-    If the deployment state is **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
+5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. Once the deployment state switches to **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
 
     ![The stamp press model is deployed.](media/azure-ml-deployed.png 'Deployed model')
 
@@ -911,7 +840,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
     curl -X POST -H "Content-Type: application/json" -d "{\"data\": [{\"Pressure\":7470, \"MachineTemperature\":69}, {\"Pressure\":7490, \"MachineTemperature\":55}, {\"Pressure\":7800, \"MachineTemperature\":30}]}" http://{YOUR CONTAINER LOCATION}/score
     ```
 
-    You should receive back a JSON array with the values `[2,0,4]`.
+    You should receive back a JSON array with the values `[1.0,0.0,3.0]`.
 
     >**NOTE**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
 
@@ -1109,6 +1038,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
         public class TelemetryOutput
         {
             public string id {get; set;}
+            public int machineid {get; set;}
             public string event_type {get; set;}
             public string entity_type {get; set;}
             public string entity_id {get; set;}
@@ -1140,10 +1070,11 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
                     var telemetry = cosmosClient.GetContainer(databaseId, outputContainerId);
                     TelemetryOutput to = new TelemetryOutput {
+                        id = System.Guid.NewGuid().ToString(),
+                        machineid = machineid ?? 0,
                         event_type = "Telemetry Ingest",
                         entity_type = "MachineTelemetry",
                         entity_id = System.Guid.NewGuid().ToString(),
-                        id = System.Guid.NewGuid().ToString(),
                         event_data = body
                     };
 
@@ -1204,7 +1135,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
    | cosmosEndpointUrl              | _enter the Cosmos DB URL, something like `https://modernize-app-#SUFFIX#.documents.azure.com:443/`_ |
    | cosmosPrimaryKey               | _enter the primary key for your Cosmos DB account_ |
    | azureMLEndpointUrl             | _enter the URL (with /score) from exercise 2_      |
-   | modernizeapp\_DOCUMENTDB        | _`AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};`_ |
+   | modernizeapp\_COSMOSDB         | _`AccountEndpoint=https://modernize-app-#SUFFIX#.documents.azure.com:443/;AccountKey={PRIMARY KEY};`_ |
    | pg\_connection                  | _`Server={modernize-app-c.postgres.database.azure.com}; Port=5432; Database=citus; Username=citus; Password={your_password}; SSL Mode=Require; Trust Server Certificate=true`_ |
    | IoTHubTriggerConnection        | _enter the Event Hub compatible endpoint for your IoT Hub_ |
    | EventHubConnection             | _enter the Event Hub primary connection string, NOT the IoT Hub connection string_    |
@@ -1431,7 +1362,7 @@ Events are loading into the `telemetry` container. Using that data, we can creat
             public static async Task Run([CosmosDBTrigger(
                 databaseName: "sensors",
                 collectionName: "telemetry",
-                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                ConnectionStringSetting = "modernizeapp_COSMOSDB",
                 LeaseCollectionName = "leases",
                 CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)
             {
@@ -1755,7 +1686,7 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
    | Template                         | _select `CosmosDBTrigger`_                         |
    | Function Name                    | _`ProcessTemperatureAnomalyEvents`_                |
    | Namespace                        | _`ModernApp`_                                      |
-   | Setting from local.settings.json | _select `modernizeapp_DOCUMENTDB`_                 |
+   | Setting from local.settings.json | _select `modernizeapp_COSMOSDB`_                   |
    | Database name                    | _`sensors`_                                        |
    | Collection name                  | _`scored_telemetry`_                               |
 
@@ -1778,7 +1709,7 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
             public static void Run([CosmosDBTrigger(
                 databaseName: "sensors",
                 collectionName: "scored_telemetry",
-                ConnectionStringSetting = "modernizeapp_DOCUMENTDB",
+                ConnectionStringSetting = "modernizeapp_COSMOSDB",
                 LeaseCollectionName = "leases")]IReadOnlyList<Document> input, ILogger log)
             {
                 foreach (Document doc in input) {
