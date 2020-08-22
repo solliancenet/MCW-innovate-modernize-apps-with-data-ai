@@ -60,7 +60,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
     c. Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
 
-3. Install [the Azure Machine Leraning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py).
+3. Install [the Azure Machine Learning SDK for Python](https://docs.microsoft.com/python/api/overview/azure/ml/install?view=azure-ml-py).
 
 4. Install [Azure Data Studio](https://docs.microsoft.com/sql/azure-data-studio/download-azure-data-studio).
 
@@ -406,11 +406,15 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
    | File system name                                     | _select `Create new` and enter `synapse`_        |
    | Assign myself the Storage Blob Data Contributor role | _ensure the box is checked_                      |
 
+   ![The form fields are completed with the previously described settings.](media/azure-create-synapse-1.png 'Create Synapse workspace')
+
    > **Note**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
 
-   > **Important**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
+   You might see the following error after entering a workspace name:  **The Azure Synapse resource provider (Microsoft.Synapse) needs to be registered with the selected subscription.** If you see this error, select **Click here to register**, located between the Subscription and Resource group.
 
-   ![The form fields are completed with the previously described settings.](media/azure-create-synapse-1.png 'Create Synapse workspace')
+   ![The link to register the Synapse resource provider to a subscription is selected.](media/azure-create-synapse-register.png 'Register Synapse to subscription')
+
+   > **Important**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
 
 4. Select **Next : Security + networking >** to move on to the Security and Networking page.  On the Security and Networking page, enter a valid password you will remember. Leave the other options at their default values.
 
@@ -429,6 +433,23 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
     ![The form fields are completed with the previously described settings.](media/azure-create-synapse-4.png 'Create SQL pool')
 
 9. Select **Review + create**. On the review screen, select **Create**.  Provisioning takes **up to 10** minutes. While this is underway, it is safe to continue to the next task.
+
+10. In the Synapse workspace, select **+ New Apache Spark pool** to create a new Spark pool.
+
+    ![The Synapse workspace page with New Spark Pool selected.](media/azure-create-synapse-5.png 'Synapse workspace Spark pool')
+
+11. In the **Create Apache Spark pool** window, complete the following:
+
+    | Field                          | Value                                              |
+    | ------------------------------ | ------------------------------------------         |
+    | Apache Spark pool name         | _`modernizeapp`_                                   |
+    | Autoscale                      | _select `disabled`_                                |
+    | Node size                      | _select `Small (4 vCPU / 32 GB)`_                  |
+    | Number of nodes                | _select `3`_                                       |
+
+    ![In the Create Apache Spark pool output, form field entries are filled in.](media/azure-synapse-create-spark-pool.png 'Create Apache Spark pool output')
+
+12. Select **Review + create**. On the review screen, select **Create**.  Provisioning may take several minutes, but you do not need to wait for the pool to be provisioned before moving to the next step.
 
 ### Task 10: Provision a Machine Learning workspace
 

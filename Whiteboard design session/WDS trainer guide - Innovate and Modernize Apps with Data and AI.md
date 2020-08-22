@@ -172,7 +172,7 @@ When participants are doing activities, you can **look ahead to refresh your mem
 
 In this whiteboard design session, you will work with a group to design a solution for ingesting and preparing manufacturing device sensor data, as well as detecting anomalies in sensor data and creating, training, and deploying a machine learning model which can predict when device maintenance will become necessary.
 
-At the end of this whiteboard design session, you will have learned how to capture Internet of Things (IoT) device data with Azure IoT Hub, process device data with Azure Stream Analytics, apply the Command and Query Responsibility Segregation (CQRS) pattern with Azure Functions, build a predictive maintenance model using Azure Synapse Analytics Spark notebooks, deploy the model to an Azure Machine Learning model registry, deploy the model to an Azure Container Instance, and generate predictions with Azure Functions accessing a Cosmos DB change feed.  These skills will help you modernize applications and integrate Artificial Intelligence into the application.
+At the end of this whiteboard design session, you will have learned how to capture Internet of Things (IoT) device data with Azure IoT Hub, process device data with Azure Stream Analytics, apply the Command and Query Responsibility Segregation (CQRS) pattern with Azure Functions, build a predictive maintenance model using an Azure Machine Learning notebook, deploy the model to an Azure Machine Learning model registry, deploy the model to an Azure Container Instance, and generate predictions with Azure Functions accessing a Cosmos DB change feed.  These skills will help you modernize applications and integrate Artificial Intelligence into the application.
 
 ## Step 1: Review the customer case study 
 
@@ -522,7 +522,7 @@ The web app is a modernized version of WWI's old monolithic web app, implementin
 
 1. Wide World Importers has an extensive amount of sensor data going back years and wish to train a model for predictive maintenance based on this sensor data. What technologies would help them train the model given this data size?
 
-    Typically, predictive maintenance model development happens in a language such as R or Python on a single machine.  With enormous amounts of data, however, data scientists can quickly run out of memory on a single machine.  For this reason, a Spark cluster hosted in a service like [Azure Synapse Analytics Spark Pools](https://docs.microsoft.com/azure/synapse-analytics/spark/apache-spark-overview) allows data scientists to build machine learning models with data distributed across multiple machines, allowing for complex, memory-hungry algorithms to process large amounts of data.
+    Typically, predictive maintenance model development happens in a language such as R or Python on a single machine.  With enormous amounts of data, however, data scientists can quickly run out of memory on local laptops.  For this reason, Azure Machine Learning allows data scientists to provision compute resources, including clusters which allow for complex, memory-hungry algorithms to process large amounts of data.
 
 2. Which platform would you recommend for deploying the trained model? This deployed model should still be part of an event sourcing solution.
 

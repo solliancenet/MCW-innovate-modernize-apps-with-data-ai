@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadServices", "ReadService
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{31BD29E6-90C6-426E-921F-7138B3384B79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessTelemetryEventsContainer", "ProcessTelemetryEventsContainer\ProcessTelemetryEventsContainer.csproj", "{07841177-BA0E-435A-9E26-41D8719DE90B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{31BD29E6-90C6-426E-921F-7138B3384B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31BD29E6-90C6-426E-921F-7138B3384B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31BD29E6-90C6-426E-921F-7138B3384B79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07841177-BA0E-435A-9E26-41D8719DE90B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07841177-BA0E-435A-9E26-41D8719DE90B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07841177-BA0E-435A-9E26-41D8719DE90B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07841177-BA0E-435A-9E26-41D8719DE90B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{78C37F55-AE3E-47EC-85D5-38FC88A3EFCC} = {1D905E51-13BC-4D81-B43A-E235C022A74D}
