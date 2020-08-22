@@ -1,4 +1,4 @@
-# Innovate and Modernize Apps with Data & AI
+# Innovate and modernize apps with Data and AI
 
 Wide World Importers (WWI) is a global manufacturing company that handles distribution worldwide. They manufacture more than 9,000 different SKUs for two types of businesses, B2B and B2C. WWI has 5 factories each with about 10,000 sensors each, meaning 50,000 sensors sending data in real time.
 
