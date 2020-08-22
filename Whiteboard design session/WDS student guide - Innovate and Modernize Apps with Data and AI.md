@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-Innovate and Modernize Apps with Data & AI
+Innovate and modernize apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -40,9 +40,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- /TOC -->
 
-# Innovate and Modernize Apps with Data and AI whiteboard design session student guide
+# Innovate and modernize apps with Data and AI whiteboard design session student guide
 
-## Abstract and learning objectives 
+## Abstract and learning objectives
 
 In this whiteboard design session, you will work with a group to design a solution for ingesting and preparing manufacturing device sensor data, as well as detecting anomalies in sensor data and creating, training, and deploying a machine learning model which can predict when device maintenance will become necessary.
 

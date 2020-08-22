@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-Innovate and Modernize Apps with Data and AI
+Innovate and modernize apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -42,7 +42,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
   - [Step 3: Present the solution](#step-3-present-the-solution)
   - [Wrap-up](#wrap-up)
   - [Additional references](#additional-references)
-- [Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-trainer-guide)
+- [Innovate and modernize apps with Data and AI whiteboard design session trainer guide](#innovate-and-modernize-apps-with-data-and-ai-whiteboard-design-session-trainer-guide)
   - [Step 1: Review the customer case study](#step-1-review-the-customer-case-study-1)
   - [Step 2: Design a proof of concept solution](#step-2-design-a-proof-of-concept-solution-1)
   - [Step 3: Present the solution](#step-3-present-the-solution-1)
@@ -358,7 +358,7 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Command and Query Responsibility Segregation (CQRS) pattern | https://docs.microsoft.com/azure/architecture/patterns/cqrs |
 | Implement a microservice domain model with .NET Core | https://docs.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model |
 
-# Innovate and Modernize Apps with Data and AI whiteboard design session trainer guide
+# Innovate and modernize apps with Data and AI whiteboard design session trainer guide
 
 ## Step 1: Review the customer case study
 

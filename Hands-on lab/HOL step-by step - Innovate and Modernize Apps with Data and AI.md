@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-Innovate and Modernize Apps with Data & AI
+Innovate and modernize apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -27,7 +27,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- TOC -->
 
-- [Innovate and Modernize Apps with Data and AI hands-on lab step-by-step](#innovate-and-modernize-apps-with-data-and-ai-hands-on-lab-step-by-step)
+- [Innovate and modernize apps with Data and AI hands-on lab step-by-step](#innovate-and-modernize-apps-with-data-and-ai-hands-on-lab-step-by-step)
   - [Abstract and learning objectives](#abstract-and-learning-objectives)
   - [Overview](#overview)
   - [Solution architecture](#solution-architecture)
@@ -72,9 +72,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- /TOC -->
 
-# Innovate and Modernize Apps with Data and AI hands-on lab step-by-step 
+# Innovate and modernize apps with Data and AI hands-on lab step-by-step
 
-## Abstract and learning objectives 
+## Abstract and learning objectives
 
 In this hands-on-lab, you will build a cloud processing and machine learning solution for IoT data. We will begin by deploying a factory load simulator using Azure IoT Edge to write into Azure IoT Hub, following the recommendations in the [Azure IoT reference architecture](https://docs.microsoft.com/azure/architecture/reference-architectures/iot).  The data in this simulator represents sensor data collected from a stamping press machine, which cuts, shapes, and imprints sheet metal.  The rest of the lab will show how to implement an event sourcing architecture using Azure technologies ranging from Cosmos DB to Stream Analytics to Azure Functions to Azure Database for PostgreSQL.
 
@@ -230,7 +230,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     Replace the **<ADD DEVICE CONNECTION STRING HERE>** text with the connection string you copied in the prior task.  In vim, use the arrow keys to move the cursor to the point before the angle bracket `<` and then type `35x` to delete the next 35 characters, leaving you with an empty pair of quotation marks. Then, type `i` to insert, paste in your text by right-clicking the screen (if supported) or `Shift+Insert`. Once you have your connection string pasted into the editor, press `Esc` to exit insert mode and type `ZZ` to save the file.
 
-    >**NOTE**: `vim` is one editor you may use to modify files in Linux, but there are others, including `nano`.  Choose the one you are most comfortable using.
+    >**Note**: `vim` is one editor you may use to modify files in Linux, but there are others, including `nano`.  Choose the one you are most comfortable using.
 
     ![Azure IoT Edge is configured.](media/vm-configure-iot-edge.png 'Azure IoT Edge device configuration')
 
@@ -250,7 +250,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
 1. Open Visual Studio Code. Navigate to the **Command Palette** by selecting it from the View menu, or by pressing `Ctrl+Shift+P`. Select the option **Azure IoT Edge: New IoT Edge Solution**. If you do not see it, begin typing "Azure IoT Edge" and it should appear.
 
-    > **NOTE**: If you do not see anything in the Command Palette for Azure IoT Edge, be sure to install the [Azure IoT Tools extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.azure-iot-tools) for Visual Studio Code.
+    > **Note**: If you do not see anything in the Command Palette for Azure IoT Edge, be sure to install the [Azure IoT Tools extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.azure-iot-tools) for Visual Studio Code.
 
     ![Create a new IoT Edge Solution.](media/code-iot-edge-solution.png 'Azure IoT Edge: New IoT Edge Solution')
 
@@ -623,7 +623,7 @@ The instructions in this task come from the guide on [how to install IoT Edge on
 
     ![The amd64 configuration is selected.](media/code-iot-edge-amd64-deployment.png 'Select Edge Deployment Manifest')
 
-    > **NOTE**: It is important that you not select the `deployment.template.json` or `deployment.debug.template.json` files. These are template JSON files which do not contain any sensitive details. These are the files that you can safely check into source control. Visual Studio Code uses these templates as the basis for the proper deployment files in the **config** folder. You should not check in files in the config folder.
+    > **Note**: It is important that you not select the `deployment.template.json` or `deployment.debug.template.json` files. These are template JSON files which do not contain any sensitive details. These are the files that you can safely check into source control. Visual Studio Code uses these templates as the basis for the proper deployment files in the **config** folder. You should not check in files in the config folder.
 
 19. Navigate back to the IoT Hub (referring back to Task 1 if needed), and then return to the IoT Edge entry in Automatic Device Management. Select the entry labeled **modernize-app-ubuntu1** and you should see an IoT Edge Runtime Response of **200 -- OK** and four deployed modules, including the **WWIFactorySensorModule**.
 
@@ -695,7 +695,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
    ![In the New datastore output, form field entries are filled in.](media/azure-ml-new-datastore-1.png 'New datastore')
 
-   >**NOTE**: If you have not stored your storage account key, navigate to your storage account. Then, in the **Settings** menu, select **Access keys** and copy the **Key** value in the **key1** section.
+   >**Note**: If you have not stored your storage account key, navigate to your storage account. Then, in the **Settings** menu, select **Access keys** and copy the **Key** value in the **key1** section.
 
 6. Select **Create** to add the new output.
 
@@ -807,7 +807,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     ![The deploy option is selected.](media/azure-ml-model-deploy.png 'Deploy')
 
-    >**NOTE**: in a production scenario, you will likely wish to use [Azure Machine Learning's MLOps](https://azure.microsoft.com/services/machine-learning/mlops/) instead of deploying models by hand through Azure ML Studio.
+    >**Note**: in a production scenario, you will likely wish to use [Azure Machine Learning's MLOps](https://azure.microsoft.com/services/machine-learning/mlops/) instead of deploying models by hand through Azure ML Studio.
 
 3. In the **Deploy a model** section, complete the following and then select **Deploy**. The **Entry script file** and **Conda dependencies file** are located in the folder containing hands-on lab resources, in the **Resources\Azure ML** directory.
 
@@ -827,7 +827,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     ![The stamp press model is selected.](media/azure-ml-endpoints.png 'Endpoints')
 
-5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. Once the deployment state switches to **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take take **up to 10 minutes** before the Deployment state is Healthy.
+5. In the stamp-press-model endpoint, observe the current state. If the Deployment state is **Transitioning**, this means that Azure Machine Learning is still deploying the endpoint. Once the deployment state switches to **Healthy**, deployment succeeded and your Azure Machine Learning deployment is ready to be consumed.  It may take **up to 10 minutes** before the Deployment state is Healthy.
 
     ![The stamp press model is deployed.](media/azure-ml-deployed.png 'Deployed model')
 
@@ -843,7 +843,7 @@ Now that your data is streaming into Azure IoT Hub, it is time to train and buil
 
     You should receive back a JSON array with the values `[1.0,0.0,3.0]`.
 
-    >**NOTE**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
+    >**Note**: If you do not have the curl application installed, you may alternatively wish to install [Postman](https://www.postman.com/), a free tool for making web requests.
 
 3. Try modifying the input JSON and seeing what results you get. The following table represents the true maintenance requirements.
 
@@ -890,7 +890,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
 ### Task 2: Create Cosmos DB containers
 
-1. In the **Containers** section for your Cosmos DB account,select **Browse**.
+1. In the **Containers** section for your Cosmos DB account, select **Browse**.
 
     ![In the Cosmos DB containers section, Browse is selected.](media/azure-cosmos-db-browse.png 'Browse')
 
@@ -986,7 +986,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
 
     ![The Azure Function will open in the current window.](media/code-function-select-open.png 'Open in current window')
 
-13. Open **local.settings.json** and add an entry for **IoTHubTriggerConnection** using your the Event Hub-compatible endpoint in your IoT Hub. Then, add entries for **cosmosEndpointUrl** and **cosmosPrimaryKey** and fill this in with the URI and primary key for your Cosmos DB account, respectively.
+13. Open **local.settings.json** and add an entry for **IoTHubTriggerConnection** using the Event Hub-compatible endpoint in your IoT Hub. Then, add entries for **cosmosEndpointUrl** and **cosmosPrimaryKey** and fill this in with the URI and primary key for your Cosmos DB account, respectively.
 
     ```json
     "IoTHubTriggerConnection": "{ Your Event Hub-compatible endpoint }",
@@ -994,7 +994,7 @@ Now that IoT Hub is storing data, we can begin to process the sensor data messag
     "cosmosPrimaryKey": "{ Your Comsos DB account's primary key }",
     ```
 
-    >**NOTE**: The Event Hub compatible endpoint can be found in the **Built-in endpoints** selection in the Settings menu for IoT Hub if you did not collect that information in Exercise 1.
+    >**Note**: The Event Hub compatible endpoint can be found in the **Built-in endpoints** selection in the Settings menu for IoT Hub if you did not collect that information in Exercise 1.
 
     ![The new local settings are filled in.](media/azure-function-local-settings.png 'local.settings.json')
 
@@ -1214,7 +1214,7 @@ Events are loading into the `telemetry` container. Using that data, we can creat
    | Password                       | _enter the password_                        |
    | Database name                  | _enter `citus`_                             |
 
-   > **NOTE**: You might need to force SSL to connect to PostgreSQL on Azure. To do this in Azure Data Studio, select the **Advanced** button and change the value for SSL mode to **Require** from its default value of Prefer.
+   > **Note**: You might need to force SSL to connect to PostgreSQL on Azure. To do this in Azure Data Studio, select the **Advanced** button and change the value for SSL mode to **Require** from its default value of Prefer.
 
    ![The form fields are completed with the previously described settings.](media/azure-data-studio-citus-connection-details.png 'Azure Data Studio Settings')
 
@@ -1304,7 +1304,7 @@ Events are loading into the `telemetry` container. Using that data, we can creat
     "EventHubConnection": "{ Your Event Hub primary connection string }"
     ```
 
-    >**NOTE**: Use the Event Hub connection string you saved before the lab.
+    >**Note**: Use the Event Hub connection string you saved before the lab.
 
     ![The new local settings are filled in.](media/azure-function-local-settings.png 'local.settings.json')
 
@@ -1530,7 +1530,7 @@ Events are loading into the `telemetry` container. Using that data, we can creat
     SELECT * FROM event;
     ```
 
-    >**NOTE**: It may take 2-3 minutes for the new Azure Function to populate data into the **event** table. If you do not see data after several minutes, navigate to the Overview panel of the App Service and **Stop** and then **Start** the functions.
+    >**Note**: It may take 2-3 minutes for the new Azure Function to populate data into the **event** table. If you do not see data after several minutes, navigate to the Overview panel of the App Service and **Stop** and then **Start** the functions.
 
     ![Maintenance recommendations are coming in.](media/azure-data-studio-event-loading.png 'Maintenance recommendations')
 
@@ -1815,7 +1815,7 @@ Your sensor data is flowing into the `telemetry_to_score` Event Hub and now you 
 
     ![Temperature anomaly data appears in PostgreSQL.](media/azure-data-studio-temperature-anomaly.png 'Temperature Anomaly')
 
-    >**NOTE**:  It may take 2-5 minutes for temperature anomalies to reach PostgreSQL.
+    >**Note**:  It may take 2-5 minutes for temperature anomalies to reach PostgreSQL.
 
 ## Exercise 7: Modernize services logic to use event sourcing and CQRS
 
@@ -2039,7 +2039,6 @@ The business logic in our container will be nearly the same as in our Function f
     az container logs --resource-group modernize-app --name modernizeappmicroservices --container-name processtelemetryeventscontainer
     ```
 
-
 ## Exercise 8: View the factory status in a Power BI report
 
 Duration: 30 minutes
@@ -2122,7 +2121,7 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
     ![Code to connect to Cosmos DB is entered and ready to run.](media/azure-synapse-develop-cosmos-connect.png 'Connect to Cosmos DB from a notebook')
 
-    >**NOTE**: it may take several minutes for a Spark session to start. The notebook cell output text will read "Starting Spark session" during this time.
+    >**Note**: it may take several minutes for a Spark session to start. The notebook cell output text will read "Starting Spark session" during this time.
 
 13. Below the first code block, select **{ } Add Code** and add a new code block. Enter and then run the following code to create a new SQL Pool table with machine anomaly data.
 
@@ -2166,7 +2165,7 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 1. Navigate to [Power BI](https://app.powerbi.com) and log in if prompted.
 
-    >**NOTE**: For this and the following task, you will need a work or school account with Power BI access.  You will not be able to use personal accounts to log into the Power BI application.
+    >**Note**: For this and the following task, you will need a work or school account with Power BI access.  You will not be able to use personal accounts to log into the Power BI application.
 
 2. In the Workspaces menu, select **Create a workspace** to create a new workspace.
 
@@ -2276,7 +2275,7 @@ In this final exercise, you will load data from Cosmos DB containers into an Azu
 
 2. When the **Secure Embed Code** window pops up, copy the value of the iframe's src attribute.
 
-    >**NOTE**: You may need to copy the whole iframe html out to a text editor in order to access the src attribute's value.
+    >**Note**: You may need to copy the whole iframe html out to a text editor in order to access the src attribute's value.
 
     ![In the secure embed code window, the source URL is selected.](media/secure-embed-window.png "The Secure embed code")
 
@@ -2327,7 +2326,7 @@ Duration: 10 minutes
 
 1. Navigate to [Power BI](https://app.powerbi.com) and log in if prompted.
 
-    >**NOTE**: If you did not create a Power BI workspace as part of exercise 8, there is no need to follow this cleanup task.
+    >**Note**: If you did not create a Power BI workspace as part of exercise 8, there is no need to follow this cleanup task.
 
 2. In the Workspaces menu, select the **...** menu option for the **Modern App** workspace and then choose **Workspace settings**.
 

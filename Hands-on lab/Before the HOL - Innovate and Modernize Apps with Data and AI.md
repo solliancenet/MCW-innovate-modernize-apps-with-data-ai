@@ -1,7 +1,7 @@
 ![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-Innovate and Modernize Apps with Data & AI
+Innovate and modernize apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -26,7 +26,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- TOC -->
 
-- [Innovate and Modernize Apps with Data and AI before the hands-on lab setup guide](#innovate-and-modernize-apps-with-data-and-ai-before-the-hands-on-lab-setup-guide)
+- [Innovate and modernize apps with Data and AI before the hands-on lab setup guide](#innovate-and-modernize-apps-with-data-and-ai-before-the-hands-on-lab-setup-guide)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Create an Azure resource group using the Azure Portal](#task-1-create-an-azure-resource-group-using-the-azure-portal)
@@ -44,7 +44,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- /TOC -->
 
-# Innovate and Modernize Apps with Data and AI before the hands-on lab setup guide 
+# Innovate and modernize apps with Data and AI before the hands-on lab setup guide
 
 ## Requirements
 
@@ -76,7 +76,7 @@ Duration: 40 minutes
 
 In this exercise, you will set up your environment for use in the rest of the hands-on lab. You should follow all steps provided before attending the Hands-on lab.
 
-> **IMPORTANT**: Many Azure resources require unique names. Throughout these steps you will see the word "SUFFIX" as part of resource names. You should replace this with your Microsoft alias, initials, or another value to ensure resources are uniquely named.
+> **Important**: Many Azure resources require unique names. Throughout these steps you will see the word "SUFFIX" as part of resource names. You should replace this with your Microsoft alias, initials, or another value to ensure resources are uniquely named.
 
 ### Task 1: Create an Azure resource group using the Azure Portal
 
@@ -125,7 +125,7 @@ Azure Data Lake Storage Gen2 will be critical for several integration points thr
    | Replication                    | _select Locally-redundant storage (LRS)_    |
    | Access tier                    | _select Hot_                                |
 
-    > **NOTE**: Please replace the `#SUFFIX#` tag in the storage account name with a suffix you would like to use. Names of storage accounts must be globally unique.
+    > **Note**: Please replace the `#SUFFIX#` tag in the storage account name with a suffix you would like to use. Names of storage accounts must be globally unique.
 
     ![The form fields are completed with the previously described settings.](media/azure-create-storage-account-1.png 'Storage Account Settings')
 
@@ -158,13 +158,13 @@ IoT Hub will store messages sent from IoT devices. In the hands-on lab, you will
    | Location                       | _select the resource group's location_      |
    | IoT hub name                   | _`modernize-app-iot-#SUFFIX#`_              |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the IoT hub name with a suffix you would like to use. Names of IoT hubs must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the IoT hub name with a suffix you would like to use. Names of IoT hubs must be globally unique.
 
    ![The form fields are completed with the previously described settings and with the Size and scale menu option selected.](media/azure-create-iot-hub-1.png 'Iot Hub Settings')
 
 4. Select **Size and scale** from the menu. In the **Pricing and scale tier** menu, select the option **F1: Free tier**.
 
-    > **NOTE**: The free tier is limited to routing 8,000 messages per day and this includes messages sent from IoT devices into IoT Hub as well as messages which IoT Hub consumers process. Throughout the course of the hands-on lab, we can expect to generate and process upwards of 3,000 messages. If you run the sensor data generator longer than five hours, you might hit the daily limit for Iot Hub's free tier. If this is a concern, choose **S1: Standard tier** instead.  The Basic tier does not include functionality which we will use during the lab, so selecting it is not recommended.
+    > **Note**: The free tier is limited to routing 8,000 messages per day and this includes messages sent from IoT devices into IoT Hub as well as messages which IoT Hub consumers process. Throughout the course of the hands-on lab, we can expect to generate and process upwards of 3,000 messages. If you run the sensor data generator longer than five hours, you might hit the daily limit for Iot Hub's free tier. If this is a concern, choose **S1: Standard tier** instead.  The Basic tier does not include functionality which we will use during the lab, so selecting it is not recommended.
 
     ![The Size and scale form fields are completed with the Free tier option selected in the Pricing and scale tier menu.](media/azure-create-iot-hub-2.png 'Iot Hub Size and scale')
 
@@ -190,7 +190,7 @@ The container registry will store container images you will create during the ha
    | Location                       | _select the resource group's location_      |
    | SKU                            | _select `Basic`_                            |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the registry name with a suffix you would like to use. Names of container registries must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the registry name with a suffix you would like to use. Names of container registries must be globally unique.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-container-registry-1.png 'Container registry Settings')
 
@@ -267,9 +267,9 @@ In the hands-on lab, you will use an Ubuntu virtual machine to send sensor data.
 
     `ssh -i #FILE_LOCATION#\modernize-app-vm_key.pem iotuser@#VM_IP_ADDRESS#`
 
-    > **IMPORTANT:**  If you receive an error message which includes "WARNING: UNPROTECTED PRIVATE KEY FILE!", please ensure that you have completed the above steps and set file permissions for the private key.
+    > **Important:**  If you receive an error message which includes "WARNING: UNPROTECTED PRIVATE KEY FILE!", please ensure that you have completed the above steps and set file permissions for the private key.
 
-    > **NOTE:** If you are running a version of Windows which does not include built-in SSH support, you can use an [SSH client like PuTTY](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-azure-vm-technical-asset#connect-to-a-linux-based-vm) to connect to your virtual machine. If you are using Linux or MacOS, you should already have the `ssh` command installed. In that case, be sure to run `chmod 400 modernize-app-vm_key.pem` to set the file as read-only and accessible only to your user account before attempting to connect.
+    > **Note:** If you are running a version of Windows which does not include built-in SSH support, you can use an [SSH client like PuTTY](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-azure-vm-technical-asset#connect-to-a-linux-based-vm) to connect to your virtual machine. If you are using Linux or MacOS, you should already have the `ssh` command installed. In that case, be sure to run `chmod 400 modernize-app-vm_key.pem` to set the file as read-only and accessible only to your user account before attempting to connect.
 
 ### Task 6: Provision Cosmos DB
 
@@ -297,9 +297,9 @@ The hands-on lab will use Cosmos DB as a key component in the event sourcing arc
    | Multi-region Writes            | _select `Disable`_                          |
    | Availability Zones             | _select `Disable`_                          |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the account name with a suffix you would like to use. Names of Cosmos DB accounts must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the account name with a suffix you would like to use. Names of Cosmos DB accounts must be globally unique.
 
-   > **NOTE**: Cosmos DB allows one account to be placed into a free tier, which provides access to 400 Request Units and 5 GB of storage for free. This hands-on lab will remain well under those limits, so if you have it available, you may wish to apply the discount.
+   > **Note**: Cosmos DB allows one account to be placed into a free tier, which provides access to 400 Request Units and 5 GB of storage for free. This hands-on lab will remain well under those limits, so if you have it available, you may wish to apply the discount.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-cosmos-db-1.png 'Cosmos DB Settings')
 
@@ -325,7 +325,7 @@ The hands-on lab will use Cosmos DB as a key component in the event sourcing arc
    | Version                        | _select `3.1`_                              |
    | Region                         | _select the resource group's location_      |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the Function App name with a suffix you would like to use. Names of Function Apps must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the Function App name with a suffix you would like to use. Names of Function Apps must be globally unique.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-function-app-1.png 'Create Function App')
 
@@ -359,7 +359,7 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
    | Location                       | _select the resource group's location_      |
    | Password                       | _enter a valid password you will remember_  |
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the server group name with a suffix you would like to use. Names of server groups must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the server group name with a suffix you would like to use. Names of server groups must be globally unique.
 
    ![The form fields are completed with the previously described settings.](media/azure-create-postgres-2.png 'Hyperscale (Citus) server group')
 
@@ -408,13 +408,13 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
    ![The form fields are completed with the previously described settings.](media/azure-create-synapse-1.png 'Create Synapse workspace')
 
-   > **NOTE**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
+   > **Note**: Please replace the `#SUFFIX#` tag in the workspace name with a suffix you would like to use. Names of workspaces must be globally unique.
 
    You might see the following error after entering a workspace name:  **The Azure Synapse resource provider (Microsoft.Synapse) needs to be registered with the selected subscription.** If you see this error, select **Click here to register**, located between the Subscription and Resource group.
 
    ![The link to register the Synapse resource provider to a subscription is selected.](media/azure-create-synapse-register.png 'Register Synapse to subscription')
 
-   > **IMPORTANT**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
+   > **Important**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
 
 4. Select **Next : Security + networking >** to move on to the Security and Networking page.  On the Security and Networking page, enter a valid password you will remember. Leave the other options at their default values.
 
