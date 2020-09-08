@@ -1,4 +1,4 @@
-![](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
+![Microsoft Cloud Workshops](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
 Innovate and modernize apps with Data and AI
@@ -414,7 +414,7 @@ In this task, you will deploy a new Azure Database for PostgreSQL, selecting the
 
    ![The link to register the Synapse resource provider to a subscription is selected.](media/azure-create-synapse-register.png 'Register Synapse to subscription')
 
-   > **Important**: Be sure to check the box which reads "Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account"!  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
+   > **Important**: Be sure to check the box which reads **Assign myself the Storage Blob Data Contributor role on the Data Lake Storage Gen2 account**.  If you do not check this box, you will be unable to complete certain exercises unless you add your account as a Storage Blob Data Contributor later.
 
 4. Select **Next : Security + networking >** to move on to the Security and Networking page.  On the Security and Networking page, enter a valid password you will remember. Leave the other options at their default values.
 
