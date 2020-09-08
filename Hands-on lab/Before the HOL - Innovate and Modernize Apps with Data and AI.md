@@ -1,7 +1,7 @@
 ![Microsoft Cloud Workshops](https://github.com/Microsoft/MCW-Template-Cloud-Workshop/raw/master/Media/ms-cloud-workshop.png "Microsoft Cloud Workshops")
 
 <div class="MCWHeader1">
-Innovate and Modernize Apps with Data and AI
+Innovate and modernize apps with Data and AI
 </div>
 
 <div class="MCWHeader2">
@@ -26,7 +26,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- TOC -->
 
-- [Innovate and Modernize Apps with Data and AI before the hands-on lab setup guide](#innovate-and-modernize-apps-with-data-and-ai-before-the-hands-on-lab-setup-guide)
+- [Innovate and modernize apps with Data and AI before the hands-on lab setup guide](#innovate-and-modernize-apps-with-data-and-ai-before-the-hands-on-lab-setup-guide)
   - [Requirements](#requirements)
   - [Before the hands-on lab](#before-the-hands-on-lab)
     - [Task 1: Create an Azure resource group using the Azure Portal](#task-1-create-an-azure-resource-group-using-the-azure-portal)
@@ -44,7 +44,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/legal/intellec
 
 <!-- /TOC -->
 
-# Innovate and Modernize Apps with Data and AI before the hands-on lab setup guide 
+# Innovate and modernize apps with Data and AI before the hands-on lab setup guide
 
 ## Requirements
 
